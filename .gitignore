@@ -1,0 +1,25 @@
+# Ignore all
+*
+# Unignore all with extensions
+!*.*
+# Unignore all dirs
+!*/
+### Above combination will ignore all files without extension ###
+
+# Ignore third party dependencies
+third-party/
+
+# Ignore .d files
+*.d
+
+# Ignore .o files
+*.o
+
+# Unignore Makefile
+!Makefile
+
+# Ignore .vscode
+.vscode
+
+# Ignore markdownlint
+.markdownlint.json
