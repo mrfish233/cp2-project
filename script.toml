@@ -1,0 +1,129 @@
+name = "Final Project"
+author = "TA"
+
+[player]
+starter = "start"
+inventory = [
+    "vision-pro",
+]
+
+[scene.library]
+name = "The School Library"
+background = "assets/scene/library.bmp"
+
+[scene.meeting-room]
+name = "The Meeting Room"
+background = "assets/scene/meeting-room.bmp"
+
+[character.classmate]
+name = "Alice (your classmate)"
+avatar = "assets/character/alice/avatar.bmp"
+tachie = "assets/character/alice/tachie.bmp"
+
+[character.ta]
+location = "meeting-room"
+name = "Teaching Assistant"
+avatar = "assets/character/ta/avatar.bmp"
+tachie = "assets/character/ta/tachie.bmp"
+
+[item.vision-pro]
+name = "Vision Pro"
+description = "A spatial computer"
+icon = "assets/item/vision-pro/icon.bmp"
+
+[event.start]
+scene = "library"
+dialogue = "hello"
+
+[dialogue.hello]
+character = "classmate"
+text = "嗨！聽說今年的期末專題要做互動式小說引擎喔～"
+[[dialogue.hello.options]]
+text = "哇！太棒了！"
+next = "teamup"
+[[dialogue.hello.options]]
+text = "那是啥鬼？"
+next = "explanation"
+
+[dialogue.teamup]
+character = "classmate"
+text = "好，那我們一組吧！想一起來討論看看嗎？"
+[[dialogue.teamup.options]]
+text = "OK，我們去會議室找助教討論吧！"
+event = "change_scene_to_meeting_room"
+
+[dialogue.explanation]
+character = "classmate"
+text = "就是一個讓你創建和玩你自己故事的遊戲平台。聽起來有點複雜，但應該蠻有趣的！"
+[[dialogue.explanation.options]]
+text = "聽起來不錯，告訴我更多！"
+next = "teamup"
+[[dialogue.explanation.options]]
+text = "好吧，我可能會需要幫助。"
+next = "teamup"
+
+[event.change_scene_to_meeting_room]
+scene = "meeting-room"
+dialogue = "ta_intro"
+
+[dialogue.ta_intro]
+character = "ta"
+text = "你好！來討論期末專題嗎？"
+[dialogue.ta_intro.options]
+text = "是的，我們有一些想法想要詢問。"
+next = "ta_discuss"
+
+[dialogue.ta_discuss]
+character = "ta"
+text = "太好了！請告訴我你們的想法。"
+[[dialogue.ta_discuss.options]]
+text = "我們想加入不同角色的情感變化，這樣會怎樣？"
+next = "emotion_implementation"
+[[dialogue.ta_discuss.options]]
+text = "我們打算探索多重結局的設計。"
+next = "multiple_endings"
+
+[dialogue.emotion_implementation]
+character = "ta"
+text = "情感變化是一個很好的功能，可以讓遊戲更加引人入勝。你們可以設計一個情感計分系統，透過玩家的選擇來影響角色對玩家的感情。"
+[[dialogue.emotion_implementation.options]]
+text = "聽起來很棒，我們會試試看。"
+next = "finalize_ideas"
+[[dialogue.emotion_implementation.options]]
+text = "這樣會不會太複雜了？"
+next = "simplify_discussion"
+
+[dialogue.multiple_endings]
+character = "ta"
+text = "多重結局是一個很好的方式來增加遊戲的重玩價值。你們應該考慮讓玩家的選擇導向不同的故事路線和結局。"
+[[dialogue.multiple_endings.options]]
+text = "這個主意很好，我們會加入這個功能。"
+next = "finalize_ideas"
+[[dialogue.multiple_endings.options]]
+text = "可能需要一點時間來實現這個想法。"
+next = "time_management"
+
+[dialogue.finalize_ideas]
+character = "ta"
+text = "很好，你們似乎已經有了一個明確的方向。開始動手做吧，有任何問題可以隨時來找我討論。"
+[[dialogue.finalize_ideas.options]]
+text = "謝謝你的建議！我們會開始實作了。"
+event = "project_start"
+
+[dialogue.simplify_discussion]
+character = "ta"
+text = "沒問題，你們可以從基本的好感度系統開始，然後逐步增加更多的功能。"
+[[dialogue.simplify_discussion.options]]
+text = "好的，我們會從基本的開始。"
+next = "finalize_ideas"
+
+[dialogue.time_management]
+character = "ta"
+text = "合理的時間管理和階段性目標設定對於成功完成專案非常重要。建議你們制定一個時間表。"
+[[dialogue.time_management.options]]
+text = "謝謝提醒，我們會制定計劃的。"
+next = "finalize_ideas"
+
+[event.project_start]
+scene = "library"
+dialogue = "start_working"
