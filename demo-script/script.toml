@@ -1,0 +1,110 @@
+name = "失落的旋律"
+author = "郝東彥&韓欣劭"
+
+# 状态 status
+
+[status.str]
+name = "力量"
+desc = "力量值"
+min = 0
+max = 100
+
+[status.charm]
+name = "魅力"
+desc = "魅力值"
+min = 0
+max = 100
+
+[status.like]
+name = "好感度"
+desc = "對方對你的好感度"
+min = 0
+max = 100
+
+# 角色 character
+
+[player]
+avatar = "assets/character/player/avatar.bmp"
+tachie = "assets/character/player/tachie.bmp"
+inventory = [
+  "tool-box"
+]
+starter = "start"
+
+[player.status]
+str = 50
+int = 60
+charm = 70
+
+[character.alfred]
+name = "阿爾弗雷德"
+avatar = "assets/characters/alfred/avatar.bmp"
+tachie = "assets/characters/alfred/tachie.bmp"
+inventory = [
+    "old-ivory-baton",
+    "metal-music-stand"
+]
+
+[character.alfred.status]
+str = 40
+int = 80
+charm = 60
+like = 50
+
+# 物品 item
+
+[item.tool-box]
+name = "工具箱"
+desc = "a seemly all-can-do tool box"
+icon = "assets/items/toolbox.bmp"
+hidden = false
+
+[item.old-ivory-baton]
+name = "指揮棒"
+desc = "一根承載了太多回憶的指揮棒"
+icon = "assets/items/old-ivory-baton.bmp"
+hidden = false
+
+[item.metal-music-stand]
+name = "譜架"
+desc = "老朋友遺留給他的譜架"
+icon = "assets/items/metal-music-stand.bmp"
+hidden = true
+
+# 场景 scene
+
+[scene.funeral]
+name = "old-church"
+background = "asset/scene/old-church.bmp"
+
+[scene.fair-of-church]
+name = "fair-of-church"
+background= "asset/scene/fair-of-church.bmp"
+
+[scene.home-visit]
+name = "home-of-arfled"
+background = "home-of-alfred"
+
+[scene.fix-music-box]
+name = "home-of-marie"
+background = "home-of-marie"
+
+[scene.alfred-gift]
+name = "bookroom-of-alfred"
+background = "bookroom-of-alfred"
+
+[scene.concert]
+name = "concert-hall"
+background = "concert-hall"
+
+# 事件 event
+
+## 事件：葬禮
+
+[event.start]
+scene = "funeral"
+dialogue = "open"
+
+[dialogue.open]
+character = "alfred"
+text = "你來了，我知道你會來的。"
