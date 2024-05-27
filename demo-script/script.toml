@@ -24,14 +24,18 @@ max = 100
 # 角色 character
 
 [player]
-avatar = "assets/character/player/avatar.bmp"
-tachie = "assets/character/player/tachie.bmp"
-inventory = [
-  "tool-box"
-]
+character = "marie"
 starter = "start"
 
-[player.status]
+[character.marie]
+name = "瑪麗"
+avatar = "assets/characters/marie/avatar.bmp"
+tachie = "assets/characters/marie/tachie.bmp"
+inventory = [
+    "tool-box"
+]
+
+[character.marie.status]
 str = 50
 int = 60
 charm = 70
@@ -103,8 +107,38 @@ background = "concert-hall"
 
 [event.start]
 scene = "funeral"
-dialogue = "open"
+dialogue = "open-1"
 
-[dialogue.open]
+[dialogue.open-1]
 character = "alfred"
 text = "你來了，我知道你會來的。"
+next = "open-2"
+
+[dialogue.open-2]
+character = "alfred"
+text = "這是我們的第一次見面，我是阿爾弗雷德。"
+[[dialogue.open-2.option]]
+text = "你好，我是瑪麗。"
+event = "walk"
+[[dialogue.open-2.option]]
+condition = "marie-toolbox"
+text = "你是誰？"
+next = "open-3"
+
+[condition.marie-toolbox]
+character = "marie"
+item = "tool-box"
+logic = "EQ"
+
+[dialogue.open-3]
+character = "alfred"
+text = "我是你的導師，也是你的朋友。"
+event = "walk"
+
+[event.walk]
+scene = "fair-of-church"
+dialogue = "walk-1"
+
+[dialogue.walk-1]
+character = "alfred"
+text = "這裡是教堂的後院，我們來這裡走走吧。"
