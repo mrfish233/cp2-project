@@ -45,6 +45,10 @@ int32_t updateTable(Script *script, ScriptTableIndex *tableIndex);
 
 int32_t createNewTable(void **table, size_t size, int32_t capacity);
 
+int32_t createIDField(TableField *field, ScriptTableIndex *tableIndex, char *buffer);
+
+int32_t addDataToTable(Script *script, ScriptTableIndex *tableIndex, TableField *field);
+
 bool isEmptyOrCommentLine(char *buffer);
 
 bool isTableLine(char *buffer);

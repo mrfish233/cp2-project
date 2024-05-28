@@ -95,24 +95,20 @@ int32_t changeScriptTable(Script *script, ScriptTableIndex *tableIndex, char *bu
         }
     }
 
-    // // Fine the name in the buffer
-
-    // if (getTableLineStr(tableIndex->name, buffer, MID) != 0) {
-    //     return 1;
-    // }
-
     if (updateTable(script, tableIndex) != 0) {
         return 1;
     }
 
-    TableField field = {0};
+    TableField field = { {0}, {0} };
 
-    strncpy(field.name, "name", STR_SIZE);
-
-    if (getTableLineStr(field.value, buffer, MID) != 0) {
+    if (createIDField(&field, tableIndex, buffer)) {
         return 1;
     }
 
+    if (addDataToTable(script, tableIndex, &field) != 0) {
+        return 1;
+    }
+ 
     return 0;
 }
 
@@ -258,6 +254,121 @@ int32_t createNewTable(void **table, size_t size, int32_t capacity) {
     return 0;
 }
 
+int32_t createIDField(TableField *field, ScriptTableIndex *tableIndex, char *buffer) {
+    if (!field || !tableIndex || !buffer) {
+        return 1;
+    }
+
+    strncpy(field->name, "id", STR_SIZE);
+
+    enum { FIRST, MID, LAST };
+
+    switch (tableIndex->table) {
+        case TABLE_CHARACTER:
+            if (tableIndex->sub_table != TABLE_STATUS) {
+                if (getTableLineStr(field->value, buffer, LAST) != 0) {
+                    return 1;
+                }
+            }
+            break;
+
+        case TABLE_DIALOGUE:
+            if (tableIndex->sub_table != TABLE_OPTION) {
+                if (getTableLineStr(field->value, buffer, LAST) != 0) {
+                    return 1;
+                }
+            }
+            break;
+
+        case TABLE_STATUS_INFO:
+        case TABLE_ITEM:
+        case TABLE_SCENE:
+        case TABLE_EVENT:
+        case TABLE_CONDITION:
+            if (getTableLineStr(field->value, buffer, LAST) != 0) {
+                return 1;
+            }
+            break;
+
+        default:
+            break;
+    }
+
+    return 0;
+}
+
+int32_t addDataToTable(Script *script, ScriptTableIndex *tableIndex, TableField *field) {
+    if (!script || !tableIndex) {
+        return 1;
+    }
+
+    switch (tableIndex->table) {
+        case TABLE_PLAYER:
+            break;
+
+        case TABLE_CHARACTER:
+            if (tableIndex->sub_table == TABLE_STATUS) {
+                // todo
+            }
+            else {
+                Character *character = &(script->characters[tableIndex->index]);
+
+                if (strcmp(field->name, "id") == 0) {
+                    strncpy(character->id, field->value, STR_SIZE);
+                }
+            }
+            break;
+
+        case TABLE_STATUS_INFO:
+            if (strcmp(field->name, "id") == 0) {
+                strncpy(script->status_infos[tableIndex->index].id, field->value, STR_SIZE);
+            }
+            break;
+
+        case TABLE_ITEM:
+            if (strcmp(field->name, "id") == 0) {
+                strncpy(script->items[tableIndex->index].id, field->value, STR_SIZE);
+            }
+            break;
+
+        case TABLE_SCENE:
+            if (strcmp(field->name, "id") == 0) {
+                strncpy(script->scenes[tableIndex->index].id, field->value, STR_SIZE);
+            }
+            break;
+
+        case TABLE_EVENT:
+            if (strcmp(field->name, "id") == 0) {
+                strncpy(script->events[tableIndex->index].id, field->value, STR_SIZE);
+            }
+            break;
+
+        case TABLE_DIALOGUE:
+            if (tableIndex->sub_table == TABLE_OPTION) {
+                // todo
+            }
+            else {
+                Dialogue *dialogue = &(script->dialogues[tableIndex->index]);
+
+                if (strcmp(field->name, "id") == 0) {
+                    strncpy(dialogue->id, field->value, STR_SIZE);
+                }
+            }
+            break;
+
+        case TABLE_CONDITION:
+            if (strcmp(field->name, "id") == 0) {
+                strncpy(script->conditions[tableIndex->index].id, field->value, STR_SIZE);
+            }
+            break;
+
+        default:
+            break;
+    }
+
+    return 0;
+}
+
 bool isEmptyOrCommentLine(char *buffer) {
     if (strlen(buffer) == 0) {
         return true;
@@ -306,8 +417,10 @@ int32_t getTableLineStr(char *str, char *buffer, int32_t pos) {
         }
 
         head = strcspn(first_dot, check);
-        tail = strcspn(first_dot, ".]");
+        tail = strcspn(first_dot + 1, ".]");
         size = tail - head;
+
+        printf("head: %ld, tail: %ld, size: %ld\n", head, tail, size);
 
         strncpy(str, first_dot + head, size);
     }
