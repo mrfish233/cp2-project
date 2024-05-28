@@ -10,14 +10,14 @@
  * StatusInfo struct, contains information about a status
  * @param id: id of the status
  * @param name: name of the status
- * @param description: description of the status
+ * @param desc: description of the status
  * @param min: minimum value of the status
  * @param max: maximum value of the status
  */
 typedef struct _StatusInfo {
     char id[STR_SIZE];
     char name[STR_SIZE];
-    char description[STR_SIZE];
+    char desc[STR_SIZE];
     int32_t min;
     int32_t max;
 } StatusInfo;
@@ -38,14 +38,14 @@ typedef struct _Status {
  * Item struct, contains information about an item
  * @param id: display name of the item
  * @param name: name of the item
- * @param description: description of the item
+ * @param desc: description of the item
  * @param icon_path: path to the icon of the item
  * @param hidden: indicate if the item is hidden
  */
 typedef struct _Item {
     char id[STR_SIZE];
     char name[STR_SIZE];
-    char description[STR_SIZE];
+    char desc[STR_SIZE];
     char icon_path[STR_SIZE];
     int32_t hidden;
 } Item;
@@ -141,7 +141,7 @@ typedef enum _DialogueType {
 } DialogueType;
 
 /**
- * Condition struct, used in DialogueOption
+ * Condition struct, used in Option
  * @param id: id of the condition
  * @param condition_type: type of the condition
  * @param condition_name: name of the condition
@@ -170,14 +170,14 @@ typedef struct _Condition {
 } Condition;
 
 /**
- * DialogueOption struct, used in Dialogue
- * @param next_type: type of the next element
- * @param next_name: name of the next element
+ * Option struct, used in Dialogue
  * @param text: text of the option
  * @param condition: name of the condition
+ * @param next_type: type of the next element
+ * @param next_name: name of the next element
  * @param hidden: hidden flag
  */
-typedef struct _DialogueOption {
+typedef struct _Option {
     char text[STR_SIZE];
     char condition[STR_SIZE];
 
@@ -185,7 +185,7 @@ typedef struct _DialogueOption {
     char next_name[STR_SIZE];
 
     int32_t hidden;
-} DialogueOption;
+} Option;
 
 /**
  * Dialogue struct
@@ -196,8 +196,8 @@ typedef struct _DialogueOption {
  * @param character_name: name of the character
  * @param next_type: type of the next element
  * @param next_name: name of the next element
- * @param options: array of DialogueOption
- * @param options_size: size of options
+ * @param options: array of Option
+ * @param option_size: size of options
  */
 typedef struct _Dialogue {
     char id[STR_SIZE];
@@ -210,7 +210,7 @@ typedef struct _Dialogue {
     DialogueType next_type;
     char next_name[STR_SIZE];
 
-    DialogueOption *options;
+    Option *options;
     int32_t option_size;
 } Dialogue;
 
@@ -238,21 +238,21 @@ typedef struct _Event {
  * Script struct, contains all the data
  * @param name: name of the script
  * @param author: author of the script
- * @param characters: array of Character
- * @param characters_size: size of characters
  * @param player: pointer to Player
+ * @param characters: array of Character
+ * @param character_size: size of characters
  * @param items: array of Item
- * @param items_size: size of items
+ * @param item_size: size of items
  * @param status_infos: array of StatusInfo
- * @param status_size: size of status_infos
+ * @param status_info_size: size of status_infos
  * @param scenes: array of Scene
- * @param scenes_size: size of scenes
+ * @param scene_size: size of scenes
  * @param events: array of Event
- * @param events_size: size of events
+ * @param event_size: size of events
  * @param dialogues: array of Dialogue
- * @param dialogues_size: size of dialogues
+ * @param dialogue_size: size of dialogues
  * @param conditions: array of Condition
- * @param conditions_size: size of conditions
+ * @param condition_size: size of conditions
  */
 typedef struct _Script {
     char name[STR_SIZE];
@@ -263,17 +263,17 @@ typedef struct _Script {
     Character *characters;
     int32_t character_size;
 
-    StatusInfo *status_infos;
-    int32_t status_info_size;
-
     Item *items;
     int32_t item_size;
 
-    Scene *scenes;
-    int32_t scene_size;
+    StatusInfo *status_infos;
+    int32_t status_info_size;
 
     Event *events;
     int32_t event_size;
+
+    Scene *scenes;
+    int32_t scene_size;
 
     Dialogue *dialogues;
     int32_t dialogue_size;
