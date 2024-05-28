@@ -8,12 +8,14 @@
 
 /**
  * StatusInfo struct, contains information about a status
+ * @param id: id of the status
  * @param name: name of the status
  * @param description: description of the status
  * @param min: minimum value of the status
  * @param max: maximum value of the status
  */
 typedef struct _StatusInfo {
+    char id[STR_SIZE];
     char name[STR_SIZE];
     char description[STR_SIZE];
     int32_t min;
@@ -34,15 +36,15 @@ typedef struct _Status {
 
 /**
  * Item struct, contains information about an item
+ * @param id: display name of the item
  * @param name: name of the item
- * @param display_name: display name of the item
  * @param description: description of the item
  * @param icon_path: path to the icon of the item
  * @param hidden: indicate if the item is hidden
  */
 typedef struct _Item {
+    char id[STR_SIZE];
     char name[STR_SIZE];
-    char display_name[STR_SIZE];
     char description[STR_SIZE];
     char icon_path[STR_SIZE];
     int32_t hidden;
@@ -52,8 +54,8 @@ typedef struct _Item {
 
 /**
  * Character struct, contains information about a character
+ * @param id: display name of the character
  * @param name: name of the character
- * @param display_name: display name of the character
  * @param avatar_path: path to the avatar image
  * @param tachie_path: path to the tachie image
  * @param status: array of Status
@@ -62,8 +64,9 @@ typedef struct _Item {
  * @param inventory_size: size of inventory
  */
 typedef struct _Character {
+    char id[STR_SIZE];
     char name[STR_SIZE];
-    char display_name[STR_SIZE];
+
     char avatar_path[STR_SIZE];
     char tachie_path[STR_SIZE];
 
@@ -88,10 +91,12 @@ typedef struct _Player {
 
 /**
  * Scene struct, contains information about a scene
+ * @param id: display name of the scene
  * @param name: name of the scene
  * @param background_path: path to the background image
  */
 typedef struct _Scene {
+    char id[STR_SIZE];
     char name[STR_SIZE];
     char background_path[STR_SIZE];
 } Scene;
@@ -105,6 +110,7 @@ typedef struct _Scene {
  * @param CHARACTER_NARRATOR: narrator character
  */
 typedef enum _CharacterType {
+    CHARACTER_NONE,
     CHARACTER_PLAYER,
     CHARACTER_NPC,
     CHARACTER_NARRATOR
@@ -116,6 +122,7 @@ typedef enum _CharacterType {
  * @param CONDITION_ITEM: condition based on item
  */
 typedef enum _ConditionType {
+    CONDITION_NONE,
     CONDITION_ITEM,
     CONDITION_STATUS
 } ConditionType;
@@ -127,6 +134,7 @@ typedef enum _ConditionType {
  * @param DIALOGUE_EVENT:  dialogue pointing to an event
  */
 typedef enum _DialogueType {
+    DIALOGUE_NONE,
     DIALOGUE_NORMAL,
     DIALOGUE_OPTION,
     DIALOGUE_EVENT
@@ -134,6 +142,7 @@ typedef enum _DialogueType {
 
 /**
  * Condition struct, used in DialogueOption
+ * @param id: id of the condition
  * @param condition_type: type of the condition
  * @param condition_name: name of the condition
  * @param character_type: type of the character
@@ -141,6 +150,8 @@ typedef enum _DialogueType {
  * @param logic: logic of the condition
  */
 typedef struct _Condition {
+    char id[STR_SIZE];
+
     ConditionType condition_type;
     char condition_name[STR_SIZE];
 
@@ -148,6 +159,7 @@ typedef struct _Condition {
     char character_name[STR_SIZE];
 
     enum {
+        LOGIC_NONE,
         LOGIC_EQ,
         LOGIC_NE,
         LOGIC_GT,
@@ -177,16 +189,18 @@ typedef struct _DialogueOption {
 
 /**
  * Dialogue struct
+ * @param id: id of the dialogue
+ * @param text: text of the dialogue
+ * @param sfx_path: path to the sound effect
  * @param character_type: type of the character
  * @param character_name: name of the character
- * @param sfx_path: path to the sound effect
- * @param text: text of the dialogue
  * @param next_type: type of the next element
  * @param next_name: name of the next element
  * @param options: array of DialogueOption
  * @param options_size: size of options
  */
 typedef struct _Dialogue {
+    char id[STR_SIZE];
     char text[STR_SIZE];
     char sfx_path[STR_SIZE];
 
@@ -204,12 +218,14 @@ typedef struct _Dialogue {
 
 /**
  * Event struct, stores all events and the first dialogue of the event
+ * @param id: id of the event
  * @param scene_name: name of the scene
  * @param dialogue_name: name of the dialogue
  * @param bgm_path: path to the background music
  * @param background_path: path to the background image
  */
 typedef struct _Event {
+    char id[STR_SIZE];
     char scene_name[STR_SIZE];
     char dialogue_name[STR_SIZE];
     char bgm_path[STR_SIZE];
