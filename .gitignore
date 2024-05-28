@@ -15,6 +15,7 @@ third-party/
 # Ignore .o files
 *.o
 
+
 # Unignore Makefile
 !Makefile
 
@@ -24,3 +25,9 @@ third-party/
 # Ignore markdownlint
 .markdownlint.json
 
+# Ignore /src/engine.c
+/src/engine.c
+# Ignore /src/w.c and /src/w.h
+/src/w.c
+/src/w.h
+/src/test.mp4
