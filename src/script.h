@@ -197,7 +197,7 @@ typedef struct _Dialogue {
     char next_name[STR_SIZE];
 
     DialogueOption *options;
-    int32_t options_size;
+    int32_t option_size;
 } Dialogue;
 
 // Event
@@ -220,6 +220,8 @@ typedef struct _Event {
 
 /**
  * Script struct, contains all the data
+ * @param name: name of the script
+ * @param author: author of the script
  * @param characters: array of Character
  * @param characters_size: size of characters
  * @param player: pointer to Player
@@ -237,26 +239,29 @@ typedef struct _Event {
  * @param conditions_size: size of conditions
  */
 typedef struct _Script {
+    char name[STR_SIZE];
+    char author[STR_SIZE];
+
     Player *player;
 
     Character *characters;
-    int32_t characters_size;
-
-    Item *items;
-    int32_t items_size;
+    int32_t character_size;
 
     StatusInfo *status_infos;
-    int32_t status_size;
+    int32_t status_info_size;
+
+    Item *items;
+    int32_t item_size;
 
     Scene *scenes;
-    int32_t scenes_size;
+    int32_t scene_size;
 
     Event *events;
-    int32_t events_size;
+    int32_t event_size;
 
     Dialogue *dialogues;
-    int32_t dialogues_size;
+    int32_t dialogue_size;
 
     Condition *conditions;
-    int32_t conditions_size;
+    int32_t condition_size;
 } Script;
