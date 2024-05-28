@@ -18,12 +18,6 @@
 //函數定義==================================================================================================
 
 
-
-
-// 初始化SDL
-// 參數: AppContext* ctx  
-// 輸出: 無
-// 功能: 初始化SDL和相關的庫，創建窗口和渲染器，並加載字體
 // 初始化SDL
 void initSDL(AppContext* ctx) {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -44,22 +38,17 @@ void initSDL(AppContext* ctx) {
     ctx->window = SDL_CreateWindow("SDL App", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, ctx->window_width, ctx->window_height, SDL_WINDOW_SHOWN);
     ctx->renderer = SDL_CreateRenderer(ctx->window, -1, SDL_RENDERER_ACCELERATED);
 
-    // 設置混合模式
     SDL_SetRenderDrawBlendMode(ctx->renderer, SDL_BLENDMODE_BLEND);
 
     ctx->font = TTF_OpenFont("/home/goose/cp2-project/third_party/font/Noto_Sans_TC/static/NotoSansTC-Black.ttf", 24);
     if (ctx->font == NULL) {
         fprintf(stderr, "Failed to load font: %s\n", TTF_GetError());
-        cleanUp(ctx);  // 確保我們正確地關閉SDL
+        cleanUp(ctx);
         exit(1);
     }
 }
 
-
 // 載入文字和圖像紋理
-// 參數: AppContext* ctx  
-// 輸出: 無
-// 功能: 將文字渲染為紋理，並將其加載到每個渲染區域
 void loadTextures(AppContext* ctx) {
     for (int i = 0; i < ctx->num_render_areas; i++) {
         if (ctx->render_areas[i].text_count > 0) {
@@ -77,11 +66,10 @@ void loadTextures(AppContext* ctx) {
 }
 
 // 渲染背景
-// 參數: AppContext* ctx  , RenderArea* area - 渲染區域
-// 輸出: 無
-// 功能: 渲染背景圖像或填充顏色
 void renderBackground(AppContext* ctx, RenderArea* area) {
-    if (area->background) {
+    if (area->is_video) {
+        renderVideo(ctx, area);
+    } else if (area->background) {
         SDL_RenderCopy(ctx->renderer, area->background, NULL, &area->rect);
     } else {
         SDL_SetRenderDrawColor(ctx->renderer, 0, 0, 0, 255);
@@ -90,40 +78,158 @@ void renderBackground(AppContext* ctx, RenderArea* area) {
 }
 
 // 創建渲染區域
-// 參數: AppContext* ctx  , int x - 渲染區域的X座標, int y - 渲染區域的Y座標, int w - 渲染區域的寬度, int h - 渲染區域的高度
-// 輸出: 無
-// 功能: 創建並初始化一個新的渲染區域
-void createRenderArea(AppContext* ctx, int x, int y, int w, int h) {  
+
+// 創建渲染區域
+void createRenderArea(AppContext* ctx, int x, int y, int w, int h) {
     printf("Creating render area at (%d, %d) with dimensions %dx%d\n", x, y, w, h);
     ctx->num_render_areas++;
     ctx->render_areas = realloc(ctx->render_areas, ctx->num_render_areas * sizeof(RenderArea));
     ctx->render_areas[ctx->num_render_areas - 1].rect = (SDL_Rect){x, y, w, h};
     ctx->render_areas[ctx->num_render_areas - 1].background = NULL;
     ctx->render_areas[ctx->num_render_areas - 1].images = NULL;
+    ctx->render_areas[ctx->num_render_areas - 1].imageRects = NULL;  // 新增初始化
     ctx->render_areas[ctx->num_render_areas - 1].image_count = 0;
     ctx->render_areas[ctx->num_render_areas - 1].texts = NULL;
     ctx->render_areas[ctx->num_render_areas - 1].textColors = NULL;
     ctx->render_areas[ctx->num_render_areas - 1].textRects = NULL;
     ctx->render_areas[ctx->num_render_areas - 1].textTextures = NULL;
     ctx->render_areas[ctx->num_render_areas - 1].text_count = 0;
+    ctx->render_areas[ctx->num_render_areas - 1].video_path = NULL;
+    ctx->render_areas[ctx->num_render_areas - 1].video_texture = NULL;
+    ctx->render_areas[ctx->num_render_areas - 1].is_video = 0;
 }
 
-// 渲染所有區域
-// 參數: AppContext* ctx  
-// 輸出: 無
-// 功能: 渲染應用程式中的所有渲染區域
-void renderAreas(AppContext* ctx) {
-    for (int i = 0; i < ctx->num_render_areas; i++) {
-        renderBackground(ctx, &ctx->render_areas[i]);
-        renderImage(ctx, &ctx->render_areas[i]);
-        renderText(ctx, &ctx->render_areas[i]);
+// 設置渲染區域內容
+void setRenderAreaContent(AppContext* ctx, int areaIndex, const char* background, char** images, int image_count, char** texts, SDL_Color* textColors, SDL_Rect* textRects, int text_count, const char* video_path, SDL_Rect* videoRect) {
+    RenderArea* area = &ctx->render_areas[areaIndex];
+
+    // 設置背景
+    if (background) {
+        area->background = IMG_LoadTexture(ctx->renderer, background);
+        if (area->background == NULL) {
+            fprintf(stderr, "Failed to load texture %s: %s\n", background, IMG_GetError());
+        }
+    }
+
+    // 設置圖片
+    area->image_count = image_count;
+    area->images = malloc(image_count * sizeof(SDL_Texture*));
+    area->imageRects = malloc(image_count * sizeof(SDL_Rect));
+    for (int i = 0; i < image_count; i++) {
+        area->images[i] = IMG_LoadTexture(ctx->renderer, images[i]);
+        if (area->images[i] == NULL) {
+            fprintf(stderr, "Failed to load texture %s: %s\n", images[i], IMG_GetError());
+        }
+        if (textRects != NULL) {
+            area->imageRects[i] = textRects[i];  // 設置圖像位置和大小
+        }
+    }
+
+    // 設置文字
+    area->text_count = text_count;
+    area->texts = malloc(text_count * sizeof(char*));
+    area->textColors = malloc(text_count * sizeof(SDL_Color));
+    area->textRects = malloc(text_count * sizeof(SDL_Rect));
+    area->textTextures = malloc(text_count * sizeof(SDL_Texture*));  // 增加對應的textTextures初始化
+    for (int i = 0; i < text_count; i++) {
+        area->texts[i] = strdup(texts[i]);
+        area->textColors[i] = textColors[i];
+        area->textRects[i] = textRects[i];
+    }
+
+    // 設置影片
+    if (video_path) {
+        area->video_path = strdup(video_path);
+        area->is_video = 1;
+        // 初始化影片播放相關的資源
+        area->video_texture = NULL;  // 影片紋理初始化為NULL
+        if (videoRect) {
+            area->videoRect = *videoRect;  // 設置影片位置和大小
+        }
+    } else {
+        area->is_video = 0;
     }
 }
 
-// 渲染圖片
-// 參數: AppContext* ctx  , RenderArea* area - 渲染區域
-// 輸出: 無
-// 功能: 渲染區域中的所有圖片
+
+// 載入影片
+int loadVideo(const char* filename, AVFormatContext** pFormatContext, AVCodecContext** pCodecContext, int* videoStreamIndex) {
+    AVCodec* pCodec;
+    AVCodecParameters* pCodecParameters;
+
+    // 打開影片文件
+    if (avformat_open_input(pFormatContext, filename, NULL, NULL) != 0) {
+        fprintf(stderr, "Could not open video file: %s\n", filename);
+        return -1;
+    }
+
+    // 獲取影片流信息
+    if (avformat_find_stream_info(*pFormatContext, NULL) < 0) {
+        fprintf(stderr, "Could not find stream information\n");
+        return -1;
+    }
+
+    // 找到影片流
+    *videoStreamIndex = -1;
+    for (int i = 0; i < (*pFormatContext)->nb_streams; i++) {
+        if ((*pFormatContext)->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
+            *videoStreamIndex = i;
+            break;
+        }
+    }
+    if (*videoStreamIndex == -1) {
+        fprintf(stderr, "Could not find video stream\n");
+        return -1;
+    }
+
+    // 獲取編碼參數
+    pCodecParameters = (*pFormatContext)->streams[*videoStreamIndex]->codecpar;
+
+    // 找到編碼器
+    pCodec = avcodec_find_decoder(pCodecParameters->codec_id);
+    if (pCodec == NULL) {
+        fprintf(stderr, "Unsupported codec!\n");
+        return -1;
+    }
+
+    // 配置編碼上下文
+    *pCodecContext = avcodec_alloc_context3(pCodec);
+    if (avcodec_parameters_to_context(*pCodecContext, pCodecParameters) < 0) {
+        fprintf(stderr, "Could not copy codec parameters to context\n");
+        return -1;
+    }
+
+    // 打開編碼器
+    if (avcodec_open2(*pCodecContext, pCodec, NULL) < 0) {
+        fprintf(stderr, "Could not open codec\n");
+        return -1;
+    }
+
+    return 0;
+}
+
+// 渲染所有區域
+void renderAreas(AppContext* ctx) {
+    for (int i = 0; i < ctx->num_render_areas; i++) {
+        renderBackground(ctx, &ctx->render_areas[i]);
+        if (ctx->render_areas[i].is_video) {
+            renderVideo(ctx, &ctx->render_areas[i]);
+        } else {
+            renderImage(ctx, &ctx->render_areas[i]);
+            renderText(ctx, &ctx->render_areas[i]);
+        }
+    }
+}
+
+// 渲染影片
+void renderVideo(AppContext* ctx, RenderArea* area) {
+    if (area->is_video) {
+        // 設置目標矩形大小，使影片適應渲染區域
+        SDL_Rect dstrect = area->rect;
+        SDL_RenderCopy(ctx->renderer, area->video_texture, NULL, &dstrect);
+    }
+}
+
 // 渲染圖片
 void renderImage(AppContext* ctx, RenderArea* area) {
     for (int i = 0; i < area->image_count; i++) {
@@ -137,81 +243,27 @@ void renderImage(AppContext* ctx, RenderArea* area) {
     }
 }
 
-
-// 渲染文字
-// 參數: AppContext* ctx - 應用程式上下文, RenderArea* area - 渲染區域
-// 輸出: 無
-// 功能: 渲染區域中的所有文字
 // 渲染文字
 void renderText(AppContext* ctx, RenderArea* area) {
     for (int i = 0; i < area->text_count; i++) {
         printf("Rendering text %d\n", i);
         SDL_Texture* texture = area->textTextures[i];
-
         if (texture == NULL) {
             fprintf(stderr, "Failed to create text texture: %s\n", SDL_GetError());
             continue;
         }
-
         SDL_Rect dstrect = {
             .x = area->rect.x + area->textRects[i].x,
             .y = area->rect.y + area->textRects[i].y,
             .w = area->textRects[i].w,
             .h = area->textRects[i].h
         };
-
-        // 設置文字顏色
         SDL_SetTextureColorMod(texture, area->textColors[i].r, area->textColors[i].g, area->textColors[i].b);
-
         SDL_RenderCopy(ctx->renderer, texture, NULL, &dstrect);
     }
 }
 
-
-// 設置渲染區域內容
-// 參數: AppContext* ctx - 應用程式上下文, int areaIndex - 渲染區域索引, const char* background - 背景圖像, char** images - 圖片數組, int image_count - 圖片數量, char** texts - 文字數組, SDL_Color* textColors - 文字顏色數組, SDL_Rect* textRects - 文字位置和大小數組, int text_count - 文字數量
-// 輸出: 無
-// 功能: 設置渲染區域的背景、圖片和文字內容
-void setRenderAreaContent(AppContext* ctx, int areaIndex, const char* background, char** images, int image_count, char** texts, SDL_Color* textColors, SDL_Rect* textRects, int text_count) {
-    RenderArea* area = &ctx->render_areas[areaIndex];
-    
-    // 設置背景
-    if (background) {
-        area->background = IMG_LoadTexture(ctx->renderer, background);
-        if (area->background == NULL) {
-            fprintf(stderr, "Failed to load texture %s: %s\n", background, IMG_GetError());
-        }
-    }
-    
-    // 設置圖片
-    area->image_count = image_count;
-    area->images = malloc(image_count * sizeof(SDL_Texture*));
-    area->imageRects = malloc(image_count * sizeof(SDL_Rect));
-    for (int i = 0; i < image_count; i++) {
-        area->images[i] = IMG_LoadTexture(ctx->renderer, images[i]);
-        if (area->images[i] == NULL) {
-            fprintf(stderr, "Failed to load texture %s: %s\n", images[i], IMG_GetError());
-        }
-        area->imageRects[i] = textRects[i];  // 設置圖像位置和大小
-    }
-    
-    // 設置文字
-    area->text_count = text_count;
-    area->texts = malloc(text_count * sizeof(char*));
-    area->textColors = malloc(text_count * sizeof(SDL_Color));
-    area->textRects = malloc(text_count * sizeof(SDL_Rect));
-    area->textTextures = malloc(text_count * sizeof(SDL_Texture*));  // 增加對應的textTextures初始化
-    for (int i = 0; i < text_count; i++) {
-        area->texts[i] = strdup(texts[i]);
-        area->textColors[i] = textColors[i];
-        area->textRects[i] = textRects[i];
-    }
-}
-
 // 清理資源
-// 參數: AppContext* ctx  
-// 輸出: 無
-// 功能: 釋放應用程式中所有分配的資源
 void cleanUp(AppContext* ctx) {
     for (int i = 0; i < ctx->num_render_areas; i++) {
         for (int j = 0; j < ctx->render_areas[i].image_count; j++) {
@@ -227,7 +279,14 @@ void cleanUp(AppContext* ctx) {
                 SDL_DestroyTexture(ctx->render_areas[i].textTextures[j]);
             }
         }
+        if (ctx->render_areas[i].video_path) {
+            free(ctx->render_areas[i].video_path);
+        }
+        if (ctx->render_areas[i].video_texture) {
+            SDL_DestroyTexture(ctx->render_areas[i].video_texture);
+        }
         free(ctx->render_areas[i].images);
+        free(ctx->render_areas[i].imageRects);  // 新增清理
         free(ctx->render_areas[i].texts);
         free(ctx->render_areas[i].textTextures);
         free(ctx->render_areas[i].textColors);
@@ -246,4 +305,116 @@ void cleanUp(AppContext* ctx) {
         free(ctx->render_areas);
     }
 }
+
+// 初始化FFmpeg
+void initFFmpeg() {
+    
+}
+
+// 影片播放函數
+void playVideo(AppContext* ctx, const char* video_path, RenderArea* area) {
+    ctx->isPlayingVideo = 1;  // 設置標誌位
+
+    AVFormatContext* pFormatCtx = avformat_alloc_context();
+    if (avformat_open_input(&pFormatCtx, video_path, NULL, NULL) != 0) {
+        fprintf(stderr, "Could not open video file: %s\n", video_path);
+        return;
+    }
+
+    if (avformat_find_stream_info(pFormatCtx, NULL) < 0) {
+        fprintf(stderr, "Could not find stream information\n");
+        return;
+    }
+
+    int videoStream = -1;
+    for (int i = 0; i < pFormatCtx->nb_streams; i++) {
+        if (pFormatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
+            videoStream = i;
+            break;
+        }
+    }
+
+    if (videoStream == -1) {
+        fprintf(stderr, "Did not find a video stream\n");
+        return;
+    }
+
+    AVCodecParameters* pCodecParameters = pFormatCtx->streams[videoStream]->codecpar;
+    AVCodec* pCodec = avcodec_find_decoder(pCodecParameters->codec_id);
+    if (pCodec == NULL) {
+        fprintf(stderr, "Unsupported codec\n");
+        return;
+    }
+
+    AVCodecContext* pCodecCtx = avcodec_alloc_context3(pCodec);
+    if (avcodec_parameters_to_context(pCodecCtx, pCodecParameters) < 0) {
+        fprintf(stderr, "Could not copy codec context\n");
+        return;
+    }
+
+    if (avcodec_open2(pCodecCtx, pCodec, NULL) < 0) {
+        fprintf(stderr, "Could not open codec\n");
+        return;
+    }
+
+    AVFrame* pFrame = av_frame_alloc();
+    AVFrame* pFrameRGB = av_frame_alloc();
+    if (pFrameRGB == NULL || pFrame == NULL) {
+        fprintf(stderr, "Could not allocate frame\n");
+        return;
+    }
+
+    int numBytes = av_image_get_buffer_size(AV_PIX_FMT_RGB24, pCodecCtx->width, pCodecCtx->height, 32);
+    uint8_t* buffer = (uint8_t*)av_malloc(numBytes * sizeof(uint8_t));
+    av_image_fill_arrays(pFrameRGB->data, pFrameRGB->linesize, buffer, AV_PIX_FMT_RGB24, pCodecCtx->width, pCodecCtx->height, 32);
+
+    struct SwsContext* sws_ctx = sws_getContext(
+        pCodecCtx->width, pCodecCtx->height, pCodecCtx->pix_fmt,
+        pCodecCtx->width, pCodecCtx->height, AV_PIX_FMT_RGB24,
+        SWS_BILINEAR, NULL, NULL, NULL
+    );
+
+    int frameFinished;
+    AVPacket packet;
+
+    while (av_read_frame(pFormatCtx, &packet) >= 0 && ctx->isPlayingVideo) {
+        if (packet.stream_index == videoStream) {
+            avcodec_send_packet(pCodecCtx, &packet);
+            frameFinished = avcodec_receive_frame(pCodecCtx, pFrame);
+
+            if (frameFinished == 0) {
+                sws_scale(
+                    sws_ctx, (uint8_t const* const*)pFrame->data,
+                    pFrame->linesize, 0, pCodecCtx->height,
+                    pFrameRGB->data, pFrameRGB->linesize
+                );
+
+                SDL_Surface* surface = SDL_CreateRGBSurfaceFrom(
+                    pFrameRGB->data[0], pCodecCtx->width, pCodecCtx->height,
+                    24, pFrameRGB->linesize[0],
+                    0x000000FF, 0x0000FF00, 0x00FF0000, 0
+                );
+                SDL_Texture* texture = SDL_CreateTextureFromSurface(ctx->renderer, surface);
+
+                SDL_FreeSurface(surface);
+                SDL_RenderCopy(ctx->renderer, texture, NULL, &area->videoRect);
+                SDL_DestroyTexture(texture);
+                SDL_RenderPresent(ctx->renderer);
+                SDL_Delay(33);  // 模擬30fps播放速度
+            }
+        }
+        av_packet_unref(&packet);
+    }
+
+    av_free(buffer);
+    av_frame_free(&pFrameRGB);
+    av_frame_free(&pFrame);
+    avcodec_free_context(&pCodecCtx);
+    avformat_close_input(&pFormatCtx);
+}
+// 停止影片播放函數
+void stopVideo(AppContext* ctx) {
+    ctx->isPlayingVideo = 0;  // 清除標誌位
+}
+
 
