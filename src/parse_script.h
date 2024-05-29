@@ -93,13 +93,21 @@ int32_t allocateTable(void **table, size_t size, int32_t capacity);
 
 /**
  * Create a ID field.
+ * @param script: the script to store the parsed data
  * @param table: the table index to create the field
  * @param buffer: the buffer to store the line
  * @return 0 if the ID field is created successfully, 1 otherwise
  */
-int32_t createIDField(Table *table, char *buffer);
+int32_t createIDField(Script *script, Table *table, char *buffer);
 
-int32_t createTableField(Table *table, char *buffer);
+/**
+ * Create a table field.
+ * @param script: the script to store the parsed data
+ * @param table: the table index to create the field
+ * @param buffer: the buffer to store the line
+ * @return 0 if the table field is created successfully, 1 otherwise
+ */
+int32_t createTableField(Script *script, Table *table, char *buffer);
 
 /**
  * Add data to a table.
@@ -133,9 +141,25 @@ bool isTableLine(char *buffer);
 int32_t getTableLineStr(char *str, char *buffer, int32_t pos);
 
 /**
+ * Remove quotes from a string.
+ * @param buffer: the buffer to remove quotes
+ */
+void removeQuotes(char *buffer);
+
+/**
  * Remove white space from a string.
  * @param buffer: the buffer to remove white space
  */
 void cleanWhiteSpace(char **buffer);
 
+/**
+ * Print the script data.
+ * @param script: the script to print
+ */
 void printScript(Script *script);
+
+/**
+ * Clear the script data.
+ * @param script: the script to clear
+ */
+void clearScript(Script *script);

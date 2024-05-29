@@ -21,25 +21,20 @@ int32_t parseTomlScript(char *filename, Script *script) {
                 return 1;
             }
 
-            if (createIDField(&table, buffer)) {
+            if (createIDField(script, &table, buffer)) {
                 printf("error: id error\n");
                 return 1;
             }
         }
         else {
-            if (createTableField(&table, buffer) != 0) {
+            if (createTableField(script, &table, buffer) != 0) {
                 printf("error: field error\n");
                 return 1;
             }
         }
-
-        if (addDataToScript(script, &table) != 0) {
-            printf("error: add data error\n");
-            return 1;
-        }
     }
 
-    printScript(script);
+    // printScript(script);
 
     closeFile(file);
     return 0;
@@ -126,28 +121,21 @@ int32_t updateParseTable(Script *script, Table *table) {
 
     void *temp  = NULL;
     size_t size = 0;
+    int32_t idx = 0;
 
     switch (table->table_name) {
-        case TABLE_PLAYER:
+        case TABLE_PLAYER: {
             table->index = 0;
 
             temp = &(script->player);
             size = sizeof(Player);
             break;
+        }
 
-        case TABLE_CHARACTER:
+        case TABLE_CHARACTER: {
             // Status table is stored in the character table
             if (table->sub_table_name == TABLE_STATUS) {
-                if (table->index >= script->character_size) {
-                    return 1;
-                }
-
-                table->sub_index = script->characters[table->index].status_size;
-                script->characters[table->index].status_size++;
-
-                temp = &(script->characters[table->index].status);
-                size = sizeof(Status);
-                break;
+                return 0;
             }
             else {
                 table->index = script->character_size;
@@ -156,41 +144,50 @@ int32_t updateParseTable(Script *script, Table *table) {
                 temp = &(script->characters);
                 size = sizeof(Character);
             }
-            break;
 
-        case TABLE_STATUS_INFO:
+            break;
+        }
+
+        case TABLE_STATUS_INFO: {
             table->index = script->status_info_size;
             script->status_info_size++;
 
             temp = &(script->status_infos);
             size = sizeof(StatusInfo);
-            break;
 
-        case TABLE_ITEM:
+            break;
+        }
+
+        case TABLE_ITEM: {
             table->index = script->item_size;
             script->item_size++;
 
             temp = &(script->items);
             size = sizeof(Item);
             break;
+        }
 
-        case TABLE_SCENE:
+        case TABLE_SCENE: {
             table->index = script->scene_size;
             script->scene_size++;
 
             temp = &(script->scenes);
             size = sizeof(Scene);
-            break;
 
-        case TABLE_EVENT:
+            break;
+        }
+
+        case TABLE_EVENT: {
             table->index = script->event_size;
             script->event_size++;
 
             temp = &(script->events);
             size = sizeof(Event);
-            break;
 
-        case TABLE_DIALOGUE:
+            break;
+        }
+
+        case TABLE_DIALOGUE: {
             // Option table is stored in the dialogue table
             if (table->sub_table_name == TABLE_OPTION) {
                 if (table->index >= script->dialogue_size) {
@@ -212,20 +209,30 @@ int32_t updateParseTable(Script *script, Table *table) {
                 size = sizeof(Dialogue);
             }
             break;
+        }
 
-        case TABLE_CONDITION:
+        case TABLE_CONDITION: {
             table->index = script->condition_size;
             script->condition_size++;
 
             temp = &(script->conditions);
             size = sizeof(Condition);
+
             break;
+        }
 
         default:
             break;
     }
 
-    if (allocateTable(temp, size, table->index) != 0) {
+    if (table->table_name == TABLE_DIALOGUE  && table->sub_table_name == TABLE_OPTION) {
+        idx = table->sub_index;
+    }
+    else {
+        idx = table->index;
+    }
+
+    if (allocateTable(temp, size, idx) != 0) {
         return 1;
     }
 
@@ -257,7 +264,7 @@ int32_t allocateTable(void **table, size_t size, int32_t capacity) {
     return 0;
 }
 
-int32_t createIDField(Table *table, char *buffer) {
+int32_t createIDField(Script *script, Table *table, char *buffer) {
     if (!table || !buffer) {
         return 1;
     }
@@ -268,40 +275,56 @@ int32_t createIDField(Table *table, char *buffer) {
     enum { FIRST, MID, LAST };
 
     switch (table->table_name) {
-        case TABLE_CHARACTER:
+        case TABLE_CHARACTER: {
             if (table->sub_table_name != TABLE_STATUS) {
                 if (getTableLineStr(table->value, buffer, LAST) != 0) {
                     return 1;
                 }
             }
-            break;
+            else {
+                return 0;
+            }
 
-        case TABLE_DIALOGUE:
+            break;
+        }
+
+        case TABLE_DIALOGUE: {
             if (table->sub_table_name != TABLE_OPTION) {
                 if (getTableLineStr(table->value, buffer, LAST) != 0) {
                     return 1;
                 }
             }
+            else {
+                return 0;
+            }
+
             break;
+        }
 
         case TABLE_STATUS_INFO:
         case TABLE_ITEM:
         case TABLE_SCENE:
         case TABLE_EVENT:
-        case TABLE_CONDITION:
+        case TABLE_CONDITION: {
             if (getTableLineStr(table->value, buffer, LAST) != 0) {
                 return 1;
             }
+
             break;
+        }
 
         default:
             break;
     }
 
+    if (addDataToScript(script, table) != 0) {
+        return 1;
+    }
+
     return 0;
 }
 
-int32_t createTableField(Table *table, char *buffer) {
+int32_t createTableField(Script *script, Table *table, char *buffer) {
     if (!table || !buffer) {
         return 1;
     }
@@ -311,8 +334,31 @@ int32_t createTableField(Table *table, char *buffer) {
     char *equal = strchr(buffer, '=');
 
     if (equal) {
+        // Clear field and value
+        memset(table->field, 0, STR_SIZE);
+        memset(table->value, 0, STR_SIZE);
+
         strncpy(table->field, buffer, equal - buffer);
+        strncpy(table->value, equal + 1, buffer + strlen(buffer) - equal);
     }
+    else {
+        strncpy(table->value, buffer, STR_SIZE);
+    }
+
+    if (table->table_name == TABLE_CHARACTER && strcmp(table->field, "inventory") == 0) {
+        printf("inventory: %s\n", table->value);
+    }
+    else {
+        removeQuotes(table->value);
+
+        if (addDataToScript(script, table) != 0) {
+            return 1;
+        }
+    }
+
+    #ifdef DEBUG
+    printf("field: %s\nvalue: %s\n\n", table->field, table->value);
+    #endif
 
     return 0;
 }
@@ -323,11 +369,45 @@ int32_t addDataToScript(Script *script, Table *table) {
     }
 
     switch (table->table_name) {
-        case TABLE_PLAYER:
-            break;
+        case TABLE_NONE: {
+            if (strcmp(table->field, "name") == 0) {
+                strncpy(script->name, table->value, STR_SIZE);
+            }
+            else if (strcmp(table->field, "author") == 0) {
+                strncpy(script->author, table->value, STR_SIZE);
+            }
 
-        case TABLE_CHARACTER:
+            break;
+        }
+
+        case TABLE_PLAYER: {
+            if (strcmp(table->field, "character") == 0) {
+                strncpy(script->player->character, table->value, STR_SIZE);
+            }
+            else if (strcmp(table->field, "start_event") == 0) {
+                strncpy(script->player->start_event, table->value, STR_SIZE);
+            }
+
+            break;
+        }
+
+        case TABLE_CHARACTER: {
             if (table->sub_table_name == TABLE_STATUS) {
+                void  *temp = &(script->characters[table->index].status);
+                size_t size = sizeof(Status);
+                int32_t idx = script->characters[table->index].status_size;
+                script->characters[table->index].status_size++;
+
+                if (allocateTable(temp, size, idx) != 0) {
+                    return 1;
+                }
+
+                Status *status = &(script->characters[table->index].status[idx]);
+
+                strncpy(status->status_name, table->field, STR_SIZE);
+                status->value = strtol(table->value, NULL, 10);
+            }
+            else if (strcmp(table->field, "inventory") == 0) {
                 // todo
             }
             else {
@@ -336,51 +416,246 @@ int32_t addDataToScript(Script *script, Table *table) {
                 if (strcmp(table->field, "id") == 0) {
                     strncpy(character->id, table->value, STR_SIZE);
                 }
-            }
-            break;
-
-        case TABLE_STATUS_INFO:
-            if (strcmp(table->field, "id") == 0) {
-                strncpy(script->status_infos[table->index].id, table->value, STR_SIZE);
-            }
-            break;
-
-        case TABLE_ITEM:
-            if (strcmp(table->field, "id") == 0) {
-                strncpy(script->items[table->index].id, table->value, STR_SIZE);
-            }
-            break;
-
-        case TABLE_SCENE:
-            if (strcmp(table->field, "id") == 0) {
-                strncpy(script->scenes[table->index].id, table->value, STR_SIZE);
-            }
-            break;
-
-        case TABLE_EVENT:
-            if (strcmp(table->field, "id") == 0) {
-                strncpy(script->events[table->index].id, table->value, STR_SIZE);
-            }
-            break;
-
-        case TABLE_DIALOGUE:
-            if (table->sub_table_name == TABLE_OPTION) {
-                // todo
-            }
-            else {
-                Dialogue *dialogue = &(script->dialogues[table->index]);
-
-                if (strcmp(table->field, "id") == 0) {
-                    strncpy(dialogue->id, table->value, STR_SIZE);
+                else if (strcmp(table->field, "name") == 0) {
+                    strncpy(character->name, table->value, STR_SIZE);
+                }
+                else if (strcmp(table->field, "avatar") == 0) {
+                    strncpy(character->avatar, table->value, STR_SIZE);
+                }
+                else if (strcmp(table->field, "tachie") == 0) {
+                    strncpy(character->tachie, table->value, STR_SIZE);
                 }
             }
-            break;
 
-        case TABLE_CONDITION:
-            if (strcmp(table->field, "id") == 0) {
-                strncpy(script->conditions[table->index].id, table->value, STR_SIZE);
-            }
             break;
+        }
+
+        case TABLE_STATUS_INFO: {
+            StatusInfo *status_info = &(script->status_infos[table->index]);
+            char *endptr = NULL;
+
+            if (strcmp(table->field, "id") == 0) {
+                strncpy(status_info->id, table->value, STR_SIZE);
+            }
+            else if (strcmp(table->field, "name") == 0) {
+                strncpy(status_info->name, table->value, STR_SIZE);
+            }
+            else if (strcmp(table->field, "desc") == 0) {
+                strncpy(status_info->desc, table->value, STR_SIZE);
+            }
+            else if (strcmp(table->field, "min") == 0) {
+                status_info->min = strtol(table->value, &endptr, 10);
+
+                if (*endptr != '\0' && *endptr != '\n') {
+                    printf("error: min error\n");
+                    return 1;
+                }
+            }
+            else if (strcmp(table->field, "max") == 0) {
+                status_info->max = strtol(table->value, &endptr, 10);
+
+                if (*endptr != '\0' && *endptr != '\n') {
+                    printf("error: max error\n");
+                    return 1;
+                }
+            }
+
+            break;
+        }
+
+        case TABLE_ITEM: {
+            Item *item = &(script->items[table->index]);
+
+            if (strcmp(table->field, "id") == 0) {
+                strncpy(item->id, table->value, STR_SIZE);
+            }
+            else if (strcmp(table->field, "name") == 0) {
+                strncpy(item->name, table->value, STR_SIZE);
+            }
+            else if (strcmp(table->field, "desc") == 0) {
+                strncpy(item->desc, table->value, STR_SIZE);
+            }
+            else if (strcmp(table->field, "icon") == 0) {
+                strncpy(item->icon, table->value, STR_SIZE);
+            }
+            else if (strcmp(table->field, "hidden") == 0) {
+                if (strcmp(table->value, "true") == 0) {
+                    item->hidden = 1;
+                }
+                else if (strcmp(table->value, "false") == 0) {
+                    item->hidden = 0;
+                }
+                else {
+                    return 1;
+                }
+            }
+
+            break;
+        }
+
+        case TABLE_SCENE: {
+            Scene *scene = &(script->scenes[table->index]);
+
+            if (strcmp(table->field, "id") == 0) {
+                strncpy(scene->id, table->value, STR_SIZE);
+            }
+            else if (strcmp(table->field, "name") == 0) {
+                strncpy(scene->name, table->value, STR_SIZE);
+            }
+            else if (strcmp(table->field, "background") == 0) {
+                strncpy(scene->background, table->value, STR_SIZE);
+            }
+
+            break;
+        }
+
+        case TABLE_EVENT: {
+            Event *event = &(script->events[table->index]);
+
+            if (strcmp(table->field, "id") == 0) {
+                strncpy(event->id, table->value, STR_SIZE);
+            }
+            else if (strcmp(table->field, "scene") == 0) {
+                strncpy(event->scene, table->value, STR_SIZE);
+            }
+            else if (strcmp(table->field, "dialogue") == 0) {
+                strncpy(event->dialogue, table->value, STR_SIZE);
+            }
+            else if (strcmp(table->field, "bgm") == 0) {
+                strncpy(event->bgm, table->value, STR_SIZE);
+            }
+            else if (strcmp(table->field, "background") == 0) {
+                strncpy(event->background, table->value, STR_SIZE);
+            }
+
+            break;
+        }
+
+        case TABLE_DIALOGUE: {
+            if (table->sub_table_name == TABLE_OPTION) {
+                Option *option = &(script->dialogues[table->index].options[table->sub_index]);
+
+                if (strcmp(table->field, "text") == 0) {
+                    strncpy(option->text, table->value, STR_SIZE);
+                }
+                else if (strcmp(table->field, "condition") == 0) {
+                    strncpy(option->condition, table->value, STR_SIZE);
+                }
+                else if (strcmp(table->field, "next") == 0) {
+                    strncpy(option->next, table->value, STR_SIZE);
+                    option->next_type = DIALOGUE_NORMAL;
+                }
+                else if (strcmp(table->field, "event") == 0) {
+                    strncpy(option->next, table->value, STR_SIZE);
+                    option->next_type = DIALOGUE_EVENT;
+                }
+                else if (strcmp(table->field, "hidden") == 0) {
+                    if (strcmp(table->value, "true") == 0) {
+                        option->hidden = 1;
+                    }
+                    else if (strcmp(table->value, "false") == 0) {
+                        option->hidden = 0;
+                    }
+                    else {
+                        return 1;
+                    }
+                }
+
+                break;
+            }
+
+            Dialogue *dialogue = &(script->dialogues[table->index]);
+
+            if (strcmp(table->field, "id") == 0) {
+                strncpy(dialogue->id, table->value, STR_SIZE);
+            }
+            else if (strcmp(table->field, "text") == 0) {
+                strncpy(dialogue->text, table->value, STR_SIZE);
+            }
+            else if (strcmp(table->field, "sfx") == 0) {
+                strncpy(dialogue->sfx, table->value, STR_SIZE);
+            }
+            else if (strcmp(table->field, "character") == 0) {
+                strncpy(dialogue->character, table->value, STR_SIZE);
+
+                if (strcmp(table->value, script->player->character) == 0) {
+                    dialogue->character_type = CHARACTER_PLAYER;
+                }
+                else {
+                    dialogue->character_type = CHARACTER_NPC;
+                }
+            }
+            else if (strcmp(table->field, "next") == 0) {
+                strncpy(dialogue->next, table->value, STR_SIZE);
+                dialogue->next_type = DIALOGUE_NORMAL;
+            }
+            else if (strcmp(table->field, "event") == 0) {
+                strncpy(dialogue->next, table->value, STR_SIZE);
+                dialogue->next_type = DIALOGUE_EVENT;
+            }
+
+            break;
+        }
+
+        case TABLE_CONDITION: {
+            Condition *condition = &(script->conditions[table->index]);
+
+            if (strcmp(table->field, "id") == 0) {
+                strncpy(condition->id, table->value, STR_SIZE);
+            }
+            else if (strcmp(table->field, "character") == 0) {
+                strncpy(condition->character, table->value, STR_SIZE);
+
+                if (strcmp(table->value, script->player->character) == 0) {
+                    condition->character_type = CHARACTER_PLAYER;
+                }
+                else {
+                    condition->character_type = CHARACTER_NPC;
+                }
+            }
+            else if (strcmp(table->field, "item") == 0) {
+                if (condition->condition_type != CONDITION_NONE) {
+                    return 1;
+                }
+
+                strncpy(condition->condition, table->value, STR_SIZE);
+                condition->condition_type = CONDITION_ITEM;
+            }
+            else if (strcmp(table->field, "status") == 0) {
+                if (condition->condition_type != CONDITION_NONE) {
+                    return 1;
+                }
+
+                strncpy(condition->condition, table->value, STR_SIZE);
+                condition->condition_type = CONDITION_STATUS;
+            }
+            else if (strcmp(table->field, "logic") == 0) {
+                if (strcmp(table->value, "EQ") == 0) {
+                    condition->logic = LOGIC_EQ;
+                }
+                else if (strcmp(table->value, "NE") == 0) {
+                    condition->logic = LOGIC_NE;
+                }
+                else if (strcmp(table->value, "GT") == 0) {
+                    condition->logic = LOGIC_GT;
+                }
+                else if (strcmp(table->value, "LT") == 0) {
+                    condition->logic = LOGIC_LT;
+                }
+                else if (strcmp(table->value, "GE") == 0) {
+                    condition->logic = LOGIC_GE;
+                }
+                else if (strcmp(table->value, "LE") == 0) {
+                    condition->logic = LOGIC_LE;
+                }
+                else {
+                    printf("error: logic error\n");
+                    return 1;
+                }
+            }
+
+            break;
+        }
 
         default:
             break;
@@ -461,6 +736,26 @@ int32_t getTableLineStr(char *str, char *buffer, int32_t pos) {
     return 0;
 }
 
+void removeQuotes(char *buffer) {
+    if (!buffer) {
+        return;
+    }
+
+    char *src = buffer;
+    char *dst = buffer;
+
+    while (*src) {
+        if (*src == '"') {
+            src++;
+            continue;
+        }
+
+        *dst++ = *src++;
+    }
+
+    *dst = '\0';
+}
+
 void cleanWhiteSpace(char **buffer) {
     if (!buffer || !(*buffer)) {
         return;
@@ -482,18 +777,26 @@ void cleanWhiteSpace(char **buffer) {
 
     *(end + 1) = '\0';
 
-    // Remove white space between characters
+    // Remove white space between characters unless it is a string
 
     char *src = *buffer;
     char *dst = *buffer;
 
+    bool quote = false;
+
     while (*src) {
+        if (*src == '"') {
+            quote = !quote;
+        }
+
         if (*src == ' ' || *src == '\t') {
-            src++;
+            if (!quote) {
+                src++;
+                continue;
+            }
         }
-        else {
-            *dst++ = *src++;
-        }
+
+        *dst++ = *src++;
     }
 
     *dst = '\0';
@@ -534,11 +837,90 @@ void printScript(Script *script) {
         printf("dialogue: %s\n", script->dialogues[i].id);
 
         // for (int32_t j = 0; j < script->dialogues[i].option_size; j++) {
-        //     printf("option: %s\n", script->dialogues[i].options[j].next_name);
+        //     printf("option: %s\n", script->dialogues[i].options[j].next);
         // }
     }
 
     for (int32_t i = 0; i < script->condition_size; i++) {
         printf("condition: %s\n", script->conditions[i].id);
+    }
+}
+
+void clearScript(Script *script) {
+    if (!script) {
+        return;
+    }
+
+    if (script->player) {
+        free(script->player);
+        script->player = NULL;
+    }
+
+    if (script->characters) {
+        if (script->character_size > 0) {
+            for (int32_t i = 0; i < script->character_size; i++) {
+                if (script->characters[i].status) {
+                    free(script->characters[i].status);
+                    script->characters[i].status = NULL;
+                    script->characters[i].status_size = 0;
+                }
+
+                if (script->characters[i].inventory) {
+                    free(script->characters[i].inventory);
+                    script->characters[i].inventory = NULL;
+                    script->characters[i].inventory_size = 0;
+                }
+            }
+        }
+
+        free(script->characters);
+        script->characters = NULL;
+        script->character_size = 0;
+    }
+
+    if (script->items) {
+        free(script->items);
+        script->items = NULL;
+        script->item_size = 0;
+    }
+
+    if (script->status_infos) {
+        free(script->status_infos);
+        script->status_infos = NULL;
+        script->status_info_size = 0;
+    }
+
+    if (script->scenes) {
+        free(script->scenes);
+        script->scenes = NULL;
+        script->scene_size = 0;
+    }
+
+    if (script->events) {
+        free(script->events);
+        script->events = NULL;
+        script->event_size = 0;
+    }
+
+    if (script->dialogues) {
+        if (script->dialogue_size > 0) {
+            for (int32_t i = 0; i < script->dialogue_size; i++) {
+                if (script->dialogues[i].options) {
+                    free(script->dialogues[i].options);
+                    script->dialogues[i].options = NULL;
+                    script->dialogues[i].option_size = 0;
+                }
+            }
+        }
+
+        free(script->dialogues);
+        script->dialogues = NULL;
+        script->dialogue_size = 0;
+    }
+
+    if (script->conditions) {
+        free(script->conditions);
+        script->conditions = NULL;
+        script->condition_size = 0;
     }
 }
