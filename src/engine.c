@@ -1,15 +1,16 @@
-// main.c
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 #include <stdio.h>
 #include <string.h>
+#include <libavutil/imgutils.h>
+#include <libavformat/avformat.h>
+#include <libavcodec/avcodec.h>
+#include <libswscale/swscale.h>
 #include "SDL.h"
-//結構定義==================================================================================================
-//w.h中定義
-//函式宣告==================================================================================================
-//w.h中定義
-//主程式====================================================================================================
+
+int stopVideoFlag = 0;
+int isVideoPlaying = 0;
 
 int main(int argc, char* argv[]) {
     AppContext ctx = {NULL, NULL, NULL, 1500, 900, NULL, 0, 0};  // 初始化應用程式上下文
@@ -30,7 +31,7 @@ int main(int argc, char* argv[]) {
     char* texts1[] = {"helloworld"};
     SDL_Rect textRect1 = {ctx.window_width / 20, ctx.window_height / 2 - 25, 100, 50};
     SDL_Rect imageRect1 = {0, 0, ctx.window_width / 10, ctx.window_width / 10};
-    setRenderAreaContent(&ctx, 0, "aa-24.bmp", images1, 1, texts1, &white, &textRect1, 1,NULL,NULL);
+    setRenderAreaContent(&ctx, 0, "aa-24.bmp", images1, 1, texts1, &white, &textRect1, 1, NULL, NULL);
     ctx.render_areas[0].imageRects = malloc(sizeof(SDL_Rect));
     ctx.render_areas[0].imageRects[0] = imageRect1;
 
@@ -49,7 +50,7 @@ int main(int argc, char* argv[]) {
         textRects2[i].h = 40; // 調整文本高度
     }
     SDL_Rect imageRect2 = {0, ctx.window_height - ctx.window_width / 10, ctx.window_width / 10, ctx.window_width / 10}; // 正方形圖片的位置和大小
-    setRenderAreaContent(&ctx, 1, "a24.bmp", images2, 1, texts2, textColors2, textRects2, 10,NULL,NULL);
+    setRenderAreaContent(&ctx, 1, "a24.bmp", images2, 1, texts2, textColors2, textRects2, 10, NULL, NULL);
     ctx.render_areas[1].imageRects = malloc(sizeof(SDL_Rect));
     ctx.render_areas[1].imageRects[0] = imageRect2;
 
@@ -60,14 +61,14 @@ int main(int argc, char* argv[]) {
         {0, 0, ctx.window_width / 20, ctx.window_height / 10 * 7},  // 左邊圖片
         {ctx.window_width / 10 * 8 - ctx.window_width / 20, 0, ctx.window_width / 20, ctx.window_height / 10 * 7}  // 右邊圖片
     };
-    setRenderAreaContent(&ctx, 2, NULL, images3, 2, texts3, NULL, imageRects3, 0,NULL,NULL);
+    setRenderAreaContent(&ctx, 2, NULL, images3, 2, texts3, NULL, imageRects3, 0, NULL, NULL);
 
     // Area 4
     char* texts4[] = {"Input your decision"};
     SDL_Rect textRect4 = {10, 10, ctx.window_width / 10 * 8 - 20, 50}; // 調整文本框大小
     char* images4[] = {"aa-24.bmp"};
     SDL_Rect imageRect4 = {ctx.window_width / 10 * 8 - 100, ctx.window_height / 10 * 3 - 100, 100, 100};  // 正方形圖片的位置和大小
-    setRenderAreaContent(&ctx, 3, "test.png", images4, 1, texts4, &white, &textRect4, 1,NULL,NULL);
+    setRenderAreaContent(&ctx, 3, "test.png", images4, 1, texts4, &white, &textRect4, 1, NULL, NULL);
     ctx.render_areas[3].imageRects = malloc(sizeof(SDL_Rect));
     ctx.render_areas[3].imageRects[0] = imageRect4;
 
@@ -98,13 +99,30 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        // 切換第三窗口的圖片
-        if (ctx.switchCounter++ % 2 == 0) {
-            ctx.render_areas[2].images[0] = NULL;
-            ctx.render_areas[2].images[1] = IMG_LoadTexture(ctx.renderer, "test.png");
+        if (isVideoPlaying) {
+            // 播放视频
+            playVideoFrame(&ctx, &ctx.render_areas[2], "test.mp4");
+
+            // 每秒检查一次输入缓冲
+            if (SDL_PollEvent(&e) && e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_SPACE) {
+                isVideoPlaying = 0;
+                setRenderAreaContent(&ctx, 2, NULL, images3, 2, texts3, NULL, imageRects3, 0, NULL, NULL);
+                loadTextures(&ctx);
+            }
         } else {
-            ctx.render_areas[2].images[0] = IMG_LoadTexture(ctx.renderer, "a24.bmp");
-            ctx.render_areas[2].images[1] = IMG_LoadTexture(ctx.renderer, "test.png");
+            // 切換第三窗口的圖片
+            if (ctx.switchCounter++ % 2 == 0) {
+                ctx.render_areas[2].images[0] = NULL;
+                ctx.render_areas[2].images[1] = IMG_LoadTexture(ctx.renderer, "test.png");
+            } else {
+                ctx.render_areas[2].images[0] = IMG_LoadTexture(ctx.renderer, "a24.bmp");
+                ctx.render_areas[2].images[1] = IMG_LoadTexture(ctx.renderer, "test.png");
+            }
+
+            // 检查是否按下空白键以切换到视频播放
+            if (SDL_PollEvent(&e) && e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_SPACE) {
+                isVideoPlaying = 1;
+            }
         }
 
         SDL_RenderClear(ctx.renderer);
@@ -115,11 +133,9 @@ int main(int argc, char* argv[]) {
 
     cleanUp(&ctx);  // 清理資源
 
-    for (int i = 0; i < 10; i++) {
+    for (int i =0;  i < 10; i++) {
         free(texts2[i]);
     }
 
     return 0;
 }
-
-

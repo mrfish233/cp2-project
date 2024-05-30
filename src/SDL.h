@@ -152,5 +152,5 @@ void initFFmpeg();
  * @return 執行緒退出狀態
  */
 int videoPlaybackThread(void* arg);
-
+void playVideoFrame(AppContext* ctx, RenderArea* area, const char* videoPath);
 #endif

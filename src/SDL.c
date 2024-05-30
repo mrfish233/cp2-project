@@ -312,12 +312,12 @@ void initFFmpeg() {
 }
 
 // 影片播放函數
-void playVideo(AppContext* ctx, const char* video_path, RenderArea* area) {
-    ctx->isPlayingVideo = 1;  // 設置標誌位
 
+void playVideoFrame(AppContext* ctx, RenderArea* area, const char* videoPath) {
+    // 初始化FFmpeg相关变量
     AVFormatContext* pFormatCtx = avformat_alloc_context();
-    if (avformat_open_input(&pFormatCtx, video_path, NULL, NULL) != 0) {
-        fprintf(stderr, "Could not open video file: %s\n", video_path);
+    if (avformat_open_input(&pFormatCtx, videoPath, NULL, NULL) != 0) {
+        fprintf(stderr, "Could not open video file: %s\n", videoPath);
         return;
     }
 
@@ -374,10 +374,10 @@ void playVideo(AppContext* ctx, const char* video_path, RenderArea* area) {
         SWS_BILINEAR, NULL, NULL, NULL
     );
 
-    int frameFinished;
     AVPacket packet;
+    int frameFinished;
 
-    while (av_read_frame(pFormatCtx, &packet) >= 0 && ctx->isPlayingVideo) {
+    while (av_read_frame(pFormatCtx, &packet) >= 0 && isVideoPlaying) {
         if (packet.stream_index == videoStream) {
             avcodec_send_packet(pCodecCtx, &packet);
             frameFinished = avcodec_receive_frame(pCodecCtx, pFrame);
@@ -397,13 +397,19 @@ void playVideo(AppContext* ctx, const char* video_path, RenderArea* area) {
                 SDL_Texture* texture = SDL_CreateTextureFromSurface(ctx->renderer, surface);
 
                 SDL_FreeSurface(surface);
-                SDL_RenderCopy(ctx->renderer, texture, NULL, &area->videoRect);
+                SDL_RenderCopy(ctx->renderer, texture, NULL, &area->rect);
                 SDL_DestroyTexture(texture);
                 SDL_RenderPresent(ctx->renderer);
-                SDL_Delay(33);  // 模擬30fps播放速度
+                SDL_Delay(33);  // 模拟30fps播放速度
             }
         }
         av_packet_unref(&packet);
+
+        // 检查输入缓冲
+        SDL_Event e;
+        if (SDL_PollEvent(&e) && e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_SPACE) {
+            isVideoPlaying = 0;
+        }
     }
 
     av_free(buffer);
@@ -412,9 +418,9 @@ void playVideo(AppContext* ctx, const char* video_path, RenderArea* area) {
     avcodec_free_context(&pCodecCtx);
     avformat_close_input(&pFormatCtx);
 }
+
 // 停止影片播放函數
 void stopVideo(AppContext* ctx) {
-    ctx->isPlayingVideo = 0;  // 清除標誌位
+    stopVideoFlag = 1;  // 设置停止标志位
 }
-
 
