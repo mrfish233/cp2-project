@@ -221,14 +221,12 @@ typedef struct _Dialogue {
  * @param scene: name of the scene
  * @param dialogue: name of the dialogue
  * @param bgm: path to the background music
- * @param background: path to the background image
  */
 typedef struct _Event {
     char id[STR_SIZE];
     char scene[STR_SIZE];
     char dialogue[STR_SIZE];
     char bgm[STR_SIZE];
-    char background[STR_SIZE];
 } Event;
 
 // Script

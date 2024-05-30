@@ -115,7 +115,6 @@ background = "concert-hall"
 scene = "funeral"
 dialogue = "open-1"
 bgm = "assets/bgm/funeral.mp3"
-background = "assets/scene/funeral.bmp"
 
 [dialogue.open-1]
 character = "alfred"
@@ -151,4 +150,4 @@ dialogue = "walk-1"
 [dialogue.walk-1]
 character = "alfred"
 text = "這裡是教堂的後院，我們來這裡走走吧。"
-end = true
+end = "assets/video/end.mp4"

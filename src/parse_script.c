@@ -568,9 +568,6 @@ int32_t addDataToScript(Script *script, Table *table) {
             else if (strcmp(table->field, "bgm") == 0) {
                 strncpy(event->bgm, table->value, STR_SIZE);
             }
-            else if (strcmp(table->field, "background") == 0) {
-                strncpy(event->background, table->value, STR_SIZE);
-            }
 
             break;
         }
@@ -639,21 +636,25 @@ int32_t addDataToScript(Script *script, Table *table) {
                     dialogue->character_type = CHARACTER_NPC;
                 }
             }
-            else if (strcmp(table->field, "next") == 0) {
-                strncpy(dialogue->next, table->value, STR_SIZE);
-                dialogue->next_type = DIALOGUE_NORMAL;
-            }
-            else if (strcmp(table->field, "event") == 0) {
-                strncpy(dialogue->next, table->value, STR_SIZE);
-                dialogue->next_type = DIALOGUE_EVENT;
-            }
-            else if (strcmp(table->field, "end") == 0) {
+            else if (strcmp(table->field, "next")  == 0 ||
+                     strcmp(table->field, "event") == 0 ||
+                     strcmp(table->field, "end")   == 0) {
                 if (dialogue->next_type != DIALOGUE_OPTION) {
                     printf("error: next type error\n");
                     return 1;
                 }
 
-                dialogue->next_type = DIALOGUE_END;
+                strncpy(dialogue->next, table->value, STR_SIZE);
+
+                if (strcmp(table->field, "next") == 0) {
+                    dialogue->next_type = DIALOGUE_NORMAL;
+                }
+                else if (strcmp(table->field, "event") == 0) {
+                    dialogue->next_type = DIALOGUE_EVENT;
+                }
+                else if (strcmp(table->field, "end") == 0) {
+                    dialogue->next_type = DIALOGUE_END;
+                }
             }
 
             break;
@@ -967,7 +968,6 @@ void printScript(Script *script) {
         printf("scene          | %s\n", script->events[i].scene);
         printf("dialogue       | %s\n", script->events[i].dialogue);
         printf("bgm            | %s\n", script->events[i].bgm);
-        printf("background     | %s\n", script->events[i].background);
 
         if (i < script->event_size - 1) {
             printf("----------------------------------------------------------------------\n");
