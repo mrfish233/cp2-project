@@ -135,7 +135,8 @@ typedef enum _ConditionType {
 typedef enum _DialogueType {
     DIALOGUE_OPTION,
     DIALOGUE_NORMAL,
-    DIALOGUE_EVENT
+    DIALOGUE_EVENT,
+    DIALOGUE_END
 } DialogueType;
 
 /**

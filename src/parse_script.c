@@ -34,7 +34,9 @@ int32_t parseTomlScript(char *filename, Script *script) {
         }
     }
 
-    // printScript(script);
+    #ifdef DEBUG
+    printScript(script);
+    #endif
 
     closeFile(file);
     return 0;
@@ -270,7 +272,7 @@ int32_t createIDField(Script *script, Table *table, char *buffer) {
     }
 
     strncpy(table->field, "id", STR_SIZE);
-    strncpy(table->value, "", STR_SIZE);
+    memset(table->value, 0, STR_SIZE);
 
     enum { FIRST, MID, LAST };
 
@@ -346,7 +348,36 @@ int32_t createTableField(Script *script, Table *table, char *buffer) {
     }
 
     if (table->table_name == TABLE_CHARACTER && strcmp(table->field, "inventory") == 0) {
-        printf("inventory: %s\n", table->value);
+        char tmp[STR_SIZE] = {0};
+        char val[STR_SIZE] = {0};
+        char *head = NULL;
+        char *tail = NULL;
+
+        strncpy(tmp, table->value, STR_SIZE);
+
+        for (size_t i = 0; i < strlen(tmp); i++) {
+            if (tmp[i] != '\"') {
+                continue;
+            }
+
+            if (!head) {
+                head = tmp + i + 1;
+            }
+            else {
+                tail = tmp + i;
+                strncpy(val, head, tail - head);
+
+                memset(table->value, 0, STR_SIZE);
+                strncpy(table->value, val, STR_SIZE);
+
+                if (addDataToScript(script, table) != 0) {
+                    return 1;
+                }
+
+                head = NULL;
+                tail = NULL;
+            }
+        }
     }
     else {
         removeQuotes(table->value);
@@ -355,10 +386,6 @@ int32_t createTableField(Script *script, Table *table, char *buffer) {
             return 1;
         }
     }
-
-    #ifdef DEBUG
-    printf("field: %s\nvalue: %s\n\n", table->field, table->value);
-    #endif
 
     return 0;
 }
@@ -408,7 +435,24 @@ int32_t addDataToScript(Script *script, Table *table) {
                 status->value = strtol(table->value, NULL, 10);
             }
             else if (strcmp(table->field, "inventory") == 0) {
-                // todo
+                void  *temp = &(script->characters[table->index].inventory);
+                size_t size = sizeof(char *);
+                int32_t idx = script->characters[table->index].inventory_size;
+                script->characters[table->index].inventory_size++;
+
+                if (allocateTable(temp, size, idx) != 0) {
+                    return 1;
+                }
+
+                char **inventory = &(script->characters[table->index].inventory[idx]);
+                *inventory = calloc(1, STR_SIZE);
+
+                if (!*inventory) {
+                    perror("addDataToScript: calloc error");
+                    return 1;
+                }
+
+                strncpy(*inventory, table->value, STR_SIZE);
             }
             else {
                 Character *character = &(script->characters[table->index]);
@@ -542,10 +586,20 @@ int32_t addDataToScript(Script *script, Table *table) {
                     strncpy(option->condition, table->value, STR_SIZE);
                 }
                 else if (strcmp(table->field, "next") == 0) {
+                    if (option->next_type != DIALOGUE_OPTION) {
+                        printf("error: next type error\n");
+                        return 1;
+                    }
+
                     strncpy(option->next, table->value, STR_SIZE);
                     option->next_type = DIALOGUE_NORMAL;
                 }
                 else if (strcmp(table->field, "event") == 0) {
+                    if (option->next_type != DIALOGUE_OPTION) {
+                        printf("error: next type error\n");
+                        return 1;
+                    }
+
                     strncpy(option->next, table->value, STR_SIZE);
                     option->next_type = DIALOGUE_EVENT;
                 }
@@ -592,6 +646,14 @@ int32_t addDataToScript(Script *script, Table *table) {
             else if (strcmp(table->field, "event") == 0) {
                 strncpy(dialogue->next, table->value, STR_SIZE);
                 dialogue->next_type = DIALOGUE_EVENT;
+            }
+            else if (strcmp(table->field, "end") == 0) {
+                if (dialogue->next_type != DIALOGUE_OPTION) {
+                    printf("error: next type error\n");
+                    return 1;
+                }
+
+                dialogue->next_type = DIALOGUE_END;
             }
 
             break;
@@ -807,43 +869,178 @@ void printScript(Script *script) {
         return;
     }
 
-    // printf("player: %s\n", script->player->id);
+    printf("======================================================================\n");
+    printf("PLAYER\n");
+    printf("----------------------------------------------------------------------\n");
+
+    printf("character      | %s\n", script->player->character);
+    printf("start_event    | %s\n", script->player->start_event);
+
+    printf("======================================================================\n");
+    printf("CHARACTER\n");
+    printf("----------------------------------------------------------------------\n");
 
     for (int32_t i = 0; i < script->character_size; i++) {
-        printf("character: %s\n", script->characters[i].id);
+        printf("id             | %s\n", script->characters[i].id);
+        printf("name           | %s\n", script->characters[i].name);
+        printf("avatar         | %s\n", script->characters[i].avatar);
+        printf("tachie         | %s\n", script->characters[i].tachie);
 
-        // for (int32_t j = 0; j < script->characters[i].status_size; j++) {
-        //     printf("status: %s\n", script->characters[i].status[j].id);
-        // }
+        for (int32_t j = 0; j < script->characters[i].status_size; j++) {
+            if (j == 0) {
+                printf("status         | ");
+            }
+            else {
+                printf("               | ");
+            }
+            printf("%s: %d\n", script->characters[i].status[j].status_name, script->characters[i].status[j].value);
+        }
+
+        for (int32_t j = 0; j < script->characters[i].inventory_size; j++) {
+            if (j == 0) {
+                printf("inventory      | ");
+            }
+            else {
+                printf("               | ");
+            }
+
+            printf("%s\n", script->characters[i].inventory[j]);
+        }
+
+        if (i < script->character_size - 1) {
+            printf("----------------------------------------------------------------------\n");
+        }
     }
+
+    printf("======================================================================\n");
+    printf("STATUS_INFO\n");
+    printf("----------------------------------------------------------------------\n");
 
     for (int32_t i = 0; i < script->status_info_size; i++) {
-        printf("status_info: %s\n", script->status_infos[i].id);
+        printf("id             | %s\n", script->status_infos[i].id);
+        printf("name           | %s\n", script->status_infos[i].name);
+        printf("desc           | %s\n", script->status_infos[i].desc);
+        printf("min            | %d\n", script->status_infos[i].min);
+        printf("max            | %d\n", script->status_infos[i].max);
+
+        if (i < script->status_info_size - 1) {
+            printf("----------------------------------------------------------------------\n");
+        }
     }
+
+    printf("======================================================================\n");
+    printf("ITEM\n");
+    printf("----------------------------------------------------------------------\n");
 
     for (int32_t i = 0; i < script->item_size; i++) {
-        printf("item: %s\n", script->items[i].id);
+        printf("id             | %s\n", script->items[i].id);
+        printf("name           | %s\n", script->items[i].name);
+        printf("desc           | %s\n", script->items[i].desc);
+        printf("icon           | %s\n", script->items[i].icon);
+        printf("hidden         | %d\n", script->items[i].hidden);
+
+        if (i < script->item_size - 1) {
+            printf("----------------------------------------------------------------------\n");
+        }
     }
+
+    printf("======================================================================\n");
+    printf("SCENE\n");
+    printf("----------------------------------------------------------------------\n");
 
     for (int32_t i = 0; i < script->scene_size; i++) {
-        printf("scene: %s\n", script->scenes[i].id);
+        printf("id             | %s\n", script->scenes[i].id);
+        printf("name           | %s\n", script->scenes[i].name);
+        printf("background     | %s\n", script->scenes[i].background);
+
+        if (i < script->scene_size - 1) {
+            printf("----------------------------------------------------------------------\n");
+        }
     }
+
+    printf("======================================================================\n");
+    printf("EVENT\n");
+    printf("----------------------------------------------------------------------\n");
 
     for (int32_t i = 0; i < script->event_size; i++) {
-        printf("event: %s\n", script->events[i].id);
+        printf("id             | %s\n", script->events[i].id);
+        printf("scene          | %s\n", script->events[i].scene);
+        printf("dialogue       | %s\n", script->events[i].dialogue);
+        printf("bgm            | %s\n", script->events[i].bgm);
+        printf("background     | %s\n", script->events[i].background);
+
+        if (i < script->event_size - 1) {
+            printf("----------------------------------------------------------------------\n");
+        }
     }
+
+    printf("======================================================================\n");
+    printf("DIALOGUE\n");
+    printf("----------------------------------------------------------------------\n");
 
     for (int32_t i = 0; i < script->dialogue_size; i++) {
-        printf("dialogue: %s\n", script->dialogues[i].id);
+        printf("id             | %s\n", script->dialogues[i].id);
+        printf("text           | %s\n", script->dialogues[i].text);
+        printf("sfx            | %s\n", script->dialogues[i].sfx);
+        printf("character      | %s\n", script->dialogues[i].character);
+        printf("next           | %s\n", script->dialogues[i].next);
+        printf("next_type      | ");
 
-        // for (int32_t j = 0; j < script->dialogues[i].option_size; j++) {
-        //     printf("option: %s\n", script->dialogues[i].options[j].next);
-        // }
+        switch (script->dialogues[i].next_type) {
+            case DIALOGUE_NORMAL:
+                printf("DIALOGUE\n");
+                break;
+            case DIALOGUE_EVENT:
+                printf("EVENT\n");
+                break;
+            case DIALOGUE_OPTION:
+                printf("OPTION\n");
+                break;
+            case DIALOGUE_END:
+                printf("END\n");
+                break;
+            default:
+                printf("ERROR\n");
+                break;
+        }
+
+        for (int32_t j = 0; j < script->dialogues[i].option_size; j++) {
+            printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+
+            printf("option         | %s\n", script->dialogues[i].options[j].text);
+            printf("condition      | %s\n", script->dialogues[i].options[j].condition);
+            printf("next           | %s\n", script->dialogues[i].options[j].next);
+            printf("next_type      | %d\n", script->dialogues[i].options[j].next_type);
+            printf("hidden         | %d\n", script->dialogues[i].options[j].hidden);
+        }
+
+        if (script->dialogues[i].option_size > 0) {
+            printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+        }
+
+        if (i < script->dialogue_size - 1) {
+            printf("----------------------------------------------------------------------\n");
+        }
     }
+
+    printf("======================================================================\n");
+    printf("CONDITION\n");
+    printf("----------------------------------------------------------------------\n");
 
     for (int32_t i = 0; i < script->condition_size; i++) {
-        printf("condition: %s\n", script->conditions[i].id);
+        printf("id             | %s\n", script->conditions[i].id);
+        printf("character      | %s\n", script->conditions[i].character);
+        printf("character_type | %d\n", script->conditions[i].character_type);
+        printf("condition      | %s\n", script->conditions[i].condition);
+        printf("condition_type | %d\n", script->conditions[i].condition_type);
+        printf("logic          | %d\n", script->conditions[i].logic);
+
+        if (i < script->condition_size - 1) {
+            printf("----------------------------------------------------------------------\n");
+        }
     }
+
+    printf("======================================================================\n");
 }
 
 void clearScript(Script *script) {
