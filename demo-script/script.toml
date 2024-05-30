@@ -25,14 +25,15 @@ max = 100
 
 [player]
 character = "marie"
-starter = "start"
+start_event = "start"
 
 [character.marie]
 name = "瑪麗"
 avatar = "assets/characters/marie/avatar.bmp"
 tachie = "assets/characters/marie/tachie.bmp"
 inventory = [
-    "tool-box"
+    "tool-box",
+    "test-item"
 ]
 
 [character.marie.status]
@@ -45,8 +46,7 @@ name = "阿爾弗雷德"
 avatar = "assets/characters/alfred/avatar.bmp"
 tachie = "assets/characters/alfred/tachie.bmp"
 inventory = [
-    "old-ivory-baton",
-    "metal-music-stand"
+    "old-ivory-baton", "metal-music-stand"
 ]
 
 [character.alfred.status]
@@ -56,6 +56,12 @@ charm = 60
 like = 50
 
 # 物品 item
+
+[item.test-item]
+name = "测试物品"
+desc = "这是一个测试物品"
+icon = "assets/items/test-item.bmp"
+hidden = false
 
 [item.tool-box]
 name = "工具箱"
@@ -108,11 +114,14 @@ background = "concert-hall"
 [event.start]
 scene = "funeral"
 dialogue = "open-1"
+bgm = "assets/bgm/funeral.mp3"
+background = "assets/scene/funeral.bmp"
 
 [dialogue.open-1]
 character = "alfred"
 text = "你來了，我知道你會來的。"
 next = "open-2"
+sfx = "assets/sfx/door-open.mp3"
 
 [dialogue.open-2]
 character = "alfred"
@@ -142,3 +151,4 @@ dialogue = "walk-1"
 [dialogue.walk-1]
 character = "alfred"
 text = "這裡是教堂的後院，我們來這裡走走吧。"
+end = true
