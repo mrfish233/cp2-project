@@ -54,7 +54,7 @@ int main(int argc, char* argv[]) {
     ctx.render_areas[1].imageRects[0] = imageRect2;
 
     // Area 3
-    char* images3[] = {"a24.bmp", "test.png"};
+    char* images3[] = {"~/cp2-project/example-game/assests/character/airudy/tachie/angry.png", "test.png"};
     char* texts3[] = {NULL};
     SDL_Rect imageRects3[2] = {
         {0, 0, ctx.window_width / 20, ctx.window_height / 10 * 7},  // 左邊圖片
@@ -65,7 +65,7 @@ int main(int argc, char* argv[]) {
     // Area 4
     char* texts4[] = {"Input your decision"};
     SDL_Rect textRect4 = {10, 10, ctx.window_width / 10 * 8 - 20, 50}; // 調整文本框大小
-    char* images4[] = {"aa-24.bmp"};
+    char* images4[] = {"a24.bmp"};
     SDL_Rect imageRect4 = {ctx.window_width / 10 * 8 - 100, ctx.window_height / 10 * 3 - 100, 100, 100};  // 正方形圖片的位置和大小
     setRenderAreaContent(&ctx, 3, "test.png", images4, 1, texts4, &white, &textRect4, 1, NULL, NULL);
     ctx.render_areas[3].imageRects = malloc(sizeof(SDL_Rect));
@@ -114,7 +114,7 @@ int main(int argc, char* argv[]) {
                 ctx.render_areas[2].images[0] = NULL;
                 ctx.render_areas[2].images[1] = IMG_LoadTexture(ctx.renderer, "test.png");
             } else {
-                ctx.render_areas[2].images[0] = IMG_LoadTexture(ctx.renderer, "a24.bmp");
+                ctx.render_areas[2].images[0] = IMG_LoadTexture(ctx.renderer, "/home/goose/cp2-project/example-game/assests/airudy/tachie/angry.png");
                 ctx.render_areas[2].images[1] = IMG_LoadTexture(ctx.renderer, "test.png");
             }
 
@@ -138,3 +138,5 @@ int main(int argc, char* argv[]) {
 
     return 0;
 }
+
+

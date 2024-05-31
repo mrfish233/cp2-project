@@ -1,4 +1,3 @@
-// SDL.h
 #ifndef SDL_H
 #define SDL_H
 
@@ -8,10 +7,16 @@
 #include <libavformat/avformat.h>
 #include <libavcodec/avcodec.h>
 #include <libswscale/swscale.h>
-#include <stdio.h>
-#include <string.h>
-#include <libavutil/imgutils.h>
-// 結構與全局變數定義==================================================================================================
+#include <unistd.h>  // 用於 getcwd
+#include <limits.h>  // 用於 PATH_MAX
+#include <linux/limits.h>
+
+
+// 定義基準路徑
+#define BASE_PATH "/home/goose/cp2-project/example-game/assests"
+extern int stopVideoFlag;
+extern int isVideoPlaying;
+// 結構定義==================================================================================================
 typedef struct {
     SDL_Rect rect;
     SDL_Texture* background;
@@ -41,10 +46,10 @@ typedef struct {
     int num_render_areas;
     int switchCounter;
     int isPlayingVideo;
-} AppContext;
+    
 
-extern int stopVideoFlag;
-extern int isVideoPlaying;
+    char base_path[PATH_MAX];  // 新增字段，用於保存基準路徑
+} AppContext;
 
 // 函式宣告=================================================
 
@@ -89,10 +94,8 @@ void createRenderArea(AppContext* ctx, int x, int y, int w, int h);
  * @param textRects 文字位置和大小數組
  * @param text_count 文字數量
  * @param video_path 影片路徑
- * @param videoRect 影片的位置和大小
  */
 void setRenderAreaContent(AppContext* ctx, int areaIndex, const char* background, char** images, int image_count, char** texts, SDL_Color* textColors, SDL_Rect* textRects, int text_count, const char* video_path, SDL_Rect* videoRect);
-
 /**
  * 渲染所有區域
  * @param ctx 應用程式上下文
@@ -127,32 +130,16 @@ void renderText(AppContext* ctx, RenderArea* area);
 void cleanUp(AppContext* ctx);
 
 
-
 /**
- * 播放影片
+ * 更新影片幀
  * @param ctx 應用程式上下文
- * @param video_path 影片路徑
- * @param area 渲染區域
+ * @param areaIndex 渲染區域索引
  */
+void updateVideoFrame(AppContext* ctx, int areaIndex);
 void playVideo(AppContext* ctx, const char* video_path, RenderArea* area);
-
-/**
- * 停止影片播放
- * @param ctx 應用程式上下文
- */
 void stopVideo(AppContext* ctx);
-
-/**
- * 初始化FFmpeg
- * 初始化FFmpeg庫以便進行影片解碼
- */
 void initFFmpeg();
+void* videoPlaybackThread(void* arg);
 
-/**
- * 播放影片的一幀
- * @param ctx 應用程式上下文
- * @param area 渲染區域
- * @param videoPath 影片路徑
- */
 void playVideoFrame(AppContext* ctx, RenderArea* area, const char* videoPath);
 #endif
