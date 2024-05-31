@@ -13,9 +13,11 @@
 //SDL.h中定義
 //函數定義==================================================================================================
 
-
+int stopVideoFlag = 0;
+int isVideoPlaying = 0;
 
 //函數定義==================================================================================================
+
 
 
 // 初始化SDL
@@ -314,7 +316,7 @@ void initFFmpeg() {
 // 影片播放函數
 
 void playVideoFrame(AppContext* ctx, RenderArea* area, const char* videoPath) {
-    // 初始化FFmpeg相关变量
+    // 初始化FFmpeg
     AVFormatContext* pFormatCtx = avformat_alloc_context();
     if (avformat_open_input(&pFormatCtx, videoPath, NULL, NULL) != 0) {
         fprintf(stderr, "Could not open video file: %s\n", videoPath);

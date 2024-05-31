@@ -1,6 +1,6 @@
-// w.h
-#ifndef W_H
-#define W_H
+// SDL.h
+#ifndef SDL_H
+#define SDL_H
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <libavutil/imgutils.h>
-// 結構定義==================================================================================================
+// 結構與全局變數定義==================================================================================================
 typedef struct {
     SDL_Rect rect;
     SDL_Texture* background;
@@ -42,6 +42,9 @@ typedef struct {
     int switchCounter;
     int isPlayingVideo;
 } AppContext;
+
+extern int stopVideoFlag;
+extern int isVideoPlaying;
 
 // 函式宣告=================================================
 
@@ -146,11 +149,10 @@ void stopVideo(AppContext* ctx);
 void initFFmpeg();
 
 /**
- * 影片播放執行緒
- * 播放影片的執行緒函式
- * @param arg 傳遞給執行緒的參數
- * @return 執行緒退出狀態
+ * 播放影片的一幀
+ * @param ctx 應用程式上下文
+ * @param area 渲染區域
+ * @param videoPath 影片路徑
  */
-int videoPlaybackThread(void* arg);
 void playVideoFrame(AppContext* ctx, RenderArea* area, const char* videoPath);
 #endif

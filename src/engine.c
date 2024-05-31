@@ -9,8 +9,7 @@
 #include <libswscale/swscale.h>
 #include "SDL.h"
 
-int stopVideoFlag = 0;
-int isVideoPlaying = 0;
+
 
 int main(int argc, char* argv[]) {
     AppContext ctx = {NULL, NULL, NULL, 1500, 900, NULL, 0, 0};  // 初始化應用程式上下文
