@@ -26,16 +26,16 @@ int main(int argc, char* argv[]) {
 
     // 設置每個渲染區域的內容
     // Area 1
-    char* images1[] = {"a24.bmp"};
+    char* images1[] = {"background/a24.bmp"};
     char* texts1[] = {"helloworld"};
     SDL_Rect textRect1 = {ctx.window_width / 20, ctx.window_height / 2 - 25, 100, 50};
     SDL_Rect imageRect1 = {0, 0, ctx.window_width / 10, ctx.window_width / 10};
-    setRenderAreaContent(&ctx, 0, "aa-24.bmp", images1, 1, texts1, &white, &textRect1, 1, NULL, NULL);
+    setRenderAreaContent(&ctx, 0, "background/aa-24.bmp", images1, 1, texts1, &white, &textRect1, 1, NULL, NULL);
     ctx.render_areas[0].imageRects = malloc(sizeof(SDL_Rect));
     ctx.render_areas[0].imageRects[0] = imageRect1;
 
     // Area 2
-    char* images2[] = {"test.png"};
+    char* images2[] = {"background/test.png"};
     char* texts2[10];
     SDL_Color textColors2[10];  // 每個文字的顏色都設置為白色
     SDL_Rect textRects2[10];
@@ -49,12 +49,12 @@ int main(int argc, char* argv[]) {
         textRects2[i].h = 40; // 調整文本高度
     }
     SDL_Rect imageRect2 = {0, ctx.window_height - ctx.window_width / 10, ctx.window_width / 10, ctx.window_width / 10}; // 正方形圖片的位置和大小
-    setRenderAreaContent(&ctx, 1, "a24.bmp", images2, 1, texts2, textColors2, textRects2, 10, NULL, NULL);
+    setRenderAreaContent(&ctx, 1, "background/a24.bmp", images2, 1, texts2, textColors2, textRects2, 10, NULL, NULL);
     ctx.render_areas[1].imageRects = malloc(sizeof(SDL_Rect));
     ctx.render_areas[1].imageRects[0] = imageRect2;
 
     // Area 3
-    char* images3[] = {"~/cp2-project/example-game/assests/character/airudy/tachie/angry.png", "test.png"};
+    char* images3[] = {"character/airudy/tachie/angry.png", "airudy/tachie/smiling.png"};
     char* texts3[] = {NULL};
     SDL_Rect imageRects3[2] = {
         {0, 0, ctx.window_width / 20, ctx.window_height / 10 * 7},  // 左邊圖片
@@ -65,9 +65,9 @@ int main(int argc, char* argv[]) {
     // Area 4
     char* texts4[] = {"Input your decision"};
     SDL_Rect textRect4 = {10, 10, ctx.window_width / 10 * 8 - 20, 50}; // 調整文本框大小
-    char* images4[] = {"a24.bmp"};
+    char* images4[] = {"character/airudy/tachie/smiling.png"};
     SDL_Rect imageRect4 = {ctx.window_width / 10 * 8 - 100, ctx.window_height / 10 * 3 - 100, 100, 100};  // 正方形圖片的位置和大小
-    setRenderAreaContent(&ctx, 3, "test.png", images4, 1, texts4, &white, &textRect4, 1, NULL, NULL);
+    setRenderAreaContent(&ctx, 3, "background/test.png", images4, 1, texts4, &white, &textRect4, 1, NULL, NULL);
     ctx.render_areas[3].imageRects = malloc(sizeof(SDL_Rect));
     ctx.render_areas[3].imageRects[0] = imageRect4;
 
@@ -100,7 +100,7 @@ int main(int argc, char* argv[]) {
 
         if (isVideoPlaying) {
             // 播放视频
-            playVideoFrame(&ctx, &ctx.render_areas[2], "test.mp4");
+            playVideoFrame(&ctx, &ctx.render_areas[2], "background/test.mp4");
 
             // 每秒检查一次输入缓冲
             if (SDL_PollEvent(&e) && e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_SPACE) {
@@ -112,10 +112,10 @@ int main(int argc, char* argv[]) {
             // 切換第三窗口的圖片
             if (ctx.switchCounter++ % 2 == 0) {
                 ctx.render_areas[2].images[0] = NULL;
-                ctx.render_areas[2].images[1] = IMG_LoadTexture(ctx.renderer, "test.png");
+                ctx.render_areas[2].images[1] = IMG_LoadTexture(ctx.renderer, "/home/goose/cp2-project/example-game/assests/character/airudy/tachie/happy.png");
             } else {
-                ctx.render_areas[2].images[0] = IMG_LoadTexture(ctx.renderer, "/home/goose/cp2-project/example-game/assests/airudy/tachie/angry.png");
-                ctx.render_areas[2].images[1] = IMG_LoadTexture(ctx.renderer, "test.png");
+                ctx.render_areas[2].images[0] = IMG_LoadTexture(ctx.renderer, "character/airudy/tachie/angry.png");
+                ctx.render_areas[2].images[1] = IMG_LoadTexture(ctx.renderer, "/home/goose/cp2-project/example-game/assests/background/test.png");
             }
 
             // 检查是否按下空白键以切换到视频播放

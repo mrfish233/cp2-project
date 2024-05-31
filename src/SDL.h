@@ -14,6 +14,8 @@
 
 // 定義基準路徑
 #define BASE_PATH "/home/goose/cp2-project/example-game/assests"
+#define MAIN_PATH /home/goose/cp2-project/example-game/assests
+
 extern int stopVideoFlag;
 extern int isVideoPlaying;
 // 結構定義==================================================================================================
@@ -50,6 +52,12 @@ typedef struct {
 
     char base_path[PATH_MAX];  // 新增字段，用於保存基準路徑
 } AppContext;
+
+typedef struct {
+    SDL_Texture *texture;
+    SDL_Rect rect;
+} Button;
+
 
 // 函式宣告=================================================
 

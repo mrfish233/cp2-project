@@ -52,15 +52,9 @@ void initSDL(AppContext* ctx) {
         exit(1);
     }
 
-    // 獲取當前工作目錄
-    if (getcwd(ctx->base_path, sizeof(ctx->base_path)) == NULL) {
-        fprintf(stderr, "Failed to get current working directory: %s\n", strerror(errno));
-        cleanUp(ctx);
-        exit(1);
-    }
-
-    // 將基準路徑加到當前工作目錄之後
-    strncat(ctx->base_path, BASE_PATH, PATH_MAX - strlen(ctx->base_path) - 1);
+    // 直接設置基準路徑
+    strncpy(ctx->base_path, BASE_PATH, sizeof(ctx->base_path) - 1);
+    ctx->base_path[sizeof(ctx->base_path) - 1] = '\0';
 }
 
 
@@ -119,16 +113,17 @@ void createRenderArea(AppContext* ctx, int x, int y, int w, int h) {
 
 void setRenderAreaContent(AppContext* ctx, int areaIndex, const char* background, char** images, int image_count, char** texts, SDL_Color* textColors, SDL_Rect* textRects, int text_count, const char* video_path, SDL_Rect* videoRect) {
     RenderArea* area = &ctx->render_areas[areaIndex];
-    size_t base_path_len = strlen(ctx->base_path);
+    size_t base_path_len = strlen(BASE_PATH); // 直接使用 BASE_PATH
 
     // 設置背景
     if (background) {
         size_t background_len = strlen(background);
         char* fullPath = (char*)malloc(base_path_len + background_len + 2); // +2 為了加上 '/' 和 '\0'
-        snprintf(fullPath, base_path_len + background_len + 2, "%s/%s", ctx->base_path, background);
+        snprintf(fullPath, base_path_len + background_len + 2, "%s/%s", BASE_PATH, background); // 使用 BASE_PATH
+        printf("Loading background texture from: %s\n", fullPath);  // 調試信息
         area->background = IMG_LoadTexture(ctx->renderer, fullPath);
         if (area->background == NULL) {
-            fprintf(stderr, "Failed to load texture %s: %s\n", fullPath, IMG_GetError());
+            fprintf(stderr, "Failed to load background texture %s: %s\n", fullPath, IMG_GetError());
         }
         free(fullPath);
     }
@@ -140,10 +135,17 @@ void setRenderAreaContent(AppContext* ctx, int areaIndex, const char* background
     for (int i = 0; i < image_count; i++) {
         size_t image_len = strlen(images[i]);
         char* fullPath = (char*)malloc(base_path_len + image_len + 2); // +2 為了加上 '/' 和 '\0'
-        snprintf(fullPath, base_path_len + image_len + 2, "%s/%s", ctx->base_path, images[i]);
-        area->images[i] = IMG_LoadTexture(ctx->renderer, fullPath);
-        if (area->images[i] == NULL) {
-            fprintf(stderr, "Failed to load texture %s: %s\n", fullPath, IMG_GetError());
+        snprintf(fullPath, base_path_len + image_len + 2, "%s/%s", BASE_PATH, images[i]); // 使用 BASE_PATH
+        printf("Loading image texture from: %s\n", fullPath);  // 調試信息
+        FILE* file = fopen(fullPath, "r");  // 嘗試手動打開文件
+        if (file) {
+            fclose(file);
+            area->images[i] = IMG_LoadTexture(ctx->renderer, fullPath);
+            if (area->images[i] == NULL) {
+                fprintf(stderr, "Failed to load image texture %s: %s\n", fullPath, IMG_GetError());
+            }
+        } else {
+            fprintf(stderr, "File does not exist or cannot be opened: %s\n", fullPath);
         }
         if (textRects != NULL) {
             area->imageRects[i] = textRects[i];  // 設置圖像位置和大小
@@ -167,7 +169,7 @@ void setRenderAreaContent(AppContext* ctx, int areaIndex, const char* background
     if (video_path) {
         size_t video_len = strlen(video_path);
         char* fullPath = (char*)malloc(base_path_len + video_len + 2); // +2 為了加上 '/' 和 '\0'
-        snprintf(fullPath, base_path_len + video_len + 2, "%s/%s", ctx->base_path, video_path);
+        snprintf(fullPath, base_path_len + video_len + 2, "%s/%s", BASE_PATH, video_path); // 使用 BASE_PATH
         area->video_path = strdup(fullPath);
         area->is_video = 1;
         // 初始化影片播放相關的資源
@@ -177,7 +179,6 @@ void setRenderAreaContent(AppContext* ctx, int areaIndex, const char* background
         area->is_video = 0;
     }
 }
-
 
 
 
