@@ -25,7 +25,7 @@ third-party/
 # Ignore markdownlint
 .markdownlint.json
 
-
+/example-game
 
 # Ignore /src/w.c and /src/w.h
 /src/w.c
