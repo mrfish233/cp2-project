@@ -13,7 +13,7 @@ TARGET = engine
 
 # compile variables
 CC = -gcc
-CFLAGS = -Wall -Wextra -MMD -MP -g
+CFLAGS = -Wall -Wextra -MMD -MP
 
 # link variables
 LDFLAGS = -Wall -Wextra
@@ -21,6 +21,11 @@ LDLIBS  = -lm `$(SDL_CONFIG) --cflags --libs`
 
 # .PHONY means these rules get executed even if files of those names exist
 .PHONY: all clean
+
+all: $(TARGET)
+
+debug: CFLAGS += -g -DDEBUG
+debug: $(TARGET)
 
 $(TARGET): $(OBJECT)
 	$(CC) $(CFLAGS) $^ $(LDFLAGS) $(LDLIBS) -o $@

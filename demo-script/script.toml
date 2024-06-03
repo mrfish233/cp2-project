@@ -1,0 +1,153 @@
+name = "失落的旋律"
+author = "郝東彥&韓欣劭"
+
+# 状态 status
+
+[status.str]
+name = "力量"
+desc = "力量值"
+min = 0
+max = 100
+
+[status.charm]
+name = "魅力"
+desc = "魅力值"
+min = 0
+max = 100
+
+[status.like]
+name = "好感度"
+desc = "對方對你的好感度"
+min = 0
+max = 100
+
+# 角色 character
+
+[player]
+character = "marie"
+start_event = "start"
+
+[character.marie]
+name = "瑪麗"
+avatar = "assets/characters/marie/avatar.bmp"
+tachie = "assets/characters/marie/tachie.bmp"
+inventory = [
+    "tool-box",
+    "test-item"
+]
+
+[character.marie.status]
+str = 50
+int = 60
+charm = 70
+
+[character.alfred]
+name = "阿爾弗雷德"
+avatar = "assets/characters/alfred/avatar.bmp"
+tachie = "assets/characters/alfred/tachie.bmp"
+inventory = [
+    "old-ivory-baton", "metal-music-stand"
+]
+
+[character.alfred.status]
+str = 40
+int = 80
+charm = 60
+like = 50
+
+# 物品 item
+
+[item.test-item]
+name = "测试物品"
+desc = "这是一个测试物品"
+icon = "assets/items/test-item.bmp"
+hidden = false
+
+[item.tool-box]
+name = "工具箱"
+desc = "a seemly all-can-do tool box"
+icon = "assets/items/toolbox.bmp"
+hidden = false
+
+[item.old-ivory-baton]
+name = "指揮棒"
+desc = "一根承載了太多回憶的指揮棒"
+icon = "assets/items/old-ivory-baton.bmp"
+hidden = false
+
+[item.metal-music-stand]
+name = "譜架"
+desc = "老朋友遺留給他的譜架"
+icon = "assets/items/metal-music-stand.bmp"
+hidden = true
+
+# 场景 scene
+
+[scene.funeral]
+name = "old-church"
+background = "asset/scene/old-church.bmp"
+
+[scene.fair-of-church]
+name = "fair-of-church"
+background= "asset/scene/fair-of-church.bmp"
+
+[scene.home-visit]
+name = "home-of-arfled"
+background = "home-of-alfred"
+
+[scene.fix-music-box]
+name = "home-of-marie"
+background = "home-of-marie"
+
+[scene.alfred-gift]
+name = "bookroom-of-alfred"
+background = "bookroom-of-alfred"
+
+[scene.concert]
+name = "concert-hall"
+background = "concert-hall"
+
+# 事件 event
+
+## 事件：葬禮
+
+[event.start]
+scene = "funeral"
+dialogue = "open-1"
+bgm = "assets/bgm/funeral.mp3"
+
+[dialogue.open-1]
+character = "alfred"
+text = "你來了，我知道你會來的。"
+next = "open-2"
+sfx = "assets/sfx/door-open.mp3"
+
+[dialogue.open-2]
+character = "alfred"
+text = "這是我們的第一次見面，我是阿爾弗雷德。"
+[[dialogue.open-2.option]]
+text = "你好，我是瑪麗。"
+event = "walk"
+[[dialogue.open-2.option]]
+condition = "marie-toolbox"
+text = "你是誰？"
+next = "open-3"
+
+[condition.marie-toolbox]
+character = "marie"
+item = "tool-box"
+logic = "EQ"
+
+[dialogue.open-3]
+character = "alfred"
+text = "我是你的導師，也是你的朋友。"
+event = "walk"
+
+[event.walk]
+scene = "fair-of-church"
+dialogue = "walk-1"
+
+[dialogue.walk-1]
+character = "alfred"
+text = "這裡是教堂的後院，我們來這裡走走吧。"
+end = "assets/video/end.mp4"
