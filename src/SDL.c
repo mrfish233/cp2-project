@@ -111,7 +111,9 @@ void createRenderArea(AppContext* ctx, int x, int y, int w, int h) {
 }
 
 
-void setRenderAreaContent(AppContext* ctx, int areaIndex, const char* background, char** images, int image_count, char** texts, SDL_Color* textColors, SDL_Rect* textRects, int text_count, const char* video_path, SDL_Rect* videoRect) {
+
+
+void setRenderAreaContent(AppContext* ctx, int areaIndex, const char* background, char** images, int image_count, char** texts, SDL_Color* textColors, SDL_Rect* textRects, int text_count, const char* video_path, SDL_Rect* imageRect) {
     RenderArea* area = &ctx->render_areas[areaIndex];
     size_t base_path_len = strlen(BASE_PATH); // 直接使用 BASE_PATH
 
@@ -143,12 +145,14 @@ void setRenderAreaContent(AppContext* ctx, int areaIndex, const char* background
             area->images[i] = IMG_LoadTexture(ctx->renderer, fullPath);
             if (area->images[i] == NULL) {
                 fprintf(stderr, "Failed to load image texture %s: %s\n", fullPath, IMG_GetError());
+            } else {
+                printf("Successfully loaded image texture: %s\n", fullPath);
             }
         } else {
             fprintf(stderr, "File does not exist or cannot be opened: %s\n", fullPath);
         }
-        if (textRects != NULL) {
-            area->imageRects[i] = textRects[i];  // 設置圖像位置和大小
+        if (imageRect != NULL) {
+            area->imageRects[i] = *imageRect;  // 設置圖像位置和大小
         }
         free(fullPath);
     }
@@ -179,7 +183,6 @@ void setRenderAreaContent(AppContext* ctx, int areaIndex, const char* background
         area->is_video = 0;
     }
 }
-
 
 
 
@@ -264,7 +267,7 @@ void renderVideo(AppContext* ctx, RenderArea* area) {
     }
 }
 
-// 渲染圖片
+
 void renderImage(AppContext* ctx, RenderArea* area) {
     for (int i = 0; i < area->image_count; i++) {
         SDL_Texture* texture = area->images[i];
@@ -273,6 +276,7 @@ void renderImage(AppContext* ctx, RenderArea* area) {
             continue;
         }
         SDL_Rect dstrect = area->imageRects[i];
+        printf("Rendering image at (%d, %d) with dimensions %dx%d\n", dstrect.x, dstrect.y, dstrect.w, dstrect.h);
         SDL_RenderCopy(ctx->renderer, texture, NULL, &dstrect);
     }
 }
@@ -467,4 +471,31 @@ void playVideoFrame(AppContext* ctx, RenderArea* area, const char* videoPath) {
 void stopVideo(AppContext* ctx) {
     stopVideoFlag = 1;  // 设置停止标志位
 }
+
+
+
+void createButton(AppContext* ctx, Button* button, int x, int y, int w, int h, const char* text, void (*onClick)(AppContext* ctx)) {
+    button->rect.x = x;
+    button->rect.y = y;
+    button->rect.w = w;
+    button->rect.h = h;
+    button->onClick = onClick;
+
+    SDL_Surface* surface = TTF_RenderText_Solid(ctx->font, text, (SDL_Color){255, 255, 255});
+    button->texture = SDL_CreateTextureFromSurface(ctx->renderer, surface);
+    SDL_FreeSurface(surface);
+}
+
+void renderButton(AppContext* ctx, Button* button) {
+    SDL_SetRenderDrawColor(ctx->renderer, 0, 0, 0, 255);
+    SDL_RenderFillRect(ctx->renderer, &button->rect);
+    SDL_RenderCopy(ctx->renderer, button->texture, NULL, &button->rect);
+}
+
+int isButtonClicked(Button* button, int x, int y) {
+    return (x >= button->rect.x && x <= button->rect.x + button->rect.w &&
+            y >= button->rect.y && y <= button->rect.y + button->rect.h);
+}
+
+
 

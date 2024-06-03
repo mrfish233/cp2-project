@@ -48,15 +48,15 @@ typedef struct {
     int num_render_areas;
     int switchCounter;
     int isPlayingVideo;
-    
-
     char base_path[PATH_MAX];  // 新增字段，用於保存基準路徑
 } AppContext;
 
 typedef struct {
-    SDL_Texture *texture;
     SDL_Rect rect;
+    SDL_Texture* texture;
+    void (*onClick)(AppContext* ctx); // 按鈕點擊事件的回調函數
 } Button;
+
 
 
 // 函式宣告=================================================
@@ -137,17 +137,55 @@ void renderText(AppContext* ctx, RenderArea* area);
  */
 void cleanUp(AppContext* ctx);
 
+/**
+ * 播放影片
+ * @param ctx 應用程式上下文
+ * @param video_path 影片路徑
+ * @param area 渲染區域
+ */
+void playVideo(AppContext* ctx, const char* video_path, RenderArea* area);
 
 /**
- * 更新影片幀
+ * 停止播放影片
  * @param ctx 應用程式上下文
- * @param areaIndex 渲染區域索引
  */
-void updateVideoFrame(AppContext* ctx, int areaIndex);
-void playVideo(AppContext* ctx, const char* video_path, RenderArea* area);
 void stopVideo(AppContext* ctx);
+
 void initFFmpeg();
 void* videoPlaybackThread(void* arg);
 
 void playVideoFrame(AppContext* ctx, RenderArea* area, const char* videoPath);
+
+/**
+ * 初始化按鈕
+ * @param ctx 應用程式上下文
+ * @param button 按鈕結構
+ * @param x 按鈕的X座標
+ * @param y 按鈕的Y座標
+ * @param w 按鈕的寬度
+ * @param h 按鈕的高度
+ * @param text 按鈕顯示的文字
+ * @param onClick 按鈕點擊時的回調函數
+ */  
+void createButton(AppContext* ctx, Button* button, int x, int y, int w, int h, const char* text, void (*onClick)(AppContext* ctx));
+
+/**
+ * 渲染按鈕
+ * @param ctx 應用程式上下文
+ * @param button 按鈕結構
+ */ 
+void renderButton(AppContext* ctx, Button* button);
+
+
+/**
+ * 檢查按鈕是否被點擊
+ * @param button 按鈕結構
+ * @param x 點擊事件的X座標
+ * @param y 點擊事件的Y座標
+ * @return 若點擊了按鈕返回1，否則返回0
+ */
+int isButtonClicked(Button* button, int x, int y);
+
+
+
 #endif
