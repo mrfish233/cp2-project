@@ -31,3 +31,5 @@ third-party/
 /src/w.c
 /src/w.h
 /src/test.mp4
+
+/src/test.c

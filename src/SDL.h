@@ -10,14 +10,18 @@
 #include <unistd.h>  // 用於 getcwd
 #include <limits.h>  // 用於 PATH_MAX
 #include <linux/limits.h>
-
+#include <SDL2/SDL_mixer.h>
+#include <libswresample/swresample.h>
+#include <libavutil/opt.h>
 
 // 定義基準路徑
 #define BASE_PATH "/home/goose/cp2-project/example-game/assests"
 #define MAIN_PATH /home/goose/cp2-project/example-game/assests
-
+#define AUDIO_BUFFER_SIZE 192000
 extern int stopVideoFlag;
 extern int isVideoPlaying;
+
+
 // 結構定義==================================================================================================
 typedef struct {
     SDL_Rect rect;
@@ -37,7 +41,10 @@ typedef struct {
     int is_video;
 } RenderArea;
 
-// 其他結構和函數宣告
+typedef struct {
+    Uint8* pos;
+    Uint32 length;
+} AudioData;
 typedef struct {
     SDL_Window* window;
     SDL_Renderer* renderer;
@@ -57,6 +64,12 @@ typedef struct {
     void (*onClick)(AppContext* ctx); // 按鈕點擊事件的回調函數
 } Button;
 
+typedef struct AudioBuffer {
+    Uint8 buffer[AUDIO_BUFFER_SIZE];
+    int size;
+    int read_pos;
+    int write_pos;
+} AudioBuffer;
 
 
 // 函式宣告=================================================
@@ -188,4 +201,10 @@ int isButtonClicked(Button* button, int x, int y);
 
 
 
+void initAudio();
+void loadSound(const char* file, Mix_Chunk** chunk);
+void playSound(Mix_Chunk* chunk);
+void playVideoWithAudio(AppContext* ctx, const char* videoPath, RenderArea* area);
+void playAudioFrame(AVCodecContext* codecCtx, AVFrame* frame);
+void audioCallback(void* userdata, Uint8* stream, int len);
 #endif

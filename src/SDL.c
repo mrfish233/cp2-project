@@ -20,6 +20,10 @@
 
 int stopVideoFlag = 0;
 int isVideoPlaying = 0;
+Uint8* audioBuffer = NULL;
+Uint32 audioBufferSize = 0;
+Uint32 audioBufferPos = 0;
+static int64_t audio_clock = 0;
 
 //函數定義==================================================================================================
 
@@ -496,6 +500,299 @@ int isButtonClicked(Button* button, int x, int y) {
     return (x >= button->rect.x && x <= button->rect.x + button->rect.w &&
             y >= button->rect.y && y <= button->rect.y + button->rect.h);
 }
+
+
+void initAudio() {
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+        fprintf(stderr, "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
+        exit(1);
+    }
+}
+
+
+void loadSound(const char* file, Mix_Chunk** chunk) {
+    *chunk = Mix_LoadWAV(file);
+    if (*chunk == NULL) {
+        fprintf(stderr, "Failed to load sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+    }
+}
+
+
+void playSound(Mix_Chunk* chunk) {
+    Mix_PlayChannel(-1, chunk, 0);
+}
+
+void audioCallback(void* userdata, Uint8* stream, int len) {
+    AudioData* audio = (AudioData*)userdata;
+
+    if (audio->length == 0) {
+        return;
+    }
+
+    len = (len > audio->length ? audio->length : len);
+    SDL_memcpy(stream, audio->pos, len);
+    audio->pos += len;
+    audio->length -= len;
+}
+
+
+void playAudioFrame(AVCodecContext* codecCtx, AVFrame* frame) {
+    static struct SwrContext* swr_ctx = NULL;
+    static Uint8* audio_buf = NULL;
+    static int audio_buf_size = 0;
+    
+    // 初始化 SwrContext
+    if (!swr_ctx) {
+        swr_ctx = swr_alloc_set_opts(
+            NULL,
+            av_get_default_channel_layout(codecCtx->channels),
+            AV_SAMPLE_FMT_S16,
+            codecCtx->sample_rate,
+            av_get_default_channel_layout(codecCtx->channels),
+            codecCtx->sample_fmt,
+            codecCtx->sample_rate,
+            0, NULL
+        );
+        if (!swr_ctx || swr_init(swr_ctx) < 0) {
+            fprintf(stderr, "Could not allocate or initialize resample context\n");
+            if (swr_ctx) swr_free(&swr_ctx);
+            return;
+        }
+    }
+
+    int data_size = av_get_bytes_per_sample(AV_SAMPLE_FMT_S16);
+    if (data_size < 0) {
+        fprintf(stderr, "Failed to calculate data size\n");
+        return;
+    }
+
+    int num_samples = frame->nb_samples;
+    int num_channels = codecCtx->channels;
+    int required_buf_size = num_samples * num_channels * data_size;
+    
+    // 檢查緩衝區大小並分配內存
+    if (!audio_buf || audio_buf_size < required_buf_size) {
+        if (audio_buf) free(audio_buf);
+        audio_buf = (Uint8*)malloc(required_buf_size);
+        if (!audio_buf) {
+            fprintf(stderr, "Could not allocate audio buffer\n");
+            return;
+        }
+        audio_buf_size = required_buf_size;
+    }
+
+    const uint8_t** in = (const uint8_t**)frame->data;
+    uint8_t* out[] = {audio_buf};
+    int ret = swr_convert(swr_ctx, out, num_samples, in, num_samples);
+    if (ret < 0) {
+        fprintf(stderr, "Error while converting audio frame\n");
+        return;
+    }
+
+    int audio_buf_len = ret * num_channels * data_size;
+    Mix_Chunk* chunk = Mix_QuickLoad_RAW(audio_buf, audio_buf_len);
+    if (!chunk) {
+        fprintf(stderr, "Failed to load audio chunk: %s\n", Mix_GetError());
+        return;
+    }
+
+    // 計算當前音訊時間戳
+    audio_clock = frame->pts * av_q2d(codecCtx->time_base);
+
+    Mix_PlayChannel(-1, chunk, 0);
+}
+
+void playVideoWithAudio(AppContext* ctx, const char* videoPath, RenderArea* area) {
+    size_t base_path_len = strlen(ctx->base_path);
+    size_t video_len = strlen(videoPath);
+    char* fullPath = (char*)malloc(base_path_len + video_len + 2); // +2 為了加上 '/' 和 '\0'
+    snprintf(fullPath, base_path_len + video_len + 2, "%s/%s", ctx->base_path, videoPath);
+
+    // 初始化FFmpeg相关变量
+    AVFormatContext* pFormatCtx = avformat_alloc_context();
+    if (avformat_open_input(&pFormatCtx, fullPath, NULL, NULL) != 0) {
+        fprintf(stderr, "Could not open video file: %s\n", fullPath);
+        free(fullPath);
+        return;
+    }
+
+    if (avformat_find_stream_info(pFormatCtx, NULL) < 0) {
+        fprintf(stderr, "Could not find stream information\n");
+        free(fullPath);
+        return;
+    }
+
+    int videoStream = -1;
+    int audioStream = -1;
+    for (int i = 0; i < pFormatCtx->nb_streams; i++) {
+        if (pFormatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO && videoStream == -1) {
+            videoStream = i;
+        } else if (pFormatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO && audioStream == -1) {
+            audioStream = i;
+        }
+    }
+
+    if (videoStream == -1) {
+        fprintf(stderr, "Did not find a video stream\n");
+        free(fullPath);
+        return;
+    }
+    if (audioStream == -1) {
+        fprintf(stderr, "Did not find an audio stream\n");
+        free(fullPath);
+        return;
+    }
+
+    AVCodecParameters* pVideoCodecParameters = pFormatCtx->streams[videoStream]->codecpar;
+    AVCodec* pVideoCodec = avcodec_find_decoder(pVideoCodecParameters->codec_id);
+    if (pVideoCodec == NULL) {
+        fprintf(stderr, "Unsupported video codec\n");
+        free(fullPath);
+        return;
+    }
+
+    AVCodecContext* pVideoCodecCtx = avcodec_alloc_context3(pVideoCodec);
+    if (avcodec_parameters_to_context(pVideoCodecCtx, pVideoCodecParameters) < 0) {
+        fprintf(stderr, "Could not copy video codec context\n");
+        free(fullPath);
+        return;
+    }
+
+    if (avcodec_open2(pVideoCodecCtx, pVideoCodec, NULL) < 0) {
+        fprintf(stderr, "Could not open video codec\n");
+        free(fullPath);
+        return;
+    }
+
+    AVCodecParameters* pAudioCodecParameters = pFormatCtx->streams[audioStream]->codecpar;
+    AVCodec* pAudioCodec = avcodec_find_decoder(pAudioCodecParameters->codec_id);
+    if (pAudioCodec == NULL) {
+        fprintf(stderr, "Unsupported audio codec\n");
+        free(fullPath);
+        return;
+    }
+
+    AVCodecContext* pAudioCodecCtx = avcodec_alloc_context3(pAudioCodec);
+    if (avcodec_parameters_to_context(pAudioCodecCtx, pAudioCodecParameters) < 0) {
+        fprintf(stderr, "Could not copy audio codec context\n");
+        free(fullPath);
+        return;
+    }
+
+    if (avcodec_open2(pAudioCodecCtx, pAudioCodec, NULL) < 0) {
+        fprintf(stderr, "Could not open audio codec\n");
+        free(fullPath);
+        return;
+    }
+
+    AVFrame* pFrame = av_frame_alloc();
+    AVFrame* pFrameRGB = av_frame_alloc();
+    if (pFrameRGB == NULL || pFrame == NULL) {
+        fprintf(stderr, "Could not allocate frame\n");
+        free(fullPath);
+        return;
+    }
+
+    int numBytes = av_image_get_buffer_size(AV_PIX_FMT_RGB24, pVideoCodecCtx->width, pVideoCodecCtx->height, 32);
+    uint8_t* buffer = (uint8_t*)av_malloc(numBytes * sizeof(uint8_t));
+    av_image_fill_arrays(pFrameRGB->data, pFrameRGB->linesize, buffer, AV_PIX_FMT_RGB24, pVideoCodecCtx->width, pVideoCodecCtx->height, 32);
+
+    struct SwsContext* sws_ctx = sws_getContext(
+        pVideoCodecCtx->width, pVideoCodecCtx->height, pVideoCodecCtx->pix_fmt,
+        pVideoCodecCtx->width, pVideoCodecCtx->height, AV_PIX_FMT_RGB24,
+        SWS_BILINEAR, NULL, NULL, NULL
+    );
+
+    AVPacket packet;
+    int frameFinished;
+
+    while (av_read_frame(pFormatCtx, &packet) >= 0 && isVideoPlaying) {
+        if (packet.stream_index == videoStream) {
+            avcodec_send_packet(pVideoCodecCtx, &packet);
+            frameFinished = avcodec_receive_frame(pVideoCodecCtx, pFrame);
+
+            if (frameFinished == 0) {
+                sws_scale(
+                    sws_ctx, (uint8_t const* const*)pFrame->data,
+                    pFrame->linesize, 0, pVideoCodecCtx->height,
+                    pFrameRGB->data, pFrameRGB->linesize
+                );
+
+                SDL_Surface* surface = SDL_CreateRGBSurfaceFrom(
+                    pFrameRGB->data[0], pVideoCodecCtx->width, pVideoCodecCtx->height,
+                    24, pFrameRGB->linesize[0],
+                    0x000000FF, 0x0000FF00, 0x00FF0000, 0
+                );
+                SDL_Texture* texture = SDL_CreateTextureFromSurface(ctx->renderer, surface);
+
+                SDL_FreeSurface(surface);
+                SDL_RenderCopy(ctx->renderer, texture, NULL, &area->rect);
+                SDL_DestroyTexture(texture);
+                SDL_RenderPresent(ctx->renderer);
+
+                // 計算當前影像時間戳
+                double video_clock = pFrame->pts * av_q2d(pVideoCodecCtx->time_base);
+
+                // 同步音訊和影像
+                if (audio_clock > video_clock ) {
+                    int delay = (int)((audio_clock - video_clock + 1.5) * 1000);
+                    SDL_Delay(delay);
+                } else {
+                    SDL_Delay(33);  // 每秒30幀，模擬播放速度
+                }
+            }
+        } else if (packet.stream_index == audioStream) {
+            avcodec_send_packet(pAudioCodecCtx, &packet);
+            frameFinished = avcodec_receive_frame(pAudioCodecCtx, pFrame);
+
+            if (frameFinished == 0) {
+                playAudioFrame(pAudioCodecCtx, pFrame);
+            }
+        }
+        av_packet_unref(&packet);
+
+        // 檢查輸入緩衝區
+        SDL_Event e;
+        if (SDL_PollEvent(&e) && e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_SPACE) {
+            isVideoPlaying = 0;
+        }
+    }
+
+    av_free(buffer);
+    av_frame_free(&pFrameRGB);
+    av_frame_free(&pFrame);
+    avcodec_free_context(&pVideoCodecCtx);
+    avcodec_free_context(&pAudioCodecCtx);
+    avformat_close_input(&pFormatCtx);
+    free(fullPath);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
