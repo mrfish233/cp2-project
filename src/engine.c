@@ -2,6 +2,13 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <libavutil/imgutils.h>
+#include <libavformat/avformat.h>
+#include <libavcodec/avcodec.h>
+#include <libswscale/swscale.h>
+#include "SDL.h"
+
+
 
 #include "script.h"
 #include "parse_file.h"
@@ -29,3 +36,5 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
+
+
