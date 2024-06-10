@@ -9,6 +9,9 @@
 # Ignore third party dependencies
 third-party/
 
+# Ignore demo files
+demo/
+
 # Ignore .d files
 *.d
 
