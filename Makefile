@@ -1,9 +1,6 @@
 # REFERENCE: https://stackoverflow.com/questions/52034997/how-to-make-makefile-recompile-when-a-header-file-is-changed
 
 SRC_DIR = src
-SDL_LOCAL_DIR = ./third-party/SDL2/bin/sdl2-config
-
-SDL_CONFIG = $(SDL_LOCAL_DIR)
 
 SROUCE := $(wildcard $(SRC_DIR)/*.c)
 OBJECT := $(SROUCE:$(SRC_DIR)/%.c=$(SRC_DIR)/%.o)
@@ -17,7 +14,7 @@ CFLAGS = -Wall -Wextra -MMD -MP
 
 # link variables
 LDFLAGS = -Wall -Wextra
-LDLIBS  = -lm `$(SDL_CONFIG) --cflags --libs`
+LDLIBS  = -lm -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -lavcodec -lavformat -lavutil -lswscale -lswresample
 
 # .PHONY means these rules get executed even if files of those names exist
 .PHONY: all clean

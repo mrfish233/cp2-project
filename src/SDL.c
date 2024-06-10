@@ -1,22 +1,4 @@
-
-
-// main.c
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
-#include <stdio.h>
-#include <string.h>
-#include <libavutil/imgutils.h>
-#include <libavformat/avformat.h>
-#include <libavcodec/avcodec.h>
-#include <libswscale/swscale.h>
 #include "SDL.h"
-//結構定義==================================================================================================
-//SDL.h中定義
-
-//函式宣告==================================================================================================
-//SDL.h中定義
-//函數定義==================================================================================================
 
 int stopVideoFlag = 0;
 int isVideoPlaying = 0;
@@ -24,9 +6,6 @@ Uint8* audioBuffer = NULL;
 Uint32 audioBufferSize = 0;
 Uint32 audioBufferPos = 0;
 static int64_t audio_clock = 0;
-
-//函數定義==================================================================================================
-
 
 void initSDL(AppContext* ctx) {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {

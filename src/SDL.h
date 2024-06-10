@@ -1,18 +1,23 @@
 #ifndef SDL_H
 #define SDL_H
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
-#include <libavformat/avformat.h>
-#include <libavcodec/avcodec.h>
-#include <libswscale/swscale.h>
+#include <stdio.h>
+#include <string.h>
 #include <unistd.h>  // 用於 getcwd
 #include <limits.h>  // 用於 PATH_MAX
 #include <linux/limits.h>
+
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_mixer.h>
-#include <libswresample/swresample.h>
+
 #include <libavutil/opt.h>
+#include <libavutil/imgutils.h>
+#include <libavformat/avformat.h>
+#include <libavcodec/avcodec.h>
+#include <libswscale/swscale.h>
+#include <libswresample/swresample.h>
 
 // 定義基準路徑
 #define BASE_PATH "/home/goose/cp2-project/example-game/assests"
