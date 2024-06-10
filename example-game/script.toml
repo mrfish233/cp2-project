@@ -1,0 +1,352 @@
+name = "失落的旋律"
+author = "郝東彥&韓欣劭"
+
+# 状态 status
+
+[status.hp]
+name = "生命"
+desc = "生命值"
+min = 0
+max = 100
+
+[status.san]
+name = "SAN"
+desc = "SAN 值"
+min = -50
+max = 50
+
+[status.coin]
+name = "金幣"
+desc = "金幣數量"
+min = 0
+max = 9999
+
+[status.like]
+name = "好感度"
+desc = "對方對主角的好感度"
+min = 0
+max = 100
+
+[status.humanity]
+name = "人性"
+desc = "人性值"
+min = -50
+max = 50
+
+[status.death]
+name = "死亡"
+desc = "死亡次數"
+min = 0
+max = 3
+
+# 角色 character
+
+[player]
+character = "lulu"
+start_event = "walking-on-street"
+
+[character.lulu]
+name = "露露"
+avatar = "assets/character/lulu/avatar.bmp"
+tachie = "assets/character/lulu/tachie.bmp"
+inventory = [
+    "baton",
+    "tone-of-harmony",
+    "whispers-of-unharmony"
+]
+
+[character.lulu.status]
+hp = 10
+san = 40
+coin = 20
+humanity = 0
+death = 0
+
+[character.belwett]
+name = "貝爾維特"
+avatar = "assets/characters/belwett/avatar.bmp"
+tachie = "assets/characters/belwett/tachie.bmp"
+inventory = []
+
+[character.belwett.status]
+hp = 10
+san = 40
+coin = 20
+like = 50
+humanity = 0
+
+[character.alfred]
+name = "阿爾弗雷德"
+avatar = "assets/characters/alfred/avatar.bmp"
+tachie = "assets/characters/alfred/tachie.bmp"
+inventory = []
+
+[character.alfred.status]
+hp = 10
+san = 40
+coin = 20
+like = 50
+humanity = 0
+
+[character.auntie]
+name = "阿姨"
+avatar = "assets/characters/unknown/avatar.bmp"
+tachie = "assets/characters/unknown/tachie.bmp"
+inventory = []
+
+[character.auntie.status]
+hp = 10
+san = 40
+coin = 20
+like = 50
+humanity = 0
+
+# 物品 item
+
+[item.baton]
+name = "指揮棒"
+desc = "指揮棒"
+icon = "assets/items/old-ivory-baton.bmp"
+hidden = false
+
+[item.tone-of-harmony]
+name = "和諧之音"
+desc = "和諧之音"
+icon = "assets/items/tone-of-harmony.bmp"
+hidden = false
+
+[item.whispers-of-unharmony]
+name = "不諧低語"
+desc = "不諧低語"
+icon = "assets/items/whispers-of-unharmony.bmp"
+hidden = false
+
+[item.cabbage]
+name = "高麗菜"
+desc = "高麗菜"
+icon = "assets/items/cabbage.bmp"
+hidden = false
+
+[item.apple]
+name = "蘋果"
+desc = "蘋果"
+icon = "assets/items/apple.bmp"
+hidden = false
+
+[item.meat]
+name = "牛肉"
+desc = "牛肉"
+icon = "assets/items/meat.bmp"
+hidden = false
+
+[item.blood]
+name = "血"
+desc = "血"
+icon = "assets/items/blood.bmp"
+hidden = false
+
+# 场景 scene
+
+[scene.street]
+name = "街道"
+background = "asset/scene/street.bmp"
+
+# 條件式結局 trigger
+
+[trigger.kill-everyone]
+character = "lulu"
+status = "humanity"
+value = -30
+logic = "LE"
+event = "everyone-dead"
+
+[trigger.become-angel]
+character = "lulu"
+status = "humanity"
+value = 50
+logic = "GE"
+event = "angel"
+
+[trigger.have-blood]
+character = "lulu"
+item = "blood"
+logic = "EQ"
+event = "everyone-dead"
+
+# 事件 event
+
+## 事件：走在街道上
+
+[event.walking-on-street]
+scene = "street"
+dialogue = "walking-on-street-1"
+bgm = "assets/bgm/street.mp3"
+
+[dialogue.walking-on-street-1]
+text = "陽光普照。"
+next = "walking-on-street-2"
+
+[dialogue.walking-on-street-2]
+text = "偷懶的電源剛掃了一半的雪便開始抽起香菸，拿著菜籃子的老婦一邊盤算著價錢一邊計划著晚上的菜單，"
+next = "walking-on-street-3"
+
+[dialogue.walking-on-street-3]
+text = "高挑的美女抖著發冷的雙腿和情人接吻，歡心雀躍的孩子則在告訴朋友自己即將擁有一台新的遊戲機。"
+next = "walking-on-street-4"
+
+[dialogue.walking-on-street-4]
+text = "一名白髮的少女躍著輕快的步伐清風拂過她的髮梢，裙襬隨著鞋子每次與地面的接觸左右跳起了舞。"
+next = "walking-on-street-5"
+
+[dialogue.walking-on-street-5]
+character = "auntie"
+text = "露露啊，這次一樣三斤高麗菜兩顆蘋果嗎？"
+[[dialogue.walking-on-street-5.option]]
+condition = "lulu-coin-ge-50"
+text = "「這次我想要一斤牛肉！」"
+next = "free-meat-1"
+[[dialogue.walking-on-street-5.option]]
+condition = "lulu-coin-ge-20"
+text = "「沒錯！謝謝阿姨！」"
+next = "free-veggie-and-fruit-1"
+[[dialogue.walking-on-street-5.option]]
+text = "「這次沒帶錢···」"
+next = "free-veggie-1"
+
+[condition.lulu-coin-ge-50]
+character = "lulu"
+status = "coin"
+value = 50
+logic = "GE"
+
+[condition.lulu-coin-ge-20]
+character = "lulu"
+status = "coin"
+value = 20
+logic = "GE"
+
+[dialogue.free-meat-1]
+character = "auntie"
+text = "哎呀！上次真是多謝你了，我們家老爺子的腰差點再也挺不起來了呢！"
+next = "free-meat-2"
+
+[dialogue.free-meat-2]
+character = "auntie"
+text = "這樣吧，這肉我就送你了！"
+event = "street-scream-1"
+update = [
+    "lulu-item-add-meat"
+]
+
+[dialogue.free-veggie-and-fruit-1]
+character = "auntie"
+text = "哎呀！上次真是多謝你了，我們家老爺子的腰差點再也挺不起來了呢！！"
+next = "free-veggie-and-fruit-2"
+
+[dialogue.free-veggie-and-fruit-2]
+character = "auntie"
+text = "這樣吧，這菜和水果我就送你了！"
+event = "street-scream-1"
+update = [
+    "lulu-item-add-cabbage",
+    "lulu-item-add-apple"
+]
+
+[dialogue.free-veggie-1]
+character = "auntie"
+text = "沒關係啦！上次真是多謝你了，我們家老爺子的腰差點再也挺不起來了呢！"
+next = "free-veggie-2"
+
+[dialogue.free-veggie-2]
+character = "auntie"
+text = "這樣吧，我就送你一些菜吧！"
+event = "street-scream-1"
+update = [
+    "lulu-item-add-cabbage"
+]
+
+[update.lulu-item-add-meat]
+character = "lulu"
+item = "meat"
+change = 1
+
+[update.lulu-item-add-cabbage]
+character = "lulu"
+item = "cabbage"
+change = 1
+
+[update.lulu-item-add-apple]
+character = "lulu"
+item = "apple"
+change = 1
+
+## 事件：尖叫
+
+[dialogue.street-scream-1]
+text = "突然，一聲尖叫打破了街道的寧靜。"
+next = "street-scream-2"
+
+[dialogue.street-scream-2]
+text = "「救命啊！」"
+next = "street-scream-3"
+
+[dialogue.street-scream-3]
+text = "「有賊！快抓住它！」"
+[[dialogue.street-scream-3.option]]
+text = "視若無睹"
+next = "street-scream-ignore-1"
+[[dialogue.street-scream-3.option]]
+text = "追上去"
+next = "street-scream-chase-1"
+
+[dialogue.street-scream-ignore]
+text = "你視若無睹。"
+next = "street-scream-ignore-2"
+update = [
+    "lulu-humanity-sub-50"
+]
+
+[dialogue.street-scream-ignore-2]
+text = "你視若無睹。之後呢？"
+end = ""
+
+[dialogue.street-scream-chase-1]
+text = "你追上去。"
+next = "street-scream-chase-2"
+update = [
+    "lulu-humanity-plus-50"
+]
+
+[dialogue.street-scream-chase-2]
+text = "你追上去。之後呢？"
+end = ""
+
+[update.lulu-humanity-sub-50]
+character = "lulu"
+status = "humanity"
+change = -50
+
+[update.lulu-humanity-plus-50]
+character = "lulu"
+status = "humanity"
+change = 50
+
+## 事件：每個人都死了
+
+[event.everyone-dead]
+scene = "street"
+dialogue = "everyone-dead-1"
+
+[dialogue.everyone-dead-1]
+text = "你看著四周，每個人都死了。"
+end = ""
+
+## 事件：成為天使
+
+[event.angel]
+scene = "street"
+dialogue = "angel-1"
+
+[dialogue.angel-1]
+text = "你變成了天使。"
+end = ""
