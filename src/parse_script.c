@@ -281,6 +281,8 @@ int32_t allocateTable(void **table, size_t size, int32_t capacity) {
             perror("allocateTable: reallocarray error");
             return 1;
         }
+
+        memset(*table + capacity * size, 0, size);
     }
 
     return 0;
@@ -1256,19 +1258,22 @@ void clearScript(Script *script) {
     }
 
     if (script->characters) {
-        if (script->character_size > 0) {
-            for (int32_t i = 0; i < script->character_size; i++) {
-                if (script->characters[i].status) {
-                    free(script->characters[i].status);
-                    script->characters[i].status = NULL;
-                    script->characters[i].status_size = 0;
+        for (int32_t i = 0; i < script->character_size; i++) {
+            if (script->characters[i].status) {
+                free(script->characters[i].status);
+                script->characters[i].status = NULL;
+                script->characters[i].status_size = 0;
+            }
+
+            if (script->characters[i].inventory_size) {
+                for (int32_t j = 0; j < script->characters[i].inventory_size; j++) {
+                    free(script->characters[i].inventory[j]);
+                    script->characters[i].inventory[j] = NULL;
                 }
 
-                if (script->characters[i].inventory) {
-                    free(script->characters[i].inventory);
-                    script->characters[i].inventory = NULL;
-                    script->characters[i].inventory_size = 0;
-                }
+                free(script->characters[i].inventory);
+                script->characters[i].inventory = NULL;
+                script->characters[i].inventory_size = 0;
             }
         }
 
@@ -1295,6 +1300,18 @@ void clearScript(Script *script) {
         script->scene_size = 0;
     }
 
+    if (script->triggers) {
+        free(script->triggers);
+        script->triggers = NULL;
+        script->trigger_size = 0;
+    }
+
+    if (script->updates) {
+        free(script->updates);
+        script->updates = NULL;
+        script->update_size = 0;
+    }
+
     if (script->events) {
         free(script->events);
         script->events = NULL;
@@ -1302,13 +1319,22 @@ void clearScript(Script *script) {
     }
 
     if (script->dialogues) {
-        if (script->dialogue_size > 0) {
-            for (int32_t i = 0; i < script->dialogue_size; i++) {
-                if (script->dialogues[i].options) {
-                    free(script->dialogues[i].options);
-                    script->dialogues[i].options = NULL;
-                    script->dialogues[i].option_size = 0;
+        for (int32_t i = 0; i < script->dialogue_size; i++) {
+            if (script->dialogues[i].options) {
+                free(script->dialogues[i].options);
+                script->dialogues[i].options = NULL;
+                script->dialogues[i].option_size = 0;
+            }
+
+            if (script->dialogues[i].updates) {
+                for (int32_t j = 0; j < script->dialogues[i].update_size; j++) {
+                    free(script->dialogues[i].updates[j]);
+                    script->dialogues[i].updates[j] = NULL;
                 }
+
+                free(script->dialogues[i].updates);
+                script->dialogues[i].updates = NULL;
+                script->dialogues[i].update_size = 0;
             }
         }
 
