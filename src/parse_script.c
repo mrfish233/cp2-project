@@ -58,6 +58,7 @@ int32_t changeParseTable(Script *script, Table *table, char *buffer) {
         "item",
         "scene",
         "event",
+        "trigger",
         "dialogue",
         "option",
         "condition",
@@ -67,9 +68,9 @@ int32_t changeParseTable(Script *script, Table *table, char *buffer) {
     enum { FIRST, MID, LAST };
 
     // Find the table name in the buffer
-    // Magic number 1 and 11 are the index of the table_name array
+    // The magic numbers are the index of the table_name array
 
-    for (int32_t i = 1; i < 11; i++) {
+    for (int32_t i = 1; i < 12; i++) {
         if (i == TABLE_ERROR) {
             printf("error: table error\n");
             return 1;
@@ -185,6 +186,16 @@ int32_t updateParseTable(Script *script, Table *table) {
 
             temp = &(script->events);
             size = sizeof(Event);
+
+            break;
+        }
+
+        case TABLE_TRIGGER: {
+            table->index = script->trigger_size;
+            script->trigger_size++;
+
+            temp = &(script->triggers);
+            size = sizeof(Trigger);
 
             break;
         }
@@ -307,6 +318,7 @@ int32_t createIDField(Script *script, Table *table, char *buffer) {
         case TABLE_ITEM:
         case TABLE_SCENE:
         case TABLE_EVENT:
+        case TABLE_TRIGGER:
         case TABLE_CONDITION: {
             if (getTableLineStr(table->value, buffer, LAST) != 0) {
                 return 1;
@@ -567,6 +579,71 @@ int32_t addDataToScript(Script *script, Table *table) {
             }
             else if (strcmp(table->field, "bgm") == 0) {
                 strncpy(event->bgm, table->value, STR_SIZE);
+            }
+
+            break;
+        }
+
+        case TABLE_TRIGGER: {
+            Trigger *trigger = &(script->triggers[table->index]);
+
+            if (strcmp(table->field, "id") == 0) {
+                strncpy(trigger->id, table->value, STR_SIZE);
+            }
+            else if (strcmp(table->field, "character") == 0) {
+                strncpy(trigger->character, table->value, STR_SIZE);
+            }
+            else if (strcmp(table->field, "event") == 0) {
+                strncpy(trigger->event, table->value, STR_SIZE);
+            }
+            else if (strcmp(table->field, "item") == 0) {
+                if (trigger->condition_type != CONDITION_NONE) {
+                    return 1;
+                }
+
+                strncpy(trigger->condition, table->value, STR_SIZE);
+                trigger->condition_type = CONDITION_ITEM;
+            }
+            else if (strcmp(table->field, "status") == 0) {
+                if (trigger->condition_type != CONDITION_NONE) {
+                    return 1;
+                }
+
+                strncpy(trigger->condition, table->value, STR_SIZE);
+                trigger->condition_type = CONDITION_STATUS;
+            }
+            else if (strcmp(table->field, "value") == 0) {
+                char *endptr = NULL;
+                trigger->value = strtol(table->value, &endptr, 10);
+
+                if (*endptr != '\0' && *endptr != '\n') {
+                    printf("error: value error\n");
+                    return 1;
+                }
+            }
+            else if (strcmp(table->field, "logic") == 0) {
+                if (strcmp(table->value, "EQ") == 0) {
+                    trigger->logic = LOGIC_EQ;
+                }
+                else if (strcmp(table->value, "NE") == 0) {
+                    trigger->logic = LOGIC_NE;
+                }
+                else if (strcmp(table->value, "GT") == 0) {
+                    trigger->logic = LOGIC_GT;
+                }
+                else if (strcmp(table->value, "LT") == 0) {
+                    trigger->logic = LOGIC_LT;
+                }
+                else if (strcmp(table->value, "GE") == 0) {
+                    trigger->logic = LOGIC_GE;
+                }
+                else if (strcmp(table->value, "LE") == 0) {
+                    trigger->logic = LOGIC_LE;
+                }
+                else {
+                    printf("error: logic error\n");
+                    return 1;
+                }
             }
 
             break;
@@ -964,6 +1041,24 @@ void printScript(Script *script) {
         printf("background     | %s\n", script->scenes[i].background);
 
         if (i < script->scene_size - 1) {
+            printf("----------------------------------------------------------------------\n");
+        }
+    }
+
+    printf("======================================================================\n");
+    printf("TRIGGER\n");
+    printf("----------------------------------------------------------------------\n");
+
+    for (int32_t i = 0; i < script->trigger_size; i++) {
+        printf("id             | %s\n", script->triggers[i].id);
+        printf("character      | %s\n", script->triggers[i].character);
+        printf("event          | %s\n", script->triggers[i].event);
+        printf("condition      | %s\n", script->triggers[i].condition);
+        printf("condition_type | %d\n", script->triggers[i].condition_type);
+        printf("value          | %d\n", script->triggers[i].value);
+        printf("logic          | %d\n", script->triggers[i].logic);
+
+        if (i < script->trigger_size - 1) {
             printf("----------------------------------------------------------------------\n");
         }
     }

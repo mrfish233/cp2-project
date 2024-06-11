@@ -33,6 +33,7 @@ typedef enum _TableName {
     TABLE_ITEM,
     TABLE_SCENE,
     TABLE_EVENT,
+    TABLE_TRIGGER,
     TABLE_DIALOGUE,
     TABLE_OPTION,
     TABLE_CONDITION,

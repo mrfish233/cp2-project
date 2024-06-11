@@ -233,6 +233,31 @@ typedef struct _Event {
     char bgm[STR_SIZE];
 } Event;
 
+// Trigger
+
+/**
+ * Trigger struct, contains information about an end trigger
+ * @param id: id of the trigger
+ * @param character: name of the character
+ * @param event: name of the event
+ * @param condition_type: type of the condition
+ * @param condition: name of the condition
+ * @param value: value of the condition
+ * @param logic: logic of the condition
+ */
+typedef struct _Trigger {
+    char id[STR_SIZE];
+    char character[STR_SIZE];
+    char event[STR_SIZE];
+
+    ConditionType condition_type;
+    char condition[STR_SIZE];
+
+    int32_t value;
+
+    LogicType logic;
+} Trigger;
+
 // Script
 
 /**
@@ -269,6 +294,9 @@ typedef struct _Script {
 
     StatusInfo *status_infos;
     int32_t status_info_size;
+
+    Trigger *triggers;
+    int32_t trigger_size;
 
     Event *events;
     int32_t event_size;
