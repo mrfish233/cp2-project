@@ -56,7 +56,6 @@ typedef struct _Item {
  * Character struct, contains information about a character
  * @param id: display name of the character
  * @param name: name of the character
- * @param avatar: path to the avatar image
  * @param tachie: path to the tachie image
  * @param status: array of Status
  * @param status_size: size of status
@@ -67,7 +66,6 @@ typedef struct _Character {
     char id[STR_SIZE];
     char name[STR_SIZE];
 
-    char avatar[STR_SIZE];
     char tachie[STR_SIZE];
 
     Status *status;
