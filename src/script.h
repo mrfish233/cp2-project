@@ -139,6 +139,16 @@ typedef enum _DialogueType {
     DIALOGUE_END
 } DialogueType;
 
+typedef enum _LogicType {
+    LOGIC_NONE,
+    LOGIC_EQ,
+    LOGIC_NE,
+    LOGIC_GT,
+    LOGIC_GE,
+    LOGIC_LT,
+    LOGIC_LE
+} LogicType;
+
 /**
  * Condition struct, used in Option
  * @param id: id of the condition
@@ -154,18 +164,12 @@ typedef struct _Condition {
     ConditionType condition_type;
     char condition[STR_SIZE];
 
+    int32_t value;
+
     CharacterType character_type;
     char character[STR_SIZE];
 
-    enum {
-        LOGIC_NONE,
-        LOGIC_EQ,
-        LOGIC_NE,
-        LOGIC_GT,
-        LOGIC_GE,
-        LOGIC_LT,
-        LOGIC_LE
-    } logic;
+    LogicType logic;
 } Condition;
 
 /**

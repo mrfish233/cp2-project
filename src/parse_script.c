@@ -692,6 +692,15 @@ int32_t addDataToScript(Script *script, Table *table) {
                 strncpy(condition->condition, table->value, STR_SIZE);
                 condition->condition_type = CONDITION_STATUS;
             }
+            else if (strcmp(table->field, "value") == 0) {
+                char *endptr = NULL;
+                condition->value = strtol(table->value, &endptr, 10);
+
+                if (*endptr != '\0' && *endptr != '\n') {
+                    printf("error: value error\n");
+                    return 1;
+                }
+            }
             else if (strcmp(table->field, "logic") == 0) {
                 if (strcmp(table->value, "EQ") == 0) {
                     condition->logic = LOGIC_EQ;
@@ -1031,6 +1040,7 @@ void printScript(Script *script) {
         printf("id             | %s\n", script->conditions[i].id);
         printf("character      | %s\n", script->conditions[i].character);
         printf("character_type | %d\n", script->conditions[i].character_type);
+        printf("value          | %d\n", script->conditions[i].value);
         printf("condition      | %s\n", script->conditions[i].condition);
         printf("condition_type | %d\n", script->conditions[i].condition_type);
         printf("logic          | %d\n", script->conditions[i].logic);
