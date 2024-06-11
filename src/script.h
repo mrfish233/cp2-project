@@ -190,6 +190,26 @@ typedef struct _Option {
     int32_t hidden;
 } Option;
 
+// Update
+
+/**
+ * Update struct, contains information about an update to character's status or inventory
+ * @param id: id of the update
+ * @param character: name of the character
+ * @param condition_type: type of the condition
+ * @param condition: name of the condition
+ * @param change: change to the status or inventory, 0/1 for inventory, value for status
+ */
+typedef struct _Update {
+    char id[STR_SIZE];
+    char character[STR_SIZE];
+
+    ConditionType condition_type;
+    char condition[STR_SIZE];
+
+    int32_t change;
+} Update;
+
 /**
  * Dialogue struct
  * @param id: id of the dialogue
@@ -215,6 +235,9 @@ typedef struct _Dialogue {
 
     Option *options;
     int32_t option_size;
+
+    char **updates;
+    int32_t update_size;
 } Dialogue;
 
 // Event
@@ -297,6 +320,9 @@ typedef struct _Script {
 
     Trigger *triggers;
     int32_t trigger_size;
+
+    Update *updates;
+    int32_t update_size;
 
     Event *events;
     int32_t event_size;

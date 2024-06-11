@@ -34,10 +34,6 @@ int32_t parseTomlScript(char *filename, Script *script) {
         }
     }
 
-    #ifdef DEBUG
-    printScript(script);
-    #endif
-
     closeFile(file);
     return 0;
 }
@@ -58,6 +54,7 @@ int32_t changeParseTable(Script *script, Table *table, char *buffer) {
         "item",
         "scene",
         "event",
+        "update",
         "trigger",
         "dialogue",
         "option",
@@ -70,7 +67,9 @@ int32_t changeParseTable(Script *script, Table *table, char *buffer) {
     // Find the table name in the buffer
     // The magic numbers are the index of the table_name array
 
-    for (int32_t i = 1; i < 12; i++) {
+    int32_t size = sizeof(table_name) / sizeof(table_name[0]);
+
+    for (int32_t i = 1; i < size; i++) {
         if (i == TABLE_ERROR) {
             printf("error: table error\n");
             return 1;
@@ -186,6 +185,16 @@ int32_t updateParseTable(Script *script, Table *table) {
 
             temp = &(script->events);
             size = sizeof(Event);
+
+            break;
+        }
+
+        case TABLE_UPDATE: {
+            table->index = script->update_size;
+            script->update_size++;
+
+            temp = &(script->updates);
+            size = sizeof(Update);
 
             break;
         }
@@ -318,6 +327,7 @@ int32_t createIDField(Script *script, Table *table, char *buffer) {
         case TABLE_ITEM:
         case TABLE_SCENE:
         case TABLE_EVENT:
+        case TABLE_UPDATE:
         case TABLE_TRIGGER:
         case TABLE_CONDITION: {
             if (getTableLineStr(table->value, buffer, LAST) != 0) {
@@ -359,7 +369,8 @@ int32_t createTableField(Script *script, Table *table, char *buffer) {
         strncpy(table->value, buffer, STR_SIZE);
     }
 
-    if (table->table_name == TABLE_CHARACTER && strcmp(table->field, "inventory") == 0) {
+    if ((table->table_name == TABLE_CHARACTER && strcmp(table->field, "inventory") == 0) ||
+        (table->table_name == TABLE_DIALOGUE  && strcmp(table->field, "update") == 0)) {
         char tmp[STR_SIZE] = {0};
         char val[STR_SIZE] = {0};
         char *head = NULL;
@@ -584,6 +595,44 @@ int32_t addDataToScript(Script *script, Table *table) {
             break;
         }
 
+        case TABLE_UPDATE: {
+            Update *update = &(script->updates[table->index]);
+
+            if (strcmp(table->field, "id") == 0) {
+                strncpy(update->id, table->value, STR_SIZE);
+            }
+            else if (strcmp(table->field, "character") == 0) {
+                strncpy(update->character, table->value, STR_SIZE);
+            }
+            else if (strcmp(table->field, "item") == 0) {
+                if (update->condition_type != CONDITION_NONE) {
+                    return 1;
+                }
+
+                strncpy(update->condition, table->value, STR_SIZE);
+                update->condition_type = CONDITION_ITEM;
+            }
+            else if (strcmp(table->field, "status") == 0) {
+                if (update->condition_type != CONDITION_NONE) {
+                    return 1;
+                }
+
+                strncpy(update->condition, table->value, STR_SIZE);
+                update->condition_type = CONDITION_STATUS;
+            }
+            else if (strcmp(table->field, "change") == 0) {
+                char *endptr = NULL;
+                update->change = strtol(table->value, &endptr, 10);
+
+                if (*endptr != '\0' && *endptr != '\n') {
+                    printf("error: change value error\n");
+                    return 1;
+                }
+            }
+
+            break;
+        }
+
         case TABLE_TRIGGER: {
             Trigger *trigger = &(script->triggers[table->index]);
 
@@ -712,6 +761,26 @@ int32_t addDataToScript(Script *script, Table *table) {
                 else {
                     dialogue->character_type = CHARACTER_NPC;
                 }
+            }
+            else if (strcmp(table->field, "update") == 0) {
+                void  *temp = &(script->dialogues[table->index].updates);
+                size_t size = sizeof(char *);
+                int32_t idx = script->dialogues[table->index].update_size;
+                script->dialogues[table->index].update_size++;
+
+                if (allocateTable(temp, size, idx) != 0) {
+                    return 1;
+                }
+
+                char **update = &(script->dialogues[table->index].updates[idx]);
+                *update = calloc(1, STR_SIZE);
+
+                if (!*update) {
+                    perror("addDataToScript: calloc error");
+                    return 1;
+                }
+
+                strncpy(*update, table->value, STR_SIZE);
             }
             else if (strcmp(table->field, "next")  == 0 ||
                      strcmp(table->field, "event") == 0 ||
@@ -1046,6 +1115,22 @@ void printScript(Script *script) {
     }
 
     printf("======================================================================\n");
+    printf("UPDATE\n");
+    printf("----------------------------------------------------------------------\n");
+
+    for (int32_t i = 0; i < script->update_size; i++) {
+        printf("id             | %s\n", script->updates[i].id);
+        printf("character      | %s\n", script->updates[i].character);
+        printf("condition      | %s\n", script->updates[i].condition);
+        printf("condition_type | %d\n", script->updates[i].condition_type);
+        printf("change         | %d\n", script->updates[i].change);
+
+        if (i < script->update_size - 1) {
+            printf("----------------------------------------------------------------------\n");
+        }
+    }
+
+    printf("======================================================================\n");
     printf("TRIGGER\n");
     printf("----------------------------------------------------------------------\n");
 
@@ -1087,6 +1172,18 @@ void printScript(Script *script) {
         printf("text           | %s\n", script->dialogues[i].text);
         printf("sfx            | %s\n", script->dialogues[i].sfx);
         printf("character      | %s\n", script->dialogues[i].character);
+
+        for (int32_t j = 0; j < script->dialogues[i].update_size; j++) {
+            if (j == 0) {
+                printf("update         | ");
+            }
+            else {
+                printf("               | ");
+            }
+
+            printf("%s\n", script->dialogues[i].updates[j]);
+        }
+
         printf("next           | %s\n", script->dialogues[i].next);
         printf("next_type      | ");
 
