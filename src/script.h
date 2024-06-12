@@ -283,6 +283,7 @@ typedef struct _Trigger {
 
 /**
  * Script struct, contains all the data
+ * @param dir: directory of the script
  * @param name: name of the script
  * @param author: author of the script
  * @param player: pointer to Player
@@ -302,6 +303,8 @@ typedef struct _Trigger {
  * @param condition_size: size of conditions
  */
 typedef struct _Script {
+    char dir[STR_SIZE];
+
     char name[STR_SIZE];
     char author[STR_SIZE];
 

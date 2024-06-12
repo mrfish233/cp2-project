@@ -1,7 +1,14 @@
 #include "parse_script.h"
 
-int32_t parseTomlScript(char *filename, Script *script) {
+int32_t parseTomlScript(Script *script) {
     FILE *file = NULL;
+
+    char filename[STR_SIZE] = {0};
+
+    if (snprintf(filename, STR_SIZE, "%s/script.toml", script->dir) < 0) {
+        printf("error: script error\n");
+        return 1;
+    }
 
     if (openFile(&file, filename, "r") != 0) {
         return 1;
