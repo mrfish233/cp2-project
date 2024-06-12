@@ -297,6 +297,24 @@ int32_t updateDialogue(Script *script, Display *display) {
     strncpy(script->current_dialogue_id, dialogue->id, STR_SIZE);
     strncpy(display->dialogue, dialogue->text, STR_SIZE);
 
+    // Find the character
+
+    if (dialogue->character_type != CHARACTER_NARRATOR) {
+        Character *character = getCharacter(script, dialogue->character);
+
+        if (character == NULL) {
+            printf("error: character '%s' not found\n", dialogue->character);
+            return 1;
+        }
+
+        strncpy(display->path_tachie, character->tachie, STR_SIZE);
+        strncpy(display->character, character->name, STR_SIZE);
+    }
+    else {
+        display->path_tachie[0] = '\0';
+        display->character[0]   = '\0';
+    }
+
     // Find options if any
 
     if (dialogue->option_size > 0) {
