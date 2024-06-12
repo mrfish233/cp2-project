@@ -133,6 +133,7 @@ int32_t updateInventoryPage(Script *script, Display *display) {
     Character *player = getCharacter(script, script->player->character);
 
     if (player == NULL) {
+        printf("error: player not found\n");
         return 1;
     }
 
@@ -144,7 +145,7 @@ int32_t updateInventoryPage(Script *script, Display *display) {
         int32_t check = isHiddenItem(script->items, script->item_size, player->inventory[i]);
 
         if (check == -1) {
-            printf("Item not found: %s\n", player->inventory[i]);
+            printf("error: item not found: %s\n", player->inventory[i]);
             return 1;
         }
         else if (check == 0) {
@@ -203,6 +204,7 @@ int32_t updateStatusPage(Script *script, Display *display) {
     Character *player = getCharacter(script, script->player->character);
 
     if (player == NULL) {
+        printf("error: player not found\n");
         return 1;
     }
 
@@ -408,6 +410,7 @@ int32_t processUpdateString(Script *script, Update *update, char *str, int32_t s
     Character *character = getCharacter(script, update->character);
 
     if (character == NULL) {
+        printf("error: character '%s' not found\n", update->character);
         return 1;
     }
 
@@ -415,6 +418,7 @@ int32_t processUpdateString(Script *script, Update *update, char *str, int32_t s
         StatusInfo *status_info = getStatusInfo(script, update->condition);
 
         if (status_info == NULL) {
+            printf("error: status '%s' not found\n", update->condition);
             return 1;
         }
 
@@ -434,6 +438,7 @@ int32_t processUpdateString(Script *script, Update *update, char *str, int32_t s
         Item *item = getItem(script, update->condition);
 
         if (item == NULL) {
+            printf("error: item '%s' not found\n", update->condition);
             return 1;
         }
 
@@ -478,6 +483,7 @@ int32_t isConditionMet(Script *script, Condition *condition) {
     Character *character = getCharacter(script, condition->character);
 
     if (character == NULL) {
+        printf("error: character '%s' not found\n", condition->character);
         return -1;
     }
 
@@ -503,6 +509,7 @@ int32_t isConditionMet(Script *script, Condition *condition) {
                     return character->status[i].value <= condition->value;
                 }
                 else {
+                    printf("error: invalid logic\n");
                     return -1;
                 }
             }
@@ -518,6 +525,7 @@ int32_t isConditionMet(Script *script, Condition *condition) {
                     return 0;
                 }
                 else {
+                    printf("error: invalid logic\n");
                     return -1;
                 }
             }
@@ -529,7 +537,12 @@ int32_t isConditionMet(Script *script, Condition *condition) {
         else if (condition->logic == LOGIC_NE) {
             return 1;
         }
+        else {
+            printf("error: invalid logic\n");
+            return -1;
+        }
     }
 
+    printf("error: condition not found\n");
     return -1;
 }
