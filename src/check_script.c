@@ -43,6 +43,20 @@ Item *getItem(Script *script, char *item_id) {
     return NULL;
 }
 
+Update *getUpdate(Script *script, char *update_id) {
+    if (script == NULL || update_id == NULL) {
+        return NULL;
+    }
+
+    for (int32_t i = 0; i < script->update_size; i++) {
+        if (strcmp(script->updates[i].id, update_id) == 0) {
+            return &(script->updates[i]);
+        }
+    }
+
+    return NULL;
+}
+
 Event *getEvent(Script *script, char *event_id) {
     if (script == NULL || event_id == NULL) {
         return NULL;

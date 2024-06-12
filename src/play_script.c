@@ -1,6 +1,6 @@
 #include "play_script.h"
 
-int32_t updateDisplayData(Script *script, Display *display) {
+int32_t updateScriptData(Script *script, Display *display) {
     if (display == NULL || script == NULL) {
         printf("error: display or script is NULL\n");
         return 1;
@@ -290,6 +290,11 @@ int32_t updateDialogue(Script *script, Display *display) {
         display->update_flag = 1;
 
         for (int32_t i = 0; i < dialogue->update_size; i++) {
+            if (updateCharacterData(script, dialogue->updates[i]) != 0) {
+                printf("error: failed to update character data\n");
+                return 1;
+            }
+
             processUpdateString(script, &(script->updates[i]), display->updates[display->update_size], STR_SIZE);
             display->update_size++;
         }
@@ -300,6 +305,108 @@ int32_t updateDialogue(Script *script, Display *display) {
     }
 
     return 0;
+}
+
+int32_t updateCharacterData(Script *script, char *update_id) {
+    if (script == NULL || update_id == NULL) {
+        return 1;
+    }
+
+    Update *update = getUpdate(script, update_id);
+
+    if (update == NULL) {
+        printf("error: update '%s' not found\n", update_id);
+        return 1;
+    }
+
+    Character *character = getCharacter(script, update->character);
+
+    if (character == NULL) {
+        printf("error: character '%s' not found\n", update->character);
+        return 1;
+    }
+
+    if (update->condition_type == CONDITION_STATUS) {
+        StatusInfo *status_info = getStatusInfo(script, update->condition);
+
+        if (status_info == NULL) {
+            printf("error: status '%s' not found\n", update->condition);
+            return 1;
+        }
+
+        for (int32_t i = 0; i < character->status_size; i++) {
+            if (strcmp(character->status[i].status_name, update->condition) == 0) {
+                character->status[i].value += update->change;
+                return 0;
+            }
+        }
+
+        printf("error: status '%s' not found\n", update->condition);
+        return 1;
+    }
+    else if (update->condition_type == CONDITION_ITEM) {
+        if (update->change == 1) {
+            for (int32_t i = 0; i < character->inventory_size; i++) {
+                if (strcmp(character->inventory[i], update->condition) == 0) {
+                    return 0;
+                }
+            }
+
+            // Add the item to the inventory
+
+            if (character->inventory_size == 0) {
+                character->inventory = (char **) calloc(1, sizeof(char *));
+            }
+            else {
+                character->inventory = (char **) reallocarray(character->inventory, (character->inventory_size + 1), sizeof(char *));
+            }
+
+            if (character->inventory == NULL) {
+                printf("error: failed to allocate memory\n");
+                return 1;
+            }
+
+            character->inventory[character->inventory_size] = (char *) calloc(STR_SIZE, sizeof(char));
+
+            if (character->inventory[character->inventory_size] == NULL) {
+                printf("error: failed to allocate memory\n");
+                return 1;
+            }
+
+            strncpy(character->inventory[character->inventory_size], update->condition, STR_SIZE);
+
+            character->inventory_size++;
+
+            return 0;
+        }
+        else if (update->change == 0) {
+            for (int32_t i = 0; i < character->inventory_size; i++) {
+                // Remove the item from the inventory
+
+                if (strcmp(character->inventory[i], update->condition) == 0) {
+                    free(character->inventory[i]);
+
+                    for (int32_t j = i; j < character->inventory_size - 1; j++) {
+                        character->inventory[j] = character->inventory[j + 1];
+                    }
+
+                    character->inventory_size--;
+
+                    return 0;
+                }
+            }
+
+            printf("error: item '%s' not found\n", update->condition);
+            return 1;
+        }
+        else {
+            printf("error: invalid change\n");
+            return 1;
+        }
+    }
+
+    printf("error: invalid condition type\n");
+    return 1;
 }
 
 int32_t processUpdateString(Script *script, Update *update, char *str, int32_t size) {

@@ -35,6 +35,14 @@ StatusInfo *getStatusInfo(Script *script, char *status_info_id);
 Item *getItem(Script *script, char *item_id);
 
 /**
+ * Get the update
+ * @param script The script to search
+ * @param update_id The id of the update to search
+ * @return The current update if found, NULL otherwise
+ */
+Update *getUpdate(Script *script, char *update_id);
+
+/**
  * Get the event
  * @param script The script to search
  * @param event_id The id of the event to search

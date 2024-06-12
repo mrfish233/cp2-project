@@ -39,12 +39,12 @@ typedef struct Display {
 } Display;
 
 /**
- * Initialize the display data
+ * Update the script data
  * @param script The script to use
- * @param display The display data to initialize
+ * @param display The display data to update
  * @return 0 if successful, 1 if failed
  */
-int32_t updateDisplayData(Script *script, Display *display);
+int32_t updateScriptData(Script *script, Display *display);
 
 /**
  * Update the inventory page
@@ -69,6 +69,14 @@ int32_t updateStatusPage(Script *script, Display *display);
  * @return 0 if successful, 1 if failed
  */
 int32_t updateDialogue(Script *script, Display *display);
+
+/**
+ * Update the character data
+ * @param script The script to use
+ * @param update_id The id of the update to search
+ * @return 0 if successful, 1 if failed
+ */
+int32_t updateCharacterData(Script *script, char *update_id);
 
 /**
  * Update the options
