@@ -77,14 +77,19 @@ int32_t updateInventoryPage(Script *script, Display *display) {
     int32_t count = 0;
 
     for (int32_t i = 0; i < player->inventory_size; i++) {
-        int32_t check = isHiddenItem(script->items, script->item_size, player->inventory[i]);
+        Item *item = getItem(script, player->inventory[i]);
 
-        if (check != 0) {
+        if (item == NULL) {
+            printf("error: item not found: %s\n", player->inventory[i]);
+            return 1;
+        }
+
+        if (item->hidden == 1) {
             continue;
         }
 
         if ((display->inventory_page - 1) * 5 <= count && count < display->inventory_page * 5) {
-            strncpy(display->inventory[display->inventory_size], player->inventory[i], STR_SIZE);
+            strncpy(display->inventory[display->inventory_size], item->name, STR_SIZE);
             display->inventory_size++;
         }
 
@@ -126,9 +131,15 @@ int32_t updateStatusPage(Script *script, Display *display) {
     int32_t count = 0;
 
     for (int32_t i = 0; i < player->status_size; i++) {
+        StatusInfo *status_info = getStatusInfo(script, player->status[i].status_name);
+
+        if (status_info == NULL) {
+            printf("error: status not found: %s\n", player->status[i].status_name);
+            return 1;
+        }
+
         if ((display->status_page - 1) * 5 <= count && count < display->status_page * 5) {
-            strncpy(display->status[display->status_size].status_name, player->status[i].status_name, STR_SIZE);
-            display->status[display->status_size].status_name[STR_SIZE - 1] = '\0';
+            strncpy(display->status[display->status_size].status_name, status_info->name, STR_SIZE);
             display->status[display->status_size].value = player->status[i].value;
             display->status_size++;
         }
