@@ -41,6 +41,34 @@ Character *getCharacter(Script *script, char *character_id) {
     return NULL;
 }
 
+StatusInfo *getStatusInfo(Script *script, char *status_info_id) {
+    if (script == NULL) {
+        return NULL;
+    }
+
+    for (int32_t i = 0; i < script->status_info_size; i++) {
+        if (strcmp(script->status_infos[i].id, status_info_id) == 0) {
+            return &(script->status_infos[i]);
+        }
+    }
+
+    return NULL;
+}
+
+Item *getItem(Script *script, char *item_id) {
+    if (script == NULL) {
+        return NULL;
+    }
+
+    for (int32_t i = 0; i < script->item_size; i++) {
+        if (strcmp(script->items[i].id, item_id) == 0) {
+            return &(script->items[i]);
+        }
+    }
+
+    return NULL;
+}
+
 Event *getEvent(Script *script, char *id) {
     if (script == NULL) {
         return NULL;
@@ -350,6 +378,79 @@ int32_t updateDialogue(Script *script, Display *display) {
     else {
         display->option_flag = 0;
         display->option_size = 0;
+    }
+
+    // Find updates if any
+
+    if (dialogue->update_size > 0) {
+        display->update_flag = 1;
+
+        for (int32_t i = 0; i < dialogue->update_size; i++) {
+            processUpdateString(script, &(script->updates[i]), display->updates[display->update_size], STR_SIZE);
+            display->update_size++;
+        }
+    }
+    else {
+        display->update_flag = 0;
+        display->update_size = 0;
+    }
+
+    return 0;
+}
+
+int32_t processUpdateString(Script *script, Update *update, char *str, int32_t size) {
+    if (update == NULL || str == NULL) {
+        return 1;
+    }
+
+    char change_str[STR_SIZE] = {0};
+
+    Character *character = getCharacter(script, update->character);
+
+    if (character == NULL) {
+        return 1;
+    }
+
+    if (update->condition_type == CONDITION_STATUS) {
+        StatusInfo *status_info = getStatusInfo(script, update->condition);
+
+        if (status_info == NULL) {
+            return 1;
+        }
+
+        int32_t change_val = update->change;
+
+        if (update->change >= 0) {
+            strncpy(change_str, "增加了", STR_SIZE);
+        }
+        else {
+            strncpy(change_str, "減少了", STR_SIZE);
+            change_val = -change_val;
+        }
+
+        snprintf(str, size, "%s 的 %s %s %d", character->name, status_info->name, change_str, change_val);
+    }
+    else if (update->condition_type == CONDITION_ITEM) {
+        Item *item = getItem(script, update->condition);
+
+        if (item == NULL) {
+            return 1;
+        }
+
+        if (update->change == 1) {
+            strncpy(change_str, "獲得了", STR_SIZE);
+        }
+        else if (update->change == 0) {
+            strncpy(change_str, "失去了", STR_SIZE);
+        }
+        else {
+            return 1;
+        }
+
+        snprintf(str, size, "%s %s %s", character->name, change_str, item->name);
+    }
+    else {
+        return 1;
     }
 
     return 0;

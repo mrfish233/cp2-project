@@ -53,6 +53,22 @@ int32_t updateDisplayData(Script *script, Display *display);
 Character *getCharacter(Script *script, char *character_id);
 
 /**
+ * Get the status info
+ * @param character The character to search
+ * @param status_info_id The id of the status to search
+ * @return The current status if found, NULL otherwise
+ */
+StatusInfo *getStatusInfo(Script *script, char *status_info_id);
+
+/**
+ * Get the item
+ * @param script The script to search
+ * @param item_id The id of the item to search
+ * @return The current item if found, NULL otherwise
+ */
+Item *getItem(Script *script, char *item_id);
+
+/**
  * Get the event
  * @param script The script to search
  * @param event_id The id of the event to search
@@ -100,7 +116,21 @@ int32_t updateInventoryPage(Script *script, Display *display);
  */
 int32_t updateStatusPage(Script *script, Display *display);
 
+/**
+ * Update the dialogue
+ * @param script The script to use
+ * @param display The display data to update
+ * @return 0 if successful, 1 if failed
+ */
 int32_t updateDialogue(Script *script, Display *display);
+
+/**
+ * Update the options
+ * @param script The script to use
+ * @param display The display data to update
+ * @return 0 if successful, 1 if failed
+ */
+int32_t processUpdateString(Script *script, Update *update, char *str, int32_t size);
 
 /**
  * Check if an item is hidden
