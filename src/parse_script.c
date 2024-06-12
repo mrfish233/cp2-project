@@ -445,7 +445,7 @@ int32_t addDataToScript(Script *script, Table *table) {
             }
             else if (strcmp(table->field, "start_event") == 0) {
                 strncpy(script->player->start_event, table->value, STR_SIZE);
-                strncpy(script->current_event, table->value, STR_SIZE);
+                strncpy(script->current_event_id, table->value, STR_SIZE);
             }
 
             break;

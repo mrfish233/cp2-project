@@ -101,7 +101,7 @@ int32_t loadScript(Script *script, SaveSlot slot) {
         return 1;
     }
 
-    strncpy(script->current_event, event->valuestring, STR_SIZE);
+    strncpy(script->current_event_id, event->valuestring, STR_SIZE);
 
     cJSON *characters = cJSON_GetObjectItem(root, "characters");
 
@@ -252,7 +252,7 @@ int32_t addDataToJSON(cJSON **root, Script *script) {
 
     // Event
 
-    if (cJSON_AddStringToObject(*root, "event", script->current_event) == NULL) {
+    if (cJSON_AddStringToObject(*root, "event", script->current_event_id) == NULL) {
         return 1;
     }
 
