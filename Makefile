@@ -4,7 +4,7 @@ SRC_DIR = src
 
 SROUCE := $(wildcard $(SRC_DIR)/*.c)
 OBJECT := $(SROUCE:$(SRC_DIR)/%.c=$(SRC_DIR)/%.o)
-DEPEND := $(SROUCE:$(SRC_DIR)/%.c=$(SRC_DIR)/%.d)\
+DEPEND := $(SROUCE:$(SRC_DIR)/%.c=$(SRC_DIR)/%.d)
 
 TARGET = engine
 
@@ -14,14 +14,16 @@ CFLAGS = -Wall -Wextra -MMD -MP
 
 # link variables
 LDFLAGS = -Wall -Wextra
-LDLIBS  = -lm -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -lavcodec -lavformat -lavutil -lswscale -lswresample
+LDLIBS  = -lm -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -lavcodec -lavformat -lavutil -lswscale -lswresample -lcjson
 
 # .PHONY means these rules get executed even if files of those names exist
 .PHONY: all clean
 
 all: $(TARGET)
 
-debug: CFLAGS += -g -DDEBUG
+# debug: CFLAGS += -g -DDEBUG
+debug: CFLAGS += -g -DDEBUG -fsanitize=address
+debug: LDFLAGS += -fsanitize=address -static-libasan
 debug: $(TARGET)
 
 $(TARGET): $(OBJECT)

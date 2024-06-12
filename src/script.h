@@ -286,6 +286,8 @@ typedef struct _Trigger {
  * @param dir: directory of the script
  * @param name: name of the script
  * @param author: author of the script
+ * @param current_event: name of the current event
+ * @param current_dialogue: name of the current dialogue
  * @param player: pointer to Player
  * @param characters: array of Character
  * @param character_size: size of characters
@@ -293,10 +295,14 @@ typedef struct _Trigger {
  * @param item_size: size of items
  * @param status_infos: array of StatusInfo
  * @param status_info_size: size of status_infos
- * @param scenes: array of Scene
- * @param scene_size: size of scenes
+ * @param triggers: array of Trigger
+ * @param trigger_size: size of triggers
+ * @param updates: array of Update
+ * @param update_size: size of updates
  * @param events: array of Event
  * @param event_size: size of events
+ * @param scenes: array of Scene
+ * @param scene_size: size of scenes
  * @param dialogues: array of Dialogue
  * @param dialogue_size: size of dialogues
  * @param conditions: array of Condition
@@ -307,6 +313,9 @@ typedef struct _Script {
 
     char name[STR_SIZE];
     char author[STR_SIZE];
+
+    char current_event[STR_SIZE];
+    char current_dialogue[STR_SIZE];
 
     Player *player;
 
