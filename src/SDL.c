@@ -48,7 +48,7 @@ void loadTextures(AppContext* ctx) {
         if (ctx->render_areas[i].text_count > 0) {
             ctx->render_areas[i].textTextures = malloc(ctx->render_areas[i].text_count * sizeof(SDL_Texture*));
             for (int j = 0; j < ctx->render_areas[i].text_count; j++) {
-                SDL_Surface* surface = TTF_RenderText_Solid(ctx->font, ctx->render_areas[i].texts[j], ctx->render_areas[i].textColors[j]);
+                SDL_Surface* surface = TTF_RenderUTF8_Blended(ctx->font, ctx->render_areas[i].texts[j], ctx->render_areas[i].textColors[j]);
                 ctx->render_areas[i].textTextures[j] = SDL_CreateTextureFromSurface(ctx->renderer, surface);
                 SDL_FreeSurface(surface);
                 if (ctx->render_areas[i].textTextures[j] == NULL) {
@@ -455,17 +455,36 @@ void createButton(AppContext* ctx, Button* button, int x, int y, int w, int h, c
     button->rect.w = w;
     button->rect.h = h;
     button->onClick = onClick;
+    strncpy(button->text, text, sizeof(button->text) - 1);  // 確保保存文本
 
-    SDL_Surface* surface = TTF_RenderText_Solid(ctx->font, text, (SDL_Color){255, 255, 255});
+    SDL_Surface* surface = TTF_RenderUTF8_Blended(ctx->font, text, (SDL_Color){255, 255, 255, 255});
     button->texture = SDL_CreateTextureFromSurface(ctx->renderer, surface);
     SDL_FreeSurface(surface);
 }
 
+
+
 void renderButton(AppContext* ctx, Button* button) {
+    // 清除按鈕區域
     SDL_SetRenderDrawColor(ctx->renderer, 0, 0, 0, 255);
     SDL_RenderFillRect(ctx->renderer, &button->rect);
-    SDL_RenderCopy(ctx->renderer, button->texture, NULL, &button->rect);
+
+    // 渲染按鈕背景
+    SDL_SetRenderDrawColor(ctx->renderer, 255, 255, 255, 255); // 白色背景
+    SDL_Rect bgRect = {button->rect.x + 2, button->rect.y + 2, button->rect.w - 4, button->rect.h - 4};
+    SDL_RenderFillRect(ctx->renderer, &bgRect);
+
+    // 渲染按鈕文字
+    SDL_Surface* textSurface = TTF_RenderUTF8_Blended(ctx->font, button->text, button->textColor);
+    SDL_Texture* textTexture = SDL_CreateTextureFromSurface(ctx->renderer, textSurface);
+    SDL_Rect textRect = {button->rect.x + (button->rect.w - textSurface->w) / 2, button->rect.y + (button->rect.h - textSurface->h) / 2, textSurface->w, textSurface->h};
+    SDL_RenderCopy(ctx->renderer, textTexture, NULL, &textRect);
+
+    // 清理資源
+    SDL_FreeSurface(textSurface);
+    SDL_DestroyTexture(textTexture);
 }
+
 
 bool isButtonClicked(Button* button, int x, int y) {
     return (x >= button->rect.x && x <= button->rect.x + button->rect.w &&

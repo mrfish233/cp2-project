@@ -68,6 +68,8 @@ typedef struct {
     SDL_Rect rect;
     SDL_Texture* texture;
     void (*onClick)(AppContext* ctx); // 按鈕點擊事件的回調函數
+    char text[100];  // 按鈕顯示的文字
+    SDL_Color textColor;
 } Button;
 
 typedef struct AudioBuffer {
