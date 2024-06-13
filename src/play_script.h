@@ -29,6 +29,7 @@ typedef struct Display {
     int32_t options_selectable[5];
     int32_t option_size;
     int32_t option_flag;
+    int32_t option_select;
 
     char    updates[5][STR_SIZE];
     int32_t update_size;

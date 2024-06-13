@@ -67,6 +67,15 @@ Scene *getScene(Script *script, char *scene_id);
 Dialogue *getDialogue(Script *script, char *dialogue_id);
 
 /**
+ * Get the dialogue option
+ * @param script The script to search
+ * @param dialogue The dialogue to search
+ * @param option_text The text of the option to search
+ * @return The current option if found, NULL otherwise
+ */
+Option *getDialogueOption(Script *script, Dialogue *dialogue, char *option_text);
+
+/**
  * Get the condition
  * @param script The script to search
  * @param condition_id The id of the condition to search

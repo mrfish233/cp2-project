@@ -231,6 +231,64 @@ int32_t updateDialogue(Script *script, Display *display) {
 
             dialogue = next;
         }
+        else if (dialogue->next_type == DIALOGUE_OPTION) {
+            if (display->option_select < 0 || display->option_select > display->option_size) {
+                printf("error: invalid option\n");
+                return 1;
+            }
+
+            int32_t opt = display->option_select;
+            display->option_select = 0;
+
+            if (opt == 0) {
+                Dialogue *next = getDialogue(script, dialogue->next);
+
+                if (next == NULL) {
+                    printf("error: dialogue '%s' not found\n", dialogue->next);
+                    return 1;
+                }
+
+                dialogue = next;
+            }
+            else {
+                opt -= 1;
+
+                Option *option = getDialogueOption(script, dialogue, display->options[opt]);
+
+                if (option == NULL) {
+                    printf("error: option '%s' not found\n", display->options[opt]);
+                    return 1;
+                }
+
+                if (option->next_type == DIALOGUE_EVENT) {
+                    event = getEvent(script, option->next);
+
+                    if (event == NULL) {
+                        printf("error: event '%s' not found\n", option->next);
+                        return 1;
+                    }
+
+                    strncpy(script->current_event_id, event->id, STR_SIZE);
+                    script->current_dialogue_id[0] = '\0';
+
+                    return updateDialogue(script, display);
+                }
+                else if (option->next_type == DIALOGUE_NORMAL) {
+                    Dialogue *next = getDialogue(script, option->next);
+
+                    if (next == NULL) {
+                        printf("error: dialogue '%s' not found\n", option->next);
+                        return 1;
+                    }
+
+                    dialogue = next;
+                }
+                else {
+                    printf("error: invalid dialogue '%s'\n", option->next);
+                    return 1;
+                }
+            }
+        }
         else {
             printf("error: invalid dialogue '%s'\n", dialogue->text);
             return 1;

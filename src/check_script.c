@@ -99,6 +99,20 @@ Dialogue *getDialogue(Script *script, char *dialogue_id) {
     return NULL;
 }
 
+Option *getDialogueOption(Script *script, Dialogue *dialogue, char *option_text) {
+    if (script == NULL || dialogue == NULL || option_text == NULL) {
+        return NULL;
+    }
+
+    for (int32_t i = 0; i < dialogue->option_size; i++) {
+        if (strcmp(dialogue->options[i].text, option_text) == 0) {
+            return &(dialogue->options[i]);
+        }
+    }
+
+    return NULL;
+}
+
 Condition *getCondition(Script *script, char *condition_id) {
     if (script == NULL || condition_id == NULL) {
         return NULL;
