@@ -33,6 +33,8 @@ typedef enum _TableName {
     TABLE_ITEM,
     TABLE_SCENE,
     TABLE_EVENT,
+    TABLE_UPDATE,
+    TABLE_TRIGGER,
     TABLE_DIALOGUE,
     TABLE_OPTION,
     TABLE_CONDITION,
@@ -59,11 +61,10 @@ typedef struct _Table {
 
 /**
  * Parse a TOML script file.
- * @param filename: the script file name
  * @param script: the script to store the parsed data
  * @return 0 if the script is parsed successfully, 1 otherwise.
  */
-int32_t parseTomlScript(char *filename, Script *script);
+int32_t parseTomlScript(Script *script);
 
 /**
  * Change current script table to be parsed.

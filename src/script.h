@@ -56,7 +56,6 @@ typedef struct _Item {
  * Character struct, contains information about a character
  * @param id: display name of the character
  * @param name: name of the character
- * @param avatar: path to the avatar image
  * @param tachie: path to the tachie image
  * @param status: array of Status
  * @param status_size: size of status
@@ -67,7 +66,6 @@ typedef struct _Character {
     char id[STR_SIZE];
     char name[STR_SIZE];
 
-    char avatar[STR_SIZE];
     char tachie[STR_SIZE];
 
     Status *status;
@@ -139,6 +137,16 @@ typedef enum _DialogueType {
     DIALOGUE_END
 } DialogueType;
 
+typedef enum _LogicType {
+    LOGIC_NONE,
+    LOGIC_EQ,
+    LOGIC_NE,
+    LOGIC_GT,
+    LOGIC_GE,
+    LOGIC_LT,
+    LOGIC_LE
+} LogicType;
+
 /**
  * Condition struct, used in Option
  * @param id: id of the condition
@@ -154,18 +162,12 @@ typedef struct _Condition {
     ConditionType condition_type;
     char condition[STR_SIZE];
 
+    int32_t value;
+
     CharacterType character_type;
     char character[STR_SIZE];
 
-    enum {
-        LOGIC_NONE,
-        LOGIC_EQ,
-        LOGIC_NE,
-        LOGIC_GT,
-        LOGIC_GE,
-        LOGIC_LT,
-        LOGIC_LE
-    } logic;
+    LogicType logic;
 } Condition;
 
 /**
@@ -185,6 +187,26 @@ typedef struct _Option {
 
     int32_t hidden;
 } Option;
+
+// Update
+
+/**
+ * Update struct, contains information about an update to character's status or inventory
+ * @param id: id of the update
+ * @param character: name of the character
+ * @param condition_type: type of the condition
+ * @param condition: name of the condition
+ * @param change: change to the status or inventory, 0/1 for inventory, value for status
+ */
+typedef struct _Update {
+    char id[STR_SIZE];
+    char character[STR_SIZE];
+
+    ConditionType condition_type;
+    char condition[STR_SIZE];
+
+    int32_t change;
+} Update;
 
 /**
  * Dialogue struct
@@ -211,6 +233,9 @@ typedef struct _Dialogue {
 
     Option *options;
     int32_t option_size;
+
+    char **updates;
+    int32_t update_size;
 } Dialogue;
 
 // Event
@@ -229,12 +254,40 @@ typedef struct _Event {
     char bgm[STR_SIZE];
 } Event;
 
+// Trigger
+
+/**
+ * Trigger struct, contains information about an end trigger
+ * @param id: id of the trigger
+ * @param character: name of the character
+ * @param event: name of the event
+ * @param condition_type: type of the condition
+ * @param condition: name of the condition
+ * @param value: value of the condition
+ * @param logic: logic of the condition
+ */
+typedef struct _Trigger {
+    char id[STR_SIZE];
+    char character[STR_SIZE];
+    char event[STR_SIZE];
+
+    ConditionType condition_type;
+    char condition[STR_SIZE];
+
+    int32_t value;
+
+    LogicType logic;
+} Trigger;
+
 // Script
 
 /**
  * Script struct, contains all the data
+ * @param dir: directory of the script
  * @param name: name of the script
  * @param author: author of the script
+ * @param current_event_id: id of the current event
+ * @param current_dialogue_id: id of the current dialogue
  * @param player: pointer to Player
  * @param characters: array of Character
  * @param character_size: size of characters
@@ -242,18 +295,27 @@ typedef struct _Event {
  * @param item_size: size of items
  * @param status_infos: array of StatusInfo
  * @param status_info_size: size of status_infos
- * @param scenes: array of Scene
- * @param scene_size: size of scenes
+ * @param triggers: array of Trigger
+ * @param trigger_size: size of triggers
+ * @param updates: array of Update
+ * @param update_size: size of updates
  * @param events: array of Event
  * @param event_size: size of events
+ * @param scenes: array of Scene
+ * @param scene_size: size of scenes
  * @param dialogues: array of Dialogue
  * @param dialogue_size: size of dialogues
  * @param conditions: array of Condition
  * @param condition_size: size of conditions
  */
 typedef struct _Script {
+    char dir[STR_SIZE];
+
     char name[STR_SIZE];
     char author[STR_SIZE];
+
+    char current_event_id[STR_SIZE];
+    char current_dialogue_id[STR_SIZE];
 
     Player *player;
 
@@ -265,6 +327,12 @@ typedef struct _Script {
 
     StatusInfo *status_infos;
     int32_t status_info_size;
+
+    Trigger *triggers;
+    int32_t trigger_size;
+
+    Update *updates;
+    int32_t update_size;
 
     Event *events;
     int32_t event_size;

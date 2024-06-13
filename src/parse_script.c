@@ -1,7 +1,14 @@
 #include "parse_script.h"
 
-int32_t parseTomlScript(char *filename, Script *script) {
+int32_t parseTomlScript(Script *script) {
     FILE *file = NULL;
+
+    char filename[STR_SIZE] = {0};
+
+    if (snprintf(filename, STR_SIZE, "%s/script.toml", script->dir) < 0) {
+        printf("error: script error\n");
+        return 1;
+    }
 
     if (openFile(&file, filename, "r") != 0) {
         return 1;
@@ -34,10 +41,6 @@ int32_t parseTomlScript(char *filename, Script *script) {
         }
     }
 
-    #ifdef DEBUG
-    printScript(script);
-    #endif
-
     closeFile(file);
     return 0;
 }
@@ -58,6 +61,8 @@ int32_t changeParseTable(Script *script, Table *table, char *buffer) {
         "item",
         "scene",
         "event",
+        "update",
+        "trigger",
         "dialogue",
         "option",
         "condition",
@@ -67,9 +72,11 @@ int32_t changeParseTable(Script *script, Table *table, char *buffer) {
     enum { FIRST, MID, LAST };
 
     // Find the table name in the buffer
-    // Magic number 1 and 11 are the index of the table_name array
+    // The magic numbers are the index of the table_name array
 
-    for (int32_t i = 1; i < 11; i++) {
+    int32_t size = sizeof(table_name) / sizeof(table_name[0]);
+
+    for (int32_t i = 1; i < size; i++) {
         if (i == TABLE_ERROR) {
             printf("error: table error\n");
             return 1;
@@ -189,6 +196,26 @@ int32_t updateParseTable(Script *script, Table *table) {
             break;
         }
 
+        case TABLE_UPDATE: {
+            table->index = script->update_size;
+            script->update_size++;
+
+            temp = &(script->updates);
+            size = sizeof(Update);
+
+            break;
+        }
+
+        case TABLE_TRIGGER: {
+            table->index = script->trigger_size;
+            script->trigger_size++;
+
+            temp = &(script->triggers);
+            size = sizeof(Trigger);
+
+            break;
+        }
+
         case TABLE_DIALOGUE: {
             // Option table is stored in the dialogue table
             if (table->sub_table_name == TABLE_OPTION) {
@@ -261,6 +288,8 @@ int32_t allocateTable(void **table, size_t size, int32_t capacity) {
             perror("allocateTable: reallocarray error");
             return 1;
         }
+
+        memset(*table + capacity * size, 0, size);
     }
 
     return 0;
@@ -307,6 +336,8 @@ int32_t createIDField(Script *script, Table *table, char *buffer) {
         case TABLE_ITEM:
         case TABLE_SCENE:
         case TABLE_EVENT:
+        case TABLE_UPDATE:
+        case TABLE_TRIGGER:
         case TABLE_CONDITION: {
             if (getTableLineStr(table->value, buffer, LAST) != 0) {
                 return 1;
@@ -347,7 +378,8 @@ int32_t createTableField(Script *script, Table *table, char *buffer) {
         strncpy(table->value, buffer, STR_SIZE);
     }
 
-    if (table->table_name == TABLE_CHARACTER && strcmp(table->field, "inventory") == 0) {
+    if ((table->table_name == TABLE_CHARACTER && strcmp(table->field, "inventory") == 0) ||
+        (table->table_name == TABLE_DIALOGUE  && strcmp(table->field, "update") == 0)) {
         char tmp[STR_SIZE] = {0};
         char val[STR_SIZE] = {0};
         char *head = NULL;
@@ -413,6 +445,7 @@ int32_t addDataToScript(Script *script, Table *table) {
             }
             else if (strcmp(table->field, "start_event") == 0) {
                 strncpy(script->player->start_event, table->value, STR_SIZE);
+                strncpy(script->current_event_id, table->value, STR_SIZE);
             }
 
             break;
@@ -462,9 +495,6 @@ int32_t addDataToScript(Script *script, Table *table) {
                 }
                 else if (strcmp(table->field, "name") == 0) {
                     strncpy(character->name, table->value, STR_SIZE);
-                }
-                else if (strcmp(table->field, "avatar") == 0) {
-                    strncpy(character->avatar, table->value, STR_SIZE);
                 }
                 else if (strcmp(table->field, "tachie") == 0) {
                     strncpy(character->tachie, table->value, STR_SIZE);
@@ -572,6 +602,109 @@ int32_t addDataToScript(Script *script, Table *table) {
             break;
         }
 
+        case TABLE_UPDATE: {
+            Update *update = &(script->updates[table->index]);
+
+            if (strcmp(table->field, "id") == 0) {
+                strncpy(update->id, table->value, STR_SIZE);
+            }
+            else if (strcmp(table->field, "character") == 0) {
+                strncpy(update->character, table->value, STR_SIZE);
+            }
+            else if (strcmp(table->field, "item") == 0) {
+                if (update->condition_type != CONDITION_NONE) {
+                    return 1;
+                }
+
+                strncpy(update->condition, table->value, STR_SIZE);
+                update->condition_type = CONDITION_ITEM;
+            }
+            else if (strcmp(table->field, "status") == 0) {
+                if (update->condition_type != CONDITION_NONE) {
+                    return 1;
+                }
+
+                strncpy(update->condition, table->value, STR_SIZE);
+                update->condition_type = CONDITION_STATUS;
+            }
+            else if (strcmp(table->field, "change") == 0) {
+                char *endptr = NULL;
+                update->change = strtol(table->value, &endptr, 10);
+
+                if (*endptr != '\0' && *endptr != '\n') {
+                    printf("error: change value error\n");
+                    return 1;
+                }
+            }
+
+            break;
+        }
+
+        case TABLE_TRIGGER: {
+            Trigger *trigger = &(script->triggers[table->index]);
+
+            if (strcmp(table->field, "id") == 0) {
+                strncpy(trigger->id, table->value, STR_SIZE);
+            }
+            else if (strcmp(table->field, "character") == 0) {
+                strncpy(trigger->character, table->value, STR_SIZE);
+            }
+            else if (strcmp(table->field, "event") == 0) {
+                strncpy(trigger->event, table->value, STR_SIZE);
+            }
+            else if (strcmp(table->field, "item") == 0) {
+                if (trigger->condition_type != CONDITION_NONE) {
+                    return 1;
+                }
+
+                strncpy(trigger->condition, table->value, STR_SIZE);
+                trigger->condition_type = CONDITION_ITEM;
+            }
+            else if (strcmp(table->field, "status") == 0) {
+                if (trigger->condition_type != CONDITION_NONE) {
+                    return 1;
+                }
+
+                strncpy(trigger->condition, table->value, STR_SIZE);
+                trigger->condition_type = CONDITION_STATUS;
+            }
+            else if (strcmp(table->field, "value") == 0) {
+                char *endptr = NULL;
+                trigger->value = strtol(table->value, &endptr, 10);
+
+                if (*endptr != '\0' && *endptr != '\n') {
+                    printf("error: value error\n");
+                    return 1;
+                }
+            }
+            else if (strcmp(table->field, "logic") == 0) {
+                if (strcmp(table->value, "EQ") == 0) {
+                    trigger->logic = LOGIC_EQ;
+                }
+                else if (strcmp(table->value, "NE") == 0) {
+                    trigger->logic = LOGIC_NE;
+                }
+                else if (strcmp(table->value, "GT") == 0) {
+                    trigger->logic = LOGIC_GT;
+                }
+                else if (strcmp(table->value, "LT") == 0) {
+                    trigger->logic = LOGIC_LT;
+                }
+                else if (strcmp(table->value, "GE") == 0) {
+                    trigger->logic = LOGIC_GE;
+                }
+                else if (strcmp(table->value, "LE") == 0) {
+                    trigger->logic = LOGIC_LE;
+                }
+                else {
+                    printf("error: logic error\n");
+                    return 1;
+                }
+            }
+
+            break;
+        }
+
         case TABLE_DIALOGUE: {
             if (table->sub_table_name == TABLE_OPTION) {
                 Option *option = &(script->dialogues[table->index].options[table->sub_index]);
@@ -636,6 +769,26 @@ int32_t addDataToScript(Script *script, Table *table) {
                     dialogue->character_type = CHARACTER_NPC;
                 }
             }
+            else if (strcmp(table->field, "update") == 0) {
+                void  *temp = &(script->dialogues[table->index].updates);
+                size_t size = sizeof(char *);
+                int32_t idx = script->dialogues[table->index].update_size;
+                script->dialogues[table->index].update_size++;
+
+                if (allocateTable(temp, size, idx) != 0) {
+                    return 1;
+                }
+
+                char **update = &(script->dialogues[table->index].updates[idx]);
+                *update = calloc(1, STR_SIZE);
+
+                if (!*update) {
+                    perror("addDataToScript: calloc error");
+                    return 1;
+                }
+
+                strncpy(*update, table->value, STR_SIZE);
+            }
             else if (strcmp(table->field, "next")  == 0 ||
                      strcmp(table->field, "event") == 0 ||
                      strcmp(table->field, "end")   == 0) {
@@ -691,6 +844,15 @@ int32_t addDataToScript(Script *script, Table *table) {
 
                 strncpy(condition->condition, table->value, STR_SIZE);
                 condition->condition_type = CONDITION_STATUS;
+            }
+            else if (strcmp(table->field, "value") == 0) {
+                char *endptr = NULL;
+                condition->value = strtol(table->value, &endptr, 10);
+
+                if (*endptr != '\0' && *endptr != '\n') {
+                    printf("error: value error\n");
+                    return 1;
+                }
             }
             else if (strcmp(table->field, "logic") == 0) {
                 if (strcmp(table->value, "EQ") == 0) {
@@ -884,7 +1046,6 @@ void printScript(Script *script) {
     for (int32_t i = 0; i < script->character_size; i++) {
         printf("id             | %s\n", script->characters[i].id);
         printf("name           | %s\n", script->characters[i].name);
-        printf("avatar         | %s\n", script->characters[i].avatar);
         printf("tachie         | %s\n", script->characters[i].tachie);
 
         for (int32_t j = 0; j < script->characters[i].status_size; j++) {
@@ -960,6 +1121,40 @@ void printScript(Script *script) {
     }
 
     printf("======================================================================\n");
+    printf("UPDATE\n");
+    printf("----------------------------------------------------------------------\n");
+
+    for (int32_t i = 0; i < script->update_size; i++) {
+        printf("id             | %s\n", script->updates[i].id);
+        printf("character      | %s\n", script->updates[i].character);
+        printf("condition      | %s\n", script->updates[i].condition);
+        printf("condition_type | %d\n", script->updates[i].condition_type);
+        printf("change         | %d\n", script->updates[i].change);
+
+        if (i < script->update_size - 1) {
+            printf("----------------------------------------------------------------------\n");
+        }
+    }
+
+    printf("======================================================================\n");
+    printf("TRIGGER\n");
+    printf("----------------------------------------------------------------------\n");
+
+    for (int32_t i = 0; i < script->trigger_size; i++) {
+        printf("id             | %s\n", script->triggers[i].id);
+        printf("character      | %s\n", script->triggers[i].character);
+        printf("event          | %s\n", script->triggers[i].event);
+        printf("condition      | %s\n", script->triggers[i].condition);
+        printf("condition_type | %d\n", script->triggers[i].condition_type);
+        printf("value          | %d\n", script->triggers[i].value);
+        printf("logic          | %d\n", script->triggers[i].logic);
+
+        if (i < script->trigger_size - 1) {
+            printf("----------------------------------------------------------------------\n");
+        }
+    }
+
+    printf("======================================================================\n");
     printf("EVENT\n");
     printf("----------------------------------------------------------------------\n");
 
@@ -983,6 +1178,18 @@ void printScript(Script *script) {
         printf("text           | %s\n", script->dialogues[i].text);
         printf("sfx            | %s\n", script->dialogues[i].sfx);
         printf("character      | %s\n", script->dialogues[i].character);
+
+        for (int32_t j = 0; j < script->dialogues[i].update_size; j++) {
+            if (j == 0) {
+                printf("update         | ");
+            }
+            else {
+                printf("               | ");
+            }
+
+            printf("%s\n", script->dialogues[i].updates[j]);
+        }
+
         printf("next           | %s\n", script->dialogues[i].next);
         printf("next_type      | ");
 
@@ -1031,6 +1238,7 @@ void printScript(Script *script) {
         printf("id             | %s\n", script->conditions[i].id);
         printf("character      | %s\n", script->conditions[i].character);
         printf("character_type | %d\n", script->conditions[i].character_type);
+        printf("value          | %d\n", script->conditions[i].value);
         printf("condition      | %s\n", script->conditions[i].condition);
         printf("condition_type | %d\n", script->conditions[i].condition_type);
         printf("logic          | %d\n", script->conditions[i].logic);
@@ -1054,19 +1262,22 @@ void clearScript(Script *script) {
     }
 
     if (script->characters) {
-        if (script->character_size > 0) {
-            for (int32_t i = 0; i < script->character_size; i++) {
-                if (script->characters[i].status) {
-                    free(script->characters[i].status);
-                    script->characters[i].status = NULL;
-                    script->characters[i].status_size = 0;
+        for (int32_t i = 0; i < script->character_size; i++) {
+            if (script->characters[i].status) {
+                free(script->characters[i].status);
+                script->characters[i].status = NULL;
+                script->characters[i].status_size = 0;
+            }
+
+            if (script->characters[i].inventory_size) {
+                for (int32_t j = 0; j < script->characters[i].inventory_size; j++) {
+                    free(script->characters[i].inventory[j]);
+                    script->characters[i].inventory[j] = NULL;
                 }
 
-                if (script->characters[i].inventory) {
-                    free(script->characters[i].inventory);
-                    script->characters[i].inventory = NULL;
-                    script->characters[i].inventory_size = 0;
-                }
+                free(script->characters[i].inventory);
+                script->characters[i].inventory = NULL;
+                script->characters[i].inventory_size = 0;
             }
         }
 
@@ -1093,6 +1304,18 @@ void clearScript(Script *script) {
         script->scene_size = 0;
     }
 
+    if (script->triggers) {
+        free(script->triggers);
+        script->triggers = NULL;
+        script->trigger_size = 0;
+    }
+
+    if (script->updates) {
+        free(script->updates);
+        script->updates = NULL;
+        script->update_size = 0;
+    }
+
     if (script->events) {
         free(script->events);
         script->events = NULL;
@@ -1100,13 +1323,22 @@ void clearScript(Script *script) {
     }
 
     if (script->dialogues) {
-        if (script->dialogue_size > 0) {
-            for (int32_t i = 0; i < script->dialogue_size; i++) {
-                if (script->dialogues[i].options) {
-                    free(script->dialogues[i].options);
-                    script->dialogues[i].options = NULL;
-                    script->dialogues[i].option_size = 0;
+        for (int32_t i = 0; i < script->dialogue_size; i++) {
+            if (script->dialogues[i].options) {
+                free(script->dialogues[i].options);
+                script->dialogues[i].options = NULL;
+                script->dialogues[i].option_size = 0;
+            }
+
+            if (script->dialogues[i].updates) {
+                for (int32_t j = 0; j < script->dialogues[i].update_size; j++) {
+                    free(script->dialogues[i].updates[j]);
+                    script->dialogues[i].updates[j] = NULL;
                 }
+
+                free(script->dialogues[i].updates);
+                script->dialogues[i].updates = NULL;
+                script->dialogues[i].update_size = 0;
             }
         }
 
