@@ -364,7 +364,7 @@ int32_t updateDialogue(Script *script, Display *display) {
                 return 1;
             }
 
-            processUpdateString(script, &(script->updates[i]), display->updates[display->update_size], STR_SIZE);
+            processUpdateString(script, dialogue->updates[i], display->updates[display->update_size], STR_SIZE);
             display->update_size++;
         }
     }
@@ -478,12 +478,17 @@ int32_t updateCharacterData(Script *script, char *update_id) {
     return 1;
 }
 
-int32_t processUpdateString(Script *script, Update *update, char *str, int32_t size) {
-    if (update == NULL || str == NULL) {
+int32_t processUpdateString(Script *script, char *update_id, char *str, int32_t size) {
+    if (script == NULL || update_id == NULL || str == NULL) {
         return 1;
     }
 
-    char change_str[STR_SIZE] = {0};
+    Update *update = getUpdate(script, update_id);
+
+    if (update == NULL) {
+        printf("error: update '%s' not found\n", update_id);
+        return 1;
+    }
 
     Character *character = getCharacter(script, update->character);
 
@@ -500,6 +505,7 @@ int32_t processUpdateString(Script *script, Update *update, char *str, int32_t s
             return 1;
         }
 
+        char change_str[STR_SIZE] = {0};
         int32_t change_val = update->change;
 
         if (update->change >= 0) {
@@ -519,6 +525,8 @@ int32_t processUpdateString(Script *script, Update *update, char *str, int32_t s
             printf("error: item '%s' not found\n", update->condition);
             return 1;
         }
+
+        char change_str[STR_SIZE] = {0};
 
         if (update->change == 1) {
             strncpy(change_str, "獲得了", STR_SIZE);

@@ -80,12 +80,14 @@ int32_t updateDialogue(Script *script, Display *display);
 int32_t updateCharacterData(Script *script, char *update_id);
 
 /**
- * Update the options
+ * Process the update string to be displayed
  * @param script The script to use
- * @param display The display data to update
+ * @param update_id The id of the update to search
+ * @param str The string to process
+ * @param size The size of the string
  * @return 0 if successful, 1 if failed
  */
-int32_t processUpdateString(Script *script, Update *update, char *str, int32_t size);
+int32_t processUpdateString(Script *script, char *update_id, char *str, int32_t size);
 
 /**
  * Check if an item is hidden
