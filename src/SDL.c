@@ -28,7 +28,7 @@ void initSDL(AppContext* ctx) {
 
     SDL_SetRenderDrawBlendMode(ctx->renderer, SDL_BLENDMODE_BLEND);
 
-    ctx->font = TTF_OpenFont("/home/goose/cp2-project/third_party/font/Noto_Sans_TC/static/NotoSansTC-Black.ttf", 24);
+    ctx->font = TTF_OpenFont("/home/goose/cp2-project/third-party/font/Noto_Sans_TC/static/NotoSansTC-Black.ttf", 24);
     if (ctx->font == NULL) {
         fprintf(stderr, "Failed to load font: %s\n", TTF_GetError());
         cleanUp(ctx);
