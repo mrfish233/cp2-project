@@ -380,7 +380,21 @@ int32_t updateDialogue(Script *script, Display *display) {
             return 1;
         }
 
-        strncpy(display->path_tachie, character->tachie, STR_SIZE);
+        Tachie *tachie = NULL;
+
+        if (strlen(dialogue->tachie) == 0) {
+            tachie = getCharacterTachie(character, "default");
+        }
+        else {
+            tachie = getCharacterTachie(character, dialogue->tachie);
+        }
+
+        if (tachie == NULL) {
+            printf("error: tachie '%s' not found\n", dialogue->tachie);
+            return 1;
+        }
+
+        strncpy(display->path_tachie, tachie->path, STR_SIZE);
         strncpy(display->character, character->name, STR_SIZE);
     }
     else {

@@ -33,13 +33,19 @@ int32_t isValidScript(Script *script) {
     for (int32_t i = 0; i < script->character_size; i++) {
         Character *chr = &(script->characters[i]);
 
-        char path[STR_SIZE] = {0};
+        if (chr->tachie_size > 0) {
+            for (int32_t j = 0; j < chr->tachie_size; j++) {
+                Tachie *tachie = &(chr->tachies[j]);
 
-        snprintf(path, STR_SIZE * 2, "%s/%s", script->dir, chr->tachie);
+                char path[STR_SIZE] = {0};
 
-        if (access(path, F_OK) != 0) {
-            printf("Character '%s' tachie not found: %s\n", chr->id, chr->tachie);
-            valid = 0;
+                snprintf(path, STR_SIZE * 2, "%s/%s", script->dir, tachie->path);
+
+                if (access(path, F_OK) != 0) {
+                    printf("Character '%s' tachie '%s' not found: %s\n", chr->id, tachie->name, tachie->path);
+                    valid = 0;
+                }
+            }
         }
 
         if (chr->status_size > 0) {
@@ -440,6 +446,20 @@ Character *getCharacter(Script *script, char *character_id) {
     for (int32_t i = 0; i < script->character_size; i++) {
         if (strcmp(script->characters[i].id, character_id) == 0) {
             return &(script->characters[i]);
+        }
+    }
+
+    return NULL;
+}
+
+Tachie *getCharacterTachie(Character *character, char *tachie_name) {
+    if (character == NULL || tachie_name == NULL) {
+        return NULL;
+    }
+
+    for (int32_t i = 0; i < character->tachie_size; i++) {
+        if (strcmp(character->tachies[i].name, tachie_name) == 0) {
+            return &(character->tachies[i]);
         }
     }
 

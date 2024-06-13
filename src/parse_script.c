@@ -56,6 +56,7 @@ int32_t changeParseTable(Script *script, Table *table, char *buffer) {
         "none",
         "player",
         "character",
+        "tachie",
         "status", // this status in toml is status_info in script
         "status", // this status in toml is sub table of character
         "item",
@@ -114,6 +115,9 @@ int32_t changeParseTable(Script *script, Table *table, char *buffer) {
         else if (strcmp(temp, table_name[TABLE_OPTION]) == 0) {
             table->sub_table_name = TABLE_OPTION;
         }
+        else if (strcmp(temp, table_name[TABLE_TACHIE]) == 0) {
+            table->sub_table_name = TABLE_TACHIE;
+        }
     }
 
     if (updateParseTable(script, table) != 0) {
@@ -143,7 +147,7 @@ int32_t updateParseTable(Script *script, Table *table) {
 
         case TABLE_CHARACTER: {
             // Status table is stored in the character table
-            if (table->sub_table_name == TABLE_STATUS) {
+            if (table->sub_table_name == TABLE_STATUS || table->sub_table_name == TABLE_TACHIE) {
                 return 0;
             }
             else {
@@ -307,7 +311,7 @@ int32_t createIDField(Script *script, Table *table, char *buffer) {
 
     switch (table->table_name) {
         case TABLE_CHARACTER: {
-            if (table->sub_table_name != TABLE_STATUS) {
+            if (table->sub_table_name != TABLE_STATUS && table->sub_table_name != TABLE_TACHIE) {
                 if (getTableLineStr(table->value, buffer, LAST) != 0) {
                     return 1;
                 }
@@ -467,6 +471,21 @@ int32_t addDataToScript(Script *script, Table *table) {
                 strncpy(status->status_name, table->field, STR_SIZE);
                 status->value = strtol(table->value, NULL, 10);
             }
+            else if (table->sub_table_name == TABLE_TACHIE) {
+                void  *temp = &(script->characters[table->index].tachies);
+                size_t size = sizeof(Tachie);
+                int32_t idx = script->characters[table->index].tachie_size;
+                script->characters[table->index].tachie_size++;
+
+                if (allocateTable(temp, size, idx) != 0) {
+                    return 1;
+                }
+
+                Tachie *tachie = &(script->characters[table->index].tachies[idx]);
+
+                strncpy(tachie->name, table->field, STR_SIZE);
+                strncpy(tachie->path, table->value, STR_SIZE);
+            }
             else if (strcmp(table->field, "inventory") == 0) {
                 void  *temp = &(script->characters[table->index].inventory);
                 size_t size = sizeof(char *);
@@ -495,9 +514,6 @@ int32_t addDataToScript(Script *script, Table *table) {
                 }
                 else if (strcmp(table->field, "name") == 0) {
                     strncpy(character->name, table->value, STR_SIZE);
-                }
-                else if (strcmp(table->field, "tachie") == 0) {
-                    strncpy(character->tachie, table->value, STR_SIZE);
                 }
             }
 
@@ -768,6 +784,9 @@ int32_t addDataToScript(Script *script, Table *table) {
                 else {
                     dialogue->character_type = CHARACTER_NPC;
                 }
+            }
+            else if (strcmp(table->field, "tachie") == 0) {
+                strncpy(dialogue->tachie, table->value, STR_SIZE);
             }
             else if (strcmp(table->field, "update") == 0) {
                 void  *temp = &(script->dialogues[table->index].updates);
@@ -1046,7 +1065,18 @@ void printScript(Script *script) {
     for (int32_t i = 0; i < script->character_size; i++) {
         printf("id             | %s\n", script->characters[i].id);
         printf("name           | %s\n", script->characters[i].name);
-        printf("tachie         | %s\n", script->characters[i].tachie);
+        // printf("tachie         | %s\n", script->characters[i].tachie);
+
+        for (int32_t j = 0; j < script->characters[i].tachie_size; j++) {
+            if (j == 0) {
+                printf("tachie         | ");
+            }
+            else {
+                printf("               | ");
+            }
+
+            printf("%s: %s\n", script->characters[i].tachies[j].name, script->characters[i].tachies[j].path);
+        }
 
         for (int32_t j = 0; j < script->characters[i].status_size; j++) {
             if (j == 0) {
@@ -1178,6 +1208,7 @@ void printScript(Script *script) {
         printf("text           | %s\n", script->dialogues[i].text);
         printf("sfx            | %s\n", script->dialogues[i].sfx);
         printf("character      | %s\n", script->dialogues[i].character);
+        printf("tachie         | %s\n", script->dialogues[i].tachie);
 
         for (int32_t j = 0; j < script->dialogues[i].update_size; j++) {
             if (j == 0) {
@@ -1267,6 +1298,12 @@ void clearScript(Script *script) {
                 free(script->characters[i].status);
                 script->characters[i].status = NULL;
                 script->characters[i].status_size = 0;
+            }
+
+            if (script->characters[i].tachies) {
+                free(script->characters[i].tachies);
+                script->characters[i].tachies = NULL;
+                script->characters[i].tachie_size = 0;
             }
 
             if (script->characters[i].inventory_size) {

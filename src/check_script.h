@@ -26,6 +26,14 @@ int32_t isValidScript(Script *script);
 Character *getCharacter(Script *script, char *character_id);
 
 /**
+ * Get the character tachie
+ * @param character The character to search
+ * @param tachie_name The name of the tachie to search
+ * @return The current tachie if found, NULL otherwise
+ */
+Tachie *getCharacterTachie(Character *character, char *tachie_name);
+
+/**
  * Get the status info
  * @param character The character to search
  * @param status_info_id The id of the status to search

@@ -53,10 +53,21 @@ typedef struct _Item {
 // Character
 
 /**
+ * Tachie struct, contains information about a tachie
+ * @param name: name of the tachie
+ * @param path: path to the tachie image
+ */
+typedef struct _Tachie {
+    char name[STR_SIZE];
+    char path[STR_SIZE];
+} Tachie;
+
+/**
  * Character struct, contains information about a character
  * @param id: display name of the character
  * @param name: name of the character
- * @param tachie: path to the tachie image
+ * @param tachies: array of Tachie
+ * @param tachie_size: size of tachies
  * @param status: array of Status
  * @param status_size: size of status
  * @param inventory: array of item names
@@ -66,7 +77,8 @@ typedef struct _Character {
     char id[STR_SIZE];
     char name[STR_SIZE];
 
-    char tachie[STR_SIZE];
+    Tachie *tachies;
+    int32_t tachie_size;
 
     Status *status;
     int32_t status_size;
@@ -215,6 +227,7 @@ typedef struct _Update {
  * @param sfx: path to the sound effect
  * @param character_type: type of the character
  * @param character: name of the character
+ * @param tachie: name of the tachie
  * @param next_type: type of the next element
  * @param next: name of the next element
  * @param options: array of Option
@@ -227,6 +240,7 @@ typedef struct _Dialogue {
 
     CharacterType character_type;
     char character[STR_SIZE];
+    char tachie[STR_SIZE];
 
     DialogueType next_type;
     char next[STR_SIZE];
