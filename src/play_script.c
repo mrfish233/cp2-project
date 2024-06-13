@@ -457,6 +457,26 @@ int32_t updateDialogue(Script *script, Display *display) {
                 return 1;
             }
 
+            Update *update = getUpdate(script, dialogue->updates[i]);
+
+            if (update == NULL) {
+                printf("error: update '%s' not found\n", dialogue->updates[i]);
+                return 1;
+            }
+
+            if (update->condition_type == CONDITION_ITEM) {
+                Item *item = getItem(script, update->condition);
+
+                if (item == NULL) {
+                    printf("error: item '%s' not found\n", update->condition);
+                    return 1;
+                }
+
+                if (item->hidden == 1) {
+                    continue;
+                }
+            }
+
             processUpdateString(script, dialogue->updates[i], display->updates[display->update_size], STR_SIZE);
             display->update_size++;
         }
