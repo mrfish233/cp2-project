@@ -40,6 +40,30 @@ typedef struct Display {
 } Display;
 
 /**
+ * Initialize the game
+ * @param script The script
+ * @param display The display data
+ * @param dir The directory of the script
+ * @return 0 if successful, 1 if failed
+ */
+int32_t initGame(Script *script, Display *display, char *dir);
+
+/**
+ * Initialize the script data
+ * @param script The script to reset
+ * @param dir The directory of the script
+ * @return 0 if successful, 1 if failed
+ */
+int32_t initScript(Script *script, char *dir);
+
+/**
+ * Initialize the display data
+ * @param display The display data to reset
+ * @return 0 if successful, 1 if failed
+ */
+int32_t initDisplay(Display *display);
+
+/**
  * Update the script data
  * @param script The script to use
  * @param display The display data to update

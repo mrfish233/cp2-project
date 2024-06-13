@@ -1,13 +1,17 @@
 #include "play_script.h"
 
-int32_t updateScriptData(Script *script, Display *display) {
-    if (display == NULL || script == NULL) {
-        printf("error: display or script is NULL\n");
+int32_t initGame(Script *script, Display *display, char *dir) {
+    if (script == NULL || display == NULL || dir == NULL) {
         return 1;
     }
 
-    display->inventory_page = 1;
-    display->status_page    = 1;
+    if (initScript(script, dir) != 0) {
+        return 1;
+    }
+
+    if (initDisplay(display) != 0) {
+        return 1;
+    }
 
     if (updateInventoryPage(script, display) != 0) {
         printf("error: failed to update inventory page\n");
@@ -19,8 +23,75 @@ int32_t updateScriptData(Script *script, Display *display) {
         return 1;
     }
 
+    return 0;
+}
+
+int32_t initScript(Script *script, char *dir) {
+    if (script == NULL || dir == NULL) {
+        return 1;
+    }
+
+    strncpy(script->dir, dir, STR_SIZE);
+
+    if (script->dir[strlen(script->dir) - 1] == '/') {
+        script->dir[strlen(script->dir) - 1] = '\0';
+    }
+
+    if (parseTomlScript(script) != 0) {
+        return 1;
+    }
+
+    return 0;
+}
+
+int32_t initDisplay(Display *display) {
+    if (display == NULL) {
+        return 1;
+    }
+
+    display->path_background[0] = '\0';
+    display->path_tachie[0]     = '\0';
+
+    display->character[0] = '\0';
+    display->dialogue[0]  = '\0';
+
+    display->inventory_size = 0;
+    display->inventory_page = 1;
+
+    display->status_size = 0;
+    display->status_page = 1;
+
+    display->option_size = 0;
+    display->option_flag = 0;
+    display->option_select = 0;
+
+    display->update_size = 0;
+    display->update_flag = 0;
+
+    display->end_path[0] = '\0';
+    display->end_flag = 0;
+
+    return 0;
+}
+
+int32_t updateScriptData(Script *script, Display *display) {
+    if (display == NULL || script == NULL) {
+        printf("error: display or script is NULL\n");
+        return 1;
+    }
+
     if (updateDialogue(script, display) != 0) {
         printf("error: failed to update dialogue\n");
+        return 1;
+    }
+
+    if (updateInventoryPage(script, display) != 0) {
+        printf("error: failed to update inventory page\n");
+        return 1;
+    }
+
+    if (updateStatusPage(script, display) != 0) {
+        printf("error: failed to update status page\n");
         return 1;
     }
 
