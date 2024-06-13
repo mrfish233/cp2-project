@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 #include <unistd.h>  // 用於 getcwd
 #include <limits.h>  // 用於 PATH_MAX
 #include <linux/limits.h>
