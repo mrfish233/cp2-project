@@ -5,10 +5,17 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "parse_script.h"
 #include "script.h"
 
+/**
+ * Check if the script is valid
+ * @param script The script to check
+ * @return 1 if the script is valid, 0 otherwise
+ */
+int32_t isValidScript(Script *script);
 
 /**
  * Get the character

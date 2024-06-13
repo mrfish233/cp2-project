@@ -9,6 +9,10 @@ int32_t initGame(Script *script, Display *display, char *dir) {
         return 1;
     }
 
+    if (!isValidScript(script)) {
+        printf("error: invalid script\n");
+    }
+
     if (initDisplay(display) != 0) {
         return 1;
     }
