@@ -3,16 +3,9 @@
 
 #include "SDL.h"
 
-// 全域flag
-bool newGameFlag = false;
-bool EndFlag = false;
-bool GamePlayingFlag = false;
-bool LoadFlag = false;
-bool CreditFlag = false;
-
-SDL_Color white = {255, 255, 255, 255}; // 定義全域變數
 
 
+int process();
 // 介面組
 void GamePlaying(AppContext* ctx);
 void End();
@@ -23,7 +16,6 @@ void BackToMainMenu(AppContext* ctx);
 void Settings(AppContext* ctx);
 
 //Button組
-void createButton1(AppContext* ctx, Button* button, int x, int y, int w, int h, const char* text, void (*onClick)(AppContext* ctx)) ;
 
 
 void onClickNewGame(AppContext* ctx) ;

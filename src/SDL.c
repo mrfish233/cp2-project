@@ -259,7 +259,7 @@ void renderImage(AppContext* ctx, RenderArea* area) {
             continue;
         }
         SDL_Rect dstrect = area->imageRects[i];
-        printf("Rendering image at (%d, %d) with dimensions %dx%d\n", dstrect.x, dstrect.y, dstrect.w, dstrect.h);
+        //printf("Rendering image at (%d, %d) with dimensions %dx%d\n", dstrect.x, dstrect.y, dstrect.w, dstrect.h);
         SDL_RenderCopy(ctx->renderer, texture, NULL, &dstrect);
     }
 }
@@ -267,7 +267,7 @@ void renderImage(AppContext* ctx, RenderArea* area) {
 // 渲染文字
 void renderText(AppContext* ctx, RenderArea* area) {
     for (int i = 0; i < area->text_count; i++) {
-        printf("Rendering text %d\n", i);
+        //printf("Rendering text %d\n", i);
         SDL_Texture* texture = area->textTextures[i];
         if (texture == NULL) {
             fprintf(stderr, "Failed to create text texture: %s\n", SDL_GetError());
@@ -475,7 +475,7 @@ void renderButton(AppContext* ctx, Button* button) {
     SDL_RenderCopy(ctx->renderer, button->texture, NULL, &button->rect);
 }
 
-int isButtonClicked(Button* button, int x, int y) {
+bool isButtonClicked(Button* button, int x, int y) {
     return (x >= button->rect.x && x <= button->rect.x + button->rect.w &&
             y >= button->rect.y && y <= button->rect.y + button->rect.h);
 }

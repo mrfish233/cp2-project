@@ -2,9 +2,16 @@
 
 // 按鈕點擊事件回調函數
 
+// 全域flag
+bool newGameFlag = false;
+bool EndFlag = false;
+bool GamePlayingFlag = false;
+bool LoadFlag = false;
+bool CreditFlag = false;
 
+SDL_Color white = {255, 255, 255, 255}; // 定義全域變數
 
-int main(int argc, char* argv[]) {
+int process() {
     AppContext ctx = {NULL, NULL, NULL, 1920, 1080, NULL, 0, 0};
     initSDL(&ctx);
 
@@ -40,6 +47,8 @@ void onClickNewGame(AppContext* ctx) {
 }
 
 
+// main.c
+
 void onClickResume(AppContext* ctx) {
     printf("Button 'Resume' clicked\n");
     LoadFlag = false;  // 取消 Load 狀態
@@ -59,6 +68,60 @@ void onClickMainMenu(AppContext* ctx) {
     CreditFlag = false; // 取消 Credit 狀態
 }
 
+// Settings 界面
+void Settings(AppContext* ctx) {
+    Button buttons[3];
+    createButton(ctx, &buttons[0], ctx->window_width / 2 - 100, ctx->window_height / 2 - 75, 200, 50, "Resume", onClickResume);
+    createButton(ctx, &buttons[1], ctx->window_width / 2 - 100, ctx->window_height / 2, 200, 50, "Save", onClickSave);
+    createButton(ctx, &buttons[2], ctx->window_width / 2 - 100, ctx->window_height / 2 + 75, 200, 50, "Main Menu", onClickMainMenu);
+
+    bool quit = false;
+    SDL_Event e;
+
+    // 設置設定背景
+    setRenderAreaContent(ctx, 0, "background/start.png", NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
+
+    while (!quit) {
+        while (SDL_PollEvent(&e) != 0) {
+            if (e.type == SDL_QUIT) {
+                EndFlag = true;
+                quit = true;
+            } else if (e.type == SDL_MOUSEBUTTONDOWN) {
+                int x = e.button.x;
+                int y = e.button.y;
+                for (int i = 0; i < 3; i++) {
+                    if (isButtonClicked(&buttons[i], x, y)) {
+                        buttons[i].onClick(ctx);
+                        quit = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        SDL_SetRenderDrawColor(ctx->renderer, 0, 0, 0, 255);
+        SDL_RenderClear(ctx->renderer);
+
+        // 渲染設定背景
+        renderBackground(ctx, &ctx->render_areas[0]);
+
+        for (int i = 0; i < 3; i++) {
+            renderButton(ctx, &buttons[i]);
+        }
+
+        SDL_RenderPresent(ctx->renderer);
+    }
+}
+
+void onClickSetting(AppContext* ctx) {
+    printf("Button 'Setting' clicked\n");
+    GamePlayingFlag = false; // 退出 GamePlaying 狀態
+    printf("Entering Settings\n"); // 添加診斷輸出
+    Settings(ctx); // 進入設定狀態
+}
+
+
+
 void onClickLoad(AppContext* ctx) {
     printf("Button 'Load' clicked\n");
     LoadFlag = true;
@@ -74,11 +137,6 @@ void onClickExit(AppContext* ctx) {
     EndFlag = true;
 }
 
-void onClickSetting(AppContext* ctx) {
-    printf("Button 'Setting' clicked\n");
-    GamePlayingFlag = false; // 退出 GamePlaying 狀態
-    Settings(ctx); // 進入設定狀態
-}
 
 // 初始化按鈕
 void initMenuButtons(AppContext* ctx, Button* buttons) {
@@ -141,8 +199,6 @@ void MainMenu(AppContext* ctx) {
     }
 }
 
-
-
 void GamePlaying(AppContext* ctx) {
     // 創建四個渲染區域，每個區域大小為視窗的四分之一
     int section_width = ctx->window_width / 2;
@@ -155,6 +211,7 @@ void GamePlaying(AppContext* ctx) {
     // 左上區設置按鈕
     Button settingButton;
     createButton(ctx, &settingButton, 10, 10, 100, 50, "Setting", onClickSetting);
+    printf("Setting button created and onClickSetting bound.\n"); // 添加診斷輸出
 
     // 右上區設置文字
     char* itemTexts[] = {"item1", "item2", "item3", "item4", "item5", "status1", "status2", "status3", "status4", "status5"};
@@ -165,6 +222,7 @@ void GamePlaying(AppContext* ctx) {
         itemRects[i].w = 100;
         itemRects[i].h = 20;
     }
+    
     SDL_Color itemColors[10];
     for (int i = 0; i < 10; i++) {
         itemColors[i] = white;
@@ -192,7 +250,16 @@ void GamePlaying(AppContext* ctx) {
             if (e.type == SDL_QUIT) {
                 quit = true;
                 EndFlag = true;
-            } else if (e.type == SDL_MOUSEBUTTONDOWN || (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_RETURN)) {
+            } else if (e.type == SDL_MOUSEBUTTONDOWN) {
+                int x = e.button.x;
+                int y = e.button.y;
+                printf("Mouse click detected at (%d, %d)\n", x, y); // 添加診斷輸出
+                if (isButtonClicked(&settingButton, x, y)) {
+                    printf("Setting button clicked.\n"); // 添加診斷輸出
+                    settingButton.onClick(ctx);
+                    quit = true;
+                }
+            } else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_RETURN) {
                 // 清空輸入框內容
                 memset(inputText, 0, sizeof(inputText));
                 textLength = 0;
@@ -201,13 +268,6 @@ void GamePlaying(AppContext* ctx) {
                 if (textLength < sizeof(inputText) - 1) {
                     strcat(inputText, e.text.text);
                     textLength += strlen(e.text.text);
-                }
-            } else if (e.type == SDL_MOUSEBUTTONDOWN) {
-                int x = e.button.x;
-                int y = e.button.y;
-                if (isButtonClicked(&settingButton, x, y)) {
-                    settingButton.onClick(ctx);
-                    quit = true;
                 }
             }
         }
@@ -240,6 +300,13 @@ void GamePlaying(AppContext* ctx) {
         SDL_RenderPresent(ctx->renderer);
     }
 }
+
+
+
+
+
+
+
 void BackToMainMenu(AppContext* ctx) {
     printf("Button 'Back' clicked\n");
     LoadFlag = false;  // 返回主菜單，將LoadFlag設置為false
@@ -382,47 +449,4 @@ void Credit() {
     CreditFlag = false; // 退出製作群狀態
 }
 
-void Settings(AppContext* ctx) {
-    Button buttons[3];
-    createButton(ctx, &buttons[0], ctx->window_width / 2 - 100, ctx->window_height / 2 - 75, 200, 50, "Resume", onClickResume);
-    createButton(ctx, &buttons[1], ctx->window_width / 2 - 100, ctx->window_height / 2, 200, 50, "Save", onClickSave);
-    createButton(ctx, &buttons[2], ctx->window_width / 2 - 100, ctx->window_height / 2 + 75, 200, 50, "Main Menu", onClickMainMenu);
-
-    bool quit = false;
-    SDL_Event e;
-
-    // 設置設定背景
-    setRenderAreaContent(ctx, 0, "background/bedroom.png", NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
-
-    while (!quit) {
-        while (SDL_PollEvent(&e) != 0) {
-            if (e.type == SDL_QUIT) {
-                EndFlag = true;
-                quit = true;
-            } else if (e.type == SDL_MOUSEBUTTONDOWN) {
-                int x = e.button.x;
-                int y = e.button.y;
-                for (int i = 0; i < 3; i++) {
-                    if (isButtonClicked(&buttons[i], x, y)) {
-                        buttons[i].onClick(ctx);
-                        quit = true;
-                        break;
-                    }
-                }
-            }
-        }
-
-        SDL_SetRenderDrawColor(ctx->renderer, 0, 0, 0, 255);
-        SDL_RenderClear(ctx->renderer);
-
-        // 渲染設定背景
-        renderBackground(ctx, &ctx->render_areas[0]);
-
-        for (int i = 0; i < 3; i++) {
-            renderButton(ctx, &buttons[i]);
-        }
-
-        SDL_RenderPresent(ctx->renderer);
-    }
-}
 

@@ -21,8 +21,8 @@
 #include <libswresample/swresample.h>
 
 // 定義基準路徑
-#define BASE_PATH "/home/goose/cp2-project/example-game/assests"
-#define MAIN_PATH /home/goose/cp2-project/example-game/assests
+#define BASE_PATH "example-game/assets"
+#define MAIN_PATH example-game/assets
 #define AUDIO_BUFFER_SIZE 192000
 extern int stopVideoFlag;
 extern int isVideoPlaying;
@@ -203,7 +203,7 @@ void renderButton(AppContext* ctx, Button* button);
  * @param y 點擊事件的Y座標
  * @return 若點擊了按鈕返回1，否則返回0
  */
-int isButtonClicked(Button* button, int x, int y);
+bool isButtonClicked(Button* button, int x, int y);
 
 
 
