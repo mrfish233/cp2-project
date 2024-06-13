@@ -10,9 +10,10 @@ bool LoadFlag = false;
 bool CreditFlag = false;
 
 SDL_Color white = {255, 255, 255, 255}; // 定義全域變數
+SDL_Color black = {0, 0, 0, 255};
 
 int process() {
-    AppContext ctx = {NULL, NULL, NULL, 1920, 1080, NULL, 0, 0};
+    AppContext ctx = {NULL, NULL, NULL, 1300, 700, NULL, 0, 0};
     initSDL(&ctx);
 
     // 創建新的渲染區域
@@ -199,46 +200,93 @@ void MainMenu(AppContext* ctx) {
     }
 }
 
-void GamePlaying(AppContext* ctx) {
-    // 創建四個渲染區域，每個區域大小為視窗的四分之一
-    int section_width = ctx->window_width / 2;
-    int section_height = ctx->window_height / 2;
-    createRenderArea(ctx, 0, 0, section_width, section_height); // 左上區
-    createRenderArea(ctx, section_width, 0, section_width, section_height); // 右上區
-    createRenderArea(ctx, 0, section_height, section_width, section_height); // 左下區
-    createRenderArea(ctx, section_width, section_height, section_width, section_height); // 右下區
+void onClickItemNextPage(AppContext* ctx) {
+    printf("Button 'Item Next Page' clicked\n");
+    // Implement item next page logic
+}
 
-    // 左上區設置按鈕
+void onClickItemPreviousPage(AppContext* ctx) {
+    printf("Button 'Item Previous Page' clicked\n");
+    // Implement item previous page logic
+}
+
+void onClickStatusNextPage(AppContext* ctx) {
+    printf("Button 'Status Next Page' clicked\n");
+    // Implement status next page logic
+}
+
+void onClickStatusPreviousPage(AppContext* ctx) {
+    printf("Button 'Status Previous Page' clicked\n");
+    // Implement status previous page logic
+}
+
+
+
+
+void GamePlaying(AppContext* ctx) {
+    // 創建五個渲染區域，根據您的設計進行佈局
+    int section_width = ctx->window_width;
+    int section_height = ctx->window_height;
+
+    // 區域佈局
+    createRenderArea(ctx, 0, 0, section_width * 0.8, section_height * 0.8); // 區域 1
+    createRenderArea(ctx, 0, section_height * 0.8, section_width * 0.2, section_height * 0.2); // 區域 2
+    createRenderArea(ctx, section_width * 0.2, section_height * 0.8, section_width * 0.8, section_height * 0.2); // 區域 3
+    createRenderArea(ctx, section_width * 0.8, 0, section_width * 0.2, section_height * 0.4); // 區域 4
+    createRenderArea(ctx, section_width * 0.8, section_height * 0.4, section_width * 0.2, section_height * 0.2); // 區域 5
+
+    // 設置背景
+    setRenderAreaContent(ctx, 0, "background/start.png", NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
+    setRenderAreaContent(ctx, 1, "background/beach.png", NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
+    setRenderAreaContent(ctx, 2, "background/black.png", NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
+    setRenderAreaContent(ctx, 3, "background/bedroom.png", NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
+    setRenderAreaContent(ctx, 4, "background/church.png", NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
+
+    // 區域1: 設置背景和按鈕
     Button settingButton;
     createButton(ctx, &settingButton, 10, 10, 100, 50, "Setting", onClickSetting);
-    printf("Setting button created and onClickSetting bound.\n"); // 添加診斷輸出
 
-    // 右上區設置文字
-    char* itemTexts[] = {"item1", "item2", "item3", "item4", "item5", "status1", "status2", "status3", "status4", "status5"};
-    SDL_Rect itemRects[10];
-    for (int i = 0; i < 10; i++) {
-        itemRects[i].x = section_width + 10; // 調整到右上區
-        itemRects[i].y = 30 * i;
-        itemRects[i].w = 100;
-        itemRects[i].h = 20;
-    }
-    
-    SDL_Color itemColors[10];
-    for (int i = 0; i < 10; i++) {
-        itemColors[i] = white;
-    }
-    setRenderAreaContent(ctx, 1, "background/beach.png", NULL, 0, itemTexts, itemColors, itemRects, 10, NULL, NULL);
-
-    // 左下區設置圖片
+    // 區域2: 設置圖片
     char* images[] = {"character/lulu/tachie/angry.png"};
-    SDL_Rect imageRect = {10, section_height + section_height - 210, 200, 200}; // 調整到左下區
-    setRenderAreaContent(ctx, 2, "background/beach.png", images, 1, NULL, NULL, NULL, 0, NULL, &imageRect);
+    SDL_Rect imageRect = {0, section_height * 0.6 + 10, section_width* 0.2, section_height * 0.4}; // 調整到左下區
+    setRenderAreaContent(ctx, 1, NULL, images, 1, NULL, NULL, NULL, 0, NULL, &imageRect);
 
-    // 右下區設置可輸入的文字方塊
-    SDL_Color black = {0, 0, 0, 255}; // 黑色
-    SDL_Color inputTextColor = {255, 255, 255, 255}; // 白色
-    char inputText[256] = {0};
-    int textLength = 0;
+    // 區域3: 設置文字框
+    SDL_Surface* textSurface = TTF_RenderUTF8_Blended(ctx->font, "text put here", white);
+    SDL_Texture* textTexture = SDL_CreateTextureFromSurface(ctx->renderer, textSurface);
+    SDL_Rect textRect = {section_width * 0.2 + 10, section_height * 0.8 + 10, textSurface->w, textSurface->h};
+    SDL_FreeSurface(textSurface);
+
+    // 區域4: 設置物品欄
+    char* itemTexts[] = {"item1", "item2", "item3", "item4", "item5"};
+    SDL_Texture* itemTextures[5];
+    SDL_Rect itemRects[5];
+    for (int i = 0; i < 5; i++) {
+        SDL_Surface* itemSurface = TTF_RenderUTF8_Blended(ctx->font, itemTexts[i], white);
+        itemTextures[i] = SDL_CreateTextureFromSurface(ctx->renderer, itemSurface);
+        itemRects[i] = (SDL_Rect){section_width * 0.8 + 10, 30 * i, itemSurface->w, itemSurface->h};
+        SDL_FreeSurface(itemSurface);
+    }
+
+    // 區域4: 設置按鈕
+    Button itemNextPageButton, itemPreviousPageButton;
+    createButton(ctx, &itemPreviousPageButton, section_width * 0.8 + 10, section_height * 0.4 - 60, 50, 50, "<", onClickItemPreviousPage);
+    createButton(ctx, &itemNextPageButton, section_width * 0.8 + 70, section_height * 0.4 - 60, 50, 50, ">", onClickItemNextPage);
+
+    // 區域5: 設置狀態欄
+    char* statusTexts[] = {"status1", "status2", "status3", "status4", "status5"};
+    SDL_Texture* statusTextures[5];
+    SDL_Rect statusRects[5];
+    for (int i = 0; i < 5; i++) {
+        SDL_Surface* statusSurface = TTF_RenderUTF8_Blended(ctx->font, statusTexts[i], white);
+        statusTextures[i] = SDL_CreateTextureFromSurface(ctx->renderer, statusSurface);
+        statusRects[i] = (SDL_Rect){section_width * 0.8 + 10, section_height * 0.4 + 30 * i, statusSurface->w, statusSurface->h};
+        SDL_FreeSurface(statusSurface);
+    }
+
+    Button statusNextPageButton, statusPreviousPageButton;
+    createButton(ctx, &statusPreviousPageButton, section_width * 0.8 + 10, section_height * 0.8 - 60, 50, 50, "<", onClickStatusPreviousPage);
+    createButton(ctx, &statusNextPageButton, section_width * 0.8 + 70, section_height * 0.8 - 60, 50, 50, ">", onClickStatusNextPage);
 
     loadTextures(ctx);
 
@@ -253,57 +301,55 @@ void GamePlaying(AppContext* ctx) {
             } else if (e.type == SDL_MOUSEBUTTONDOWN) {
                 int x = e.button.x;
                 int y = e.button.y;
-                printf("Mouse click detected at (%d, %d)\n", x, y); // 添加診斷輸出
                 if (isButtonClicked(&settingButton, x, y)) {
-                    printf("Setting button clicked.\n"); // 添加診斷輸出
                     settingButton.onClick(ctx);
                     quit = true;
+                } else if (isButtonClicked(&itemNextPageButton, x, y)) {
+                    itemNextPageButton.onClick(ctx);
+                } else if (isButtonClicked(&itemPreviousPageButton, x, y)) {
+                    itemPreviousPageButton.onClick(ctx);
+                } else if (isButtonClicked(&statusNextPageButton, x, y)) {
+                    statusNextPageButton.onClick(ctx);
+                } else if (isButtonClicked(&statusPreviousPageButton, x, y)) {
+                    statusPreviousPageButton.onClick(ctx);
                 }
-            } else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_RETURN) {
-                // 清空輸入框內容
-                memset(inputText, 0, sizeof(inputText));
-                textLength = 0;
             } else if (e.type == SDL_TEXTINPUT) {
                 // 處理文字輸入
-                if (textLength < sizeof(inputText) - 1) {
-                    strcat(inputText, e.text.text);
-                    textLength += strlen(e.text.text);
-                }
+                // 在區域3顯示
             }
         }
 
         SDL_SetRenderDrawColor(ctx->renderer, 0, 0, 0, 255);
         SDL_RenderClear(ctx->renderer);
 
-        // 依次渲染各個區域，確保渲染順序
-        renderBackground(ctx, &ctx->render_areas[0]);
-        renderBackground(ctx, &ctx->render_areas[1]);
-        renderBackground(ctx, &ctx->render_areas[2]);
-        SDL_SetRenderDrawColor(ctx->renderer, black.r, black.g, black.b, black.a);
-        SDL_RenderFillRect(ctx->renderer, &ctx->render_areas[3].rect);
+        // 渲染各個區域，確保背景在最下面
+        renderBackground(ctx, &ctx->render_areas[0]);        
+        renderBackground(ctx, &ctx->render_areas[1]);        
+        renderBackground(ctx, &ctx->render_areas[2]);        
+        renderBackground(ctx, &ctx->render_areas[3]);        
+        renderBackground(ctx, &ctx->render_areas[4]);        
 
-        renderText(ctx, &ctx->render_areas[1]);
-        renderImage(ctx, &ctx->render_areas[2]);
-
-        // 渲染輸入框內的文字
-        if (strlen(inputText) > 0) {
-            SDL_Surface* textSurface = TTF_RenderUTF8_Blended(ctx->font, inputText, inputTextColor);
-            SDL_Texture* textTexture = SDL_CreateTextureFromSurface(ctx->renderer, textSurface);
-            SDL_Rect textRect = {section_width + 10, section_height + section_height / 2 - 15, textSurface->w, textSurface->h};
-            SDL_RenderCopy(ctx->renderer, textTexture, NULL, &textRect);
-            SDL_FreeSurface(textSurface);
-            SDL_DestroyTexture(textTexture);
+        renderImage(ctx, &ctx->render_areas[1]); // 區域2的圖片
+        renderButton(ctx, &itemNextPageButton); // 區域4的按鈕
+        renderButton(ctx, &itemPreviousPageButton);
+        renderButton(ctx, &statusNextPageButton); // 區域5的按鈕
+        renderButton(ctx, &statusPreviousPageButton);
+        renderButton(ctx, &settingButton); // 區域1的按鈕
+        SDL_RenderCopy(ctx->renderer, textTexture, NULL, &textRect); // 渲染區域3的文字
+        for (int i = 0; i < 5; i++) {
+            SDL_RenderCopy(ctx->renderer, itemTextures[i], NULL, &itemRects[i]); // 渲染區域4的文字
+            SDL_RenderCopy(ctx->renderer, statusTextures[i], NULL, &statusRects[i]); // 渲染區域5的文字
         }
-
-        renderButton(ctx, &settingButton); // 渲染按鈕在最上層
-
         SDL_RenderPresent(ctx->renderer);
     }
+
+    // 釋放資源
+    SDL_DestroyTexture(textTexture);
+    for (int i = 0; i < 5; i++) {
+        SDL_DestroyTexture(itemTextures[i]);
+        SDL_DestroyTexture(statusTextures[i]);
+    }
 }
-
-
-
-
 
 
 
@@ -311,8 +357,6 @@ void BackToMainMenu(AppContext* ctx) {
     printf("Button 'Back' clicked\n");
     LoadFlag = false;  // 返回主菜單，將LoadFlag設置為false
 }
-
-// main.c
 
 void onClickSaveSlot1(AppContext* ctx) {
     printf("Button 'Save 1' clicked\n");
