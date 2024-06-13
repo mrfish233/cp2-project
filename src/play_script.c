@@ -163,6 +163,13 @@ int32_t updateDialogue(Script *script, Display *display) {
     Scene *scene = NULL;
     Dialogue *dialogue = NULL;
 
+    // Check all triggers
+
+    if (checkAllTriggers(script, display) != 0) {
+        printf("error: failed to check all triggers\n");
+        return 1;
+    }
+
     // If the dialogue is empty, get from the event
     // Else, check the next dialogue
 
@@ -193,6 +200,11 @@ int32_t updateDialogue(Script *script, Display *display) {
             printf("error: dialogue '%s' not found\n", event->dialogue);
             return 1;
         }
+
+        if (dialogue->next_type == DIALOGUE_END) {
+            strncpy(display->end_path, dialogue->next, STR_SIZE);
+            display->end_flag = 1;
+        }
     }
     else {
         dialogue = getDialogue(script, script->current_dialogue_id);
@@ -218,8 +230,6 @@ int32_t updateDialogue(Script *script, Display *display) {
         else if (dialogue->next_type == DIALOGUE_END) {
             strncpy(display->end_path, dialogue->next, STR_SIZE);
             display->end_flag = 1;
-
-            return 0;
         }
         else if ((dialogue->next_type == DIALOGUE_OPTION && display->option_select == 0) ||
                  (dialogue->next_type == DIALOGUE_NORMAL)) {
@@ -358,6 +368,43 @@ int32_t updateDialogue(Script *script, Display *display) {
     else {
         display->update_flag = 0;
         display->update_size = 0;
+    }
+
+    return 0;
+}
+
+int32_t checkAllTriggers(Script *script, Display *display) {
+    if (script == NULL || display == NULL) {
+        return 1;
+    }
+
+    for (int32_t i = 0; i < script->trigger_size; i++) {
+        Trigger *trigger = &(script->triggers[i]);
+
+        Condition temp = {
+            .character = {0},
+            .condition = {0},
+            .condition_type = trigger->condition_type,
+            .value = trigger->value,
+            .logic = trigger->logic
+        };
+
+        strncpy(temp.character, trigger->character, STR_SIZE);
+        strncpy(temp.condition, trigger->condition, STR_SIZE);
+
+        if (isConditionMet(script, &temp) == 1) {
+            Event *event = getEvent(script, trigger->event);
+
+            if (event == NULL) {
+                printf("error: event '%s' not found\n", trigger->event);
+                return 1;
+            }
+
+            strncpy(script->current_event_id, event->id, STR_SIZE);
+            script->current_dialogue_id[0] = '\0';
+
+            break;
+        }
     }
 
     return 0;

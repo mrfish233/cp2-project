@@ -72,6 +72,14 @@ int32_t updateStatusPage(Script *script, Display *display);
 int32_t updateDialogue(Script *script, Display *display);
 
 /**
+ * Check all triggers
+ * @param script The script to use
+ * @param display The display data to update
+ * @return 0 if successful, 1 if failed
+ */
+int32_t checkAllTriggers(Script *script, Display *display);
+
+/**
  * Update the character data
  * @param script The script to use
  * @param update_id The id of the update to search
