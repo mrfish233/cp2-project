@@ -21,8 +21,8 @@
 #include <libswresample/swresample.h>
 
 // 定義基準路徑
-#define BASE_PATH "/home/goose/cp2-project/example-game/assests"
-#define MAIN_PATH /home/goose/cp2-project/example-game/assests
+#define BASE_PATH "example-game/assets"
+#define MAIN_PATH example-game/assets
 #define AUDIO_BUFFER_SIZE 192000
 extern int stopVideoFlag;
 extern int isVideoPlaying;

@@ -3,14 +3,16 @@
 
 #include "SDL.h"
 
-// 全域flag
-bool newGameFlag = false;
-bool EndFlag = false;
-bool GamePlayingFlag = false;
-bool LoadFlag = false;
-bool CreditFlag = false;
 
-SDL_Color white = {255, 255, 255, 255}; // 定義全域變數
+
+
+
+int process();
+
+
+
+
+
 
 
 // 介面組

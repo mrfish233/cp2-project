@@ -1,10 +1,16 @@
 #include "UI.h"
 
 // 按鈕點擊事件回調函數
+// 全域flag
+bool newGameFlag = false;
+bool EndFlag = false;
+bool GamePlayingFlag = false;
+bool LoadFlag = false;
+bool CreditFlag = false;
 
+SDL_Color white = {255, 255, 255, 255}; // 定義全域變數
 
-
-int main(int argc, char* argv[]) {
+int process() {
     AppContext ctx = {NULL, NULL, NULL, 1920, 1080, NULL, 0, 0};
     initSDL(&ctx);
 
@@ -33,11 +39,13 @@ int main(int argc, char* argv[]) {
 }
 
 
+
 void onClickNewGame(AppContext* ctx) {
     printf("Button 'New Game' clicked\n");
     newGameFlag = true;
     GamePlayingFlag = true;
 }
+
 
 
 void onClickResume(AppContext* ctx) {
@@ -58,7 +66,6 @@ void onClickMainMenu(AppContext* ctx) {
     GamePlayingFlag = false; // 取消 GamePlaying 狀態
     CreditFlag = false; // 取消 Credit 狀態
 }
-
 void onClickLoad(AppContext* ctx) {
     printf("Button 'Load' clicked\n");
     LoadFlag = true;
@@ -74,11 +81,7 @@ void onClickExit(AppContext* ctx) {
     EndFlag = true;
 }
 
-void onClickSetting(AppContext* ctx) {
-    printf("Button 'Setting' clicked\n");
-    GamePlayingFlag = false; // 退出 GamePlaying 狀態
-    Settings(ctx); // 進入設定狀態
-}
+
 
 // 初始化按鈕
 void initMenuButtons(AppContext* ctx, Button* buttons) {
@@ -142,7 +145,6 @@ void MainMenu(AppContext* ctx) {
 }
 
 
-
 void GamePlaying(AppContext* ctx) {
     // 創建四個渲染區域，每個區域大小為視窗的四分之一
     int section_width = ctx->window_width / 2;
@@ -165,6 +167,7 @@ void GamePlaying(AppContext* ctx) {
         itemRects[i].w = 100;
         itemRects[i].h = 20;
     }
+    
     SDL_Color itemColors[10];
     for (int i = 0; i < 10; i++) {
         itemColors[i] = white;
@@ -240,6 +243,7 @@ void GamePlaying(AppContext* ctx) {
         SDL_RenderPresent(ctx->renderer);
     }
 }
+
 void BackToMainMenu(AppContext* ctx) {
     printf("Button 'Back' clicked\n");
     LoadFlag = false;  // 返回主菜單，將LoadFlag設置為false
@@ -331,7 +335,7 @@ void Load(AppContext* ctx) {
             if (e.type == SDL_QUIT) {
                 quit = true;
                 EndFlag = true;
-            } else if (e.type == SDL_MOUSEBUTTONDOWN) {
+            } else if (e.type == SDL_MOUSEBUTTONDOWN) {  
                 int x = e.button.x;
                 int y = e.button.y;
                 if (isButtonClicked(&backButton, x, y)) {
@@ -382,6 +386,10 @@ void Credit() {
     CreditFlag = false; // 退出製作群狀態
 }
 
+
+
+
+// Settings 界面
 void Settings(AppContext* ctx) {
     Button buttons[3];
     createButton(ctx, &buttons[0], ctx->window_width / 2 - 100, ctx->window_height / 2 - 75, 200, 50, "Resume", onClickResume);
@@ -392,7 +400,7 @@ void Settings(AppContext* ctx) {
     SDL_Event e;
 
     // 設置設定背景
-    setRenderAreaContent(ctx, 0, "background/bedroom.png", NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
+    setRenderAreaContent(ctx, 0, "background/start.png", NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
 
     while (!quit) {
         while (SDL_PollEvent(&e) != 0) {
@@ -424,5 +432,12 @@ void Settings(AppContext* ctx) {
 
         SDL_RenderPresent(ctx->renderer);
     }
+}
+
+// 在 GamePlaying 中點擊 Setting 按鈕時呼叫的函數
+void onClickSetting(AppContext* ctx) {
+    printf("Button 'Setting' clicked\n");
+    GamePlayingFlag = false; // 退出 GamePlaying 狀態
+    Settings(ctx); // 進入設定狀態
 }
 
