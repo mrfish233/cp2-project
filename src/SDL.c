@@ -48,7 +48,7 @@ void loadTextures(AppContext* ctx) {
         if (ctx->render_areas[i].text_count > 0) {
             ctx->render_areas[i].textTextures = malloc(ctx->render_areas[i].text_count * sizeof(SDL_Texture*));
             for (int j = 0; j < ctx->render_areas[i].text_count; j++) {
-                SDL_Surface* surface = TTF_RenderText_Solid(ctx->font, ctx->render_areas[i].texts[j], ctx->render_areas[i].textColors[j]);
+                SDL_Surface* surface = TTF_RenderUTF8_Blended(ctx->font, ctx->render_areas[i].texts[j], ctx->render_areas[i].textColors[j]);
                 ctx->render_areas[i].textTextures[j] = SDL_CreateTextureFromSurface(ctx->renderer, surface);
                 SDL_FreeSurface(surface);
                 if (ctx->render_areas[i].textTextures[j] == NULL) {
@@ -59,21 +59,20 @@ void loadTextures(AppContext* ctx) {
     }
 }
 
-// 渲染背景
 void renderBackground(AppContext* ctx, RenderArea* area) {
     if (area->is_video) {
         renderVideo(ctx, area);
     } else if (area->background) {
-        SDL_RenderCopy(ctx->renderer, area->background, NULL, &area->rect);
+        // 設置目標矩形大小，使背景適應渲染區域
+        SDL_Rect dstrect = area->rect;
+        SDL_RenderCopy(ctx->renderer, area->background, NULL, &dstrect);
     } else {
         SDL_SetRenderDrawColor(ctx->renderer, 0, 0, 0, 255);
         SDL_RenderFillRect(ctx->renderer, &area->rect);
     }
 }
 
-// 創建渲染區域
 
-// 創建渲染區域
 void createRenderArea(AppContext* ctx, int x, int y, int w, int h) {
     printf("Creating render area at (%d, %d) with dimensions %dx%d\n", x, y, w, h);
     ctx->num_render_areas++;
@@ -95,17 +94,16 @@ void createRenderArea(AppContext* ctx, int x, int y, int w, int h) {
 
 
 
-
 void setRenderAreaContent(AppContext* ctx, int areaIndex, const char* background, char** images, int image_count, char** texts, SDL_Color* textColors, SDL_Rect* textRects, int text_count, const char* video_path, SDL_Rect* imageRect) {
     RenderArea* area = &ctx->render_areas[areaIndex];
-    size_t base_path_len = strlen(BASE_PATH); // 直接使用 BASE_PATH
+    size_t base_path_len = strlen(BASE_PATH);
 
     // 設置背景
     if (background) {
         size_t background_len = strlen(background);
         char* fullPath = (char*)malloc(base_path_len + background_len + 2); // +2 為了加上 '/' 和 '\0'
-        snprintf(fullPath, base_path_len + background_len + 2, "%s/%s", BASE_PATH, background); // 使用 BASE_PATH
-        printf("Loading background texture from: %s\n", fullPath);  // 調試信息
+        snprintf(fullPath, base_path_len + background_len + 2, "%s/%s", BASE_PATH, background);
+        printf("Loading background texture from: %s\n", fullPath);
         area->background = IMG_LoadTexture(ctx->renderer, fullPath);
         if (area->background == NULL) {
             fprintf(stderr, "Failed to load background texture %s: %s\n", fullPath, IMG_GetError());
@@ -120,9 +118,9 @@ void setRenderAreaContent(AppContext* ctx, int areaIndex, const char* background
     for (int i = 0; i < image_count; i++) {
         size_t image_len = strlen(images[i]);
         char* fullPath = (char*)malloc(base_path_len + image_len + 2); // +2 為了加上 '/' 和 '\0'
-        snprintf(fullPath, base_path_len + image_len + 2, "%s/%s", BASE_PATH, images[i]); // 使用 BASE_PATH
-        printf("Loading image texture from: %s\n", fullPath);  // 調試信息
-        FILE* file = fopen(fullPath, "r");  // 嘗試手動打開文件
+        snprintf(fullPath, base_path_len + image_len + 2, "%s/%s", BASE_PATH, images[i]);
+        printf("Loading image texture from: %s\n", fullPath);
+        FILE* file = fopen(fullPath, "r");
         if (file) {
             fclose(file);
             area->images[i] = IMG_LoadTexture(ctx->renderer, fullPath);
@@ -135,7 +133,7 @@ void setRenderAreaContent(AppContext* ctx, int areaIndex, const char* background
             fprintf(stderr, "File does not exist or cannot be opened: %s\n", fullPath);
         }
         if (imageRect != NULL) {
-            area->imageRects[i] = *imageRect;  // 設置圖像位置和大小
+            area->imageRects[i] = *imageRect;
         }
         free(fullPath);
     }
@@ -145,7 +143,7 @@ void setRenderAreaContent(AppContext* ctx, int areaIndex, const char* background
     area->texts = malloc(text_count * sizeof(char*));
     area->textColors = malloc(text_count * sizeof(SDL_Color));
     area->textRects = malloc(text_count * sizeof(SDL_Rect));
-    area->textTextures = malloc(text_count * sizeof(SDL_Texture*));  // 增加對應的textTextures初始化
+    area->textTextures = malloc(text_count * sizeof(SDL_Texture*));
     for (int i = 0; i < text_count; i++) {
         area->texts[i] = strdup(texts[i]);
         area->textColors[i] = textColors[i];
@@ -156,21 +154,15 @@ void setRenderAreaContent(AppContext* ctx, int areaIndex, const char* background
     if (video_path) {
         size_t video_len = strlen(video_path);
         char* fullPath = (char*)malloc(base_path_len + video_len + 2); // +2 為了加上 '/' 和 '\0'
-        snprintf(fullPath, base_path_len + video_len + 2, "%s/%s", BASE_PATH, video_path); // 使用 BASE_PATH
+        snprintf(fullPath, base_path_len + video_len + 2, "%s/%s", BASE_PATH, video_path);
         area->video_path = strdup(fullPath);
         area->is_video = 1;
-        // 初始化影片播放相關的資源
-        area->video_texture = NULL;  // 影片紋理初始化為NULL
+        area->video_texture = NULL;
         free(fullPath);
     } else {
         area->is_video = 0;
     }
 }
-
-
-
-
-
 
 // 載入影片
 int loadVideo(const char* filename, AVFormatContext** pFormatContext, AVCodecContext** pCodecContext, int* videoStreamIndex) {
@@ -259,7 +251,7 @@ void renderImage(AppContext* ctx, RenderArea* area) {
             continue;
         }
         SDL_Rect dstrect = area->imageRects[i];
-        printf("Rendering image at (%d, %d) with dimensions %dx%d\n", dstrect.x, dstrect.y, dstrect.w, dstrect.h);
+        //printf("Rendering image at (%d, %d) with dimensions %dx%d\n", dstrect.x, dstrect.y, dstrect.w, dstrect.h);
         SDL_RenderCopy(ctx->renderer, texture, NULL, &dstrect);
     }
 }
@@ -267,7 +259,7 @@ void renderImage(AppContext* ctx, RenderArea* area) {
 // 渲染文字
 void renderText(AppContext* ctx, RenderArea* area) {
     for (int i = 0; i < area->text_count; i++) {
-        printf("Rendering text %d\n", i);
+        //printf("Rendering text %d\n", i);
         SDL_Texture* texture = area->textTextures[i];
         if (texture == NULL) {
             fprintf(stderr, "Failed to create text texture: %s\n", SDL_GetError());
@@ -463,19 +455,38 @@ void createButton(AppContext* ctx, Button* button, int x, int y, int w, int h, c
     button->rect.w = w;
     button->rect.h = h;
     button->onClick = onClick;
+    strncpy(button->text, text, sizeof(button->text) - 1);  // 確保保存文本
 
-    SDL_Surface* surface = TTF_RenderText_Solid(ctx->font, text, (SDL_Color){255, 255, 255});
+    SDL_Surface* surface = TTF_RenderUTF8_Blended(ctx->font, text, (SDL_Color){255, 255, 255, 255});
     button->texture = SDL_CreateTextureFromSurface(ctx->renderer, surface);
     SDL_FreeSurface(surface);
 }
 
+
+
 void renderButton(AppContext* ctx, Button* button) {
+    // 清除按鈕區域
     SDL_SetRenderDrawColor(ctx->renderer, 0, 0, 0, 255);
     SDL_RenderFillRect(ctx->renderer, &button->rect);
-    SDL_RenderCopy(ctx->renderer, button->texture, NULL, &button->rect);
+
+    // 渲染按鈕背景
+    SDL_SetRenderDrawColor(ctx->renderer, 255, 255, 255, 255); // 白色背景
+    SDL_Rect bgRect = {button->rect.x + 2, button->rect.y + 2, button->rect.w - 4, button->rect.h - 4};
+    SDL_RenderFillRect(ctx->renderer, &bgRect);
+
+    // 渲染按鈕文字
+    SDL_Surface* textSurface = TTF_RenderUTF8_Blended(ctx->font, button->text, button->textColor);
+    SDL_Texture* textTexture = SDL_CreateTextureFromSurface(ctx->renderer, textSurface);
+    SDL_Rect textRect = {button->rect.x + (button->rect.w - textSurface->w) / 2, button->rect.y + (button->rect.h - textSurface->h) / 2, textSurface->w, textSurface->h};
+    SDL_RenderCopy(ctx->renderer, textTexture, NULL, &textRect);
+
+    // 清理資源
+    SDL_FreeSurface(textSurface);
+    SDL_DestroyTexture(textTexture);
 }
 
-int isButtonClicked(Button* button, int x, int y) {
+
+bool isButtonClicked(Button* button, int x, int y) {
     return (x >= button->rect.x && x <= button->rect.x + button->rect.w &&
             y >= button->rect.y && y <= button->rect.y + button->rect.h);
 }

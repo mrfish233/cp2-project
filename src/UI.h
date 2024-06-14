@@ -5,16 +5,7 @@
 
 
 
-
-
 int process();
-
-
-
-
-
-
-
 // 介面組
 void GamePlaying(AppContext* ctx);
 void End();
@@ -25,7 +16,6 @@ void BackToMainMenu(AppContext* ctx);
 void Settings(AppContext* ctx);
 
 //Button組
-void createButton1(AppContext* ctx, Button* button, int x, int y, int w, int h, const char* text, void (*onClick)(AppContext* ctx)) ;
 
 
 void onClickNewGame(AppContext* ctx) ;
