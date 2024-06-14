@@ -21,8 +21,6 @@
 #include <libswresample/swresample.h>
 
 // 定義基準路徑
-#define BASE_PATH "example-game/assets"
-#define MAIN_PATH example-game/assets
 #define AUDIO_BUFFER_SIZE 192000
 extern int stopVideoFlag;
 extern int isVideoPlaying;
@@ -61,7 +59,6 @@ typedef struct {
     int num_render_areas;
     int switchCounter;
     int isPlayingVideo;
-    char base_path[PATH_MAX];  // 新增字段，用於保存基準路徑
 } AppContext;
 
 typedef struct {

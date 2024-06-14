@@ -3,9 +3,8 @@
 
 #include "SDL.h"
 
+int startEngine(char *dir);
 
-
-int process();
 // 介面組
 void GamePlaying(AppContext* ctx);
 void End();
@@ -16,7 +15,6 @@ void BackToMainMenu(AppContext* ctx);
 void Settings(AppContext* ctx);
 
 //Button組
-
 
 void onClickNewGame(AppContext* ctx) ;
 void onClickResume(AppContext* ctx);

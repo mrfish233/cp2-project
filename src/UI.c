@@ -12,8 +12,8 @@ bool CreditFlag = false;
 SDL_Color white = {255, 255, 255, 255}; // 定義全域變數
 SDL_Color black = {0, 0, 0, 255};
 
-int process() {
-    AppContext ctx = {NULL, NULL, NULL, 1300, 700, NULL, 0, 0};
+int startEngine(char *dir) {
+    AppContext ctx = { NULL, NULL, NULL, 1300, 700, NULL, 0, 0, 0 };
     initSDL(&ctx);
 
     // 創建新的渲染區域
@@ -31,7 +31,7 @@ int process() {
         } else {
             MainMenu(&ctx);
         }
-        
+
         // 重置標誌位，避免重複執行
         newGameFlag = false;
     }
@@ -81,7 +81,7 @@ void Settings(AppContext* ctx) {
     SDL_Event e;
 
     // 設置設定背景
-    setRenderAreaContent(ctx, 0, "background/start.png", NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
+    setRenderAreaContent(ctx, 0, "example-game/assets/background/start.png", NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
 
     while (!quit) {
         while (SDL_PollEvent(&e) != 0) {
@@ -166,7 +166,7 @@ void MainMenu(AppContext* ctx) {
     SDL_Event e;
 
     // 設置主菜單背景
-    setRenderAreaContent(ctx, 0, "background/start.png", NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
+    setRenderAreaContent(ctx, 0, "example-game/assets/background/start.png", NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
 
     while (!quit) {
         while (SDL_PollEvent(&e) != 0) {
@@ -446,17 +446,17 @@ void GamePlaying(AppContext* ctx) {
     createRenderArea(ctx, section_width * 0.8, section_height * 0.4, section_width * 0.2, section_height * 0.2); // 區域 5
 
     // 設置背景
-    setRenderAreaContent(ctx, 0, "background/start.png", NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
-    setRenderAreaContent(ctx, 1, "background/beach.png", NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
-    setRenderAreaContent(ctx, 2, "background/black.png", NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
-    setRenderAreaContent(ctx, 3, "background/bedroom.png", NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
-    setRenderAreaContent(ctx, 4, "background/church.png", NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
+    setRenderAreaContent(ctx, 0, "example-game/assets/background/start.png", NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
+    setRenderAreaContent(ctx, 1, "example-game/assets/background/beach.png", NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
+    setRenderAreaContent(ctx, 2, "example-game/assets/background/black.png", NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
+    setRenderAreaContent(ctx, 3, "example-game/assets/background/bedroom.png", NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
+    setRenderAreaContent(ctx, 4, "example-game/assets/background/church.png", NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
 
     // 區域1: 設置背景和按鈕
     createButton(ctx, &settingButton, 10, 10, 100, 50, "Setting", onClickSetting);
 
     // 區域2: 設置圖片
-    char* images[] = {"character/lulu/tachie/angry.png"};
+    char* images[] = {"example-game/assets/character/lulu/tachie/angry.png"};
     SDL_Rect imageRect = {0, section_height * 0.6 + 10, section_width* 0.2, section_height * 0.4}; // 調整到左下區
     setRenderAreaContent(ctx, 1, NULL, images, 1, NULL, NULL, NULL, 0, NULL, &imageRect);
 
