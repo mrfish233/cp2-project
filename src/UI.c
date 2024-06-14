@@ -1,7 +1,5 @@
 #include "UI.h"
 
-// 按鈕點擊事件回調函數
-
 // 全域flag
 bool newGameFlag = false;
 bool EndFlag = false;
@@ -40,16 +38,11 @@ int startEngine(char *dir) {
     return 0;
 }
 
-
-
 void onClickNewGame(AppContext* ctx) {
     printf("Button 'New Game' clicked\n");
     newGameFlag = true;
     GamePlayingFlag = true;
 }
-
-
-// main.c
 
 void onClickResume(AppContext* ctx) {
     printf("Button 'Resume' clicked\n");
@@ -70,7 +63,6 @@ void onClickMainMenu(AppContext* ctx) {
     CreditFlag = false; // 取消 Credit 狀態
 }
 
-// Settings 界面
 void Settings(AppContext* ctx) {
     Button buttons[3];
     createButton(ctx, &buttons[0], ctx->window_width / 2 - 100, ctx->window_height / 2 - 75, 200, 50, "Resume", onClickResume);
@@ -122,8 +114,6 @@ void onClickSetting(AppContext* ctx) {
     Settings(ctx); // 進入設定狀態
 }
 
-
-
 void onClickLoad(AppContext* ctx) {
     printf("Button 'Load' clicked\n");
     LoadFlag = true;
@@ -139,8 +129,6 @@ void onClickExit(AppContext* ctx) {
     EndFlag = true;
 }
 
-
-// 初始化按鈕
 void initMenuButtons(AppContext* ctx, Button* buttons) {
     createButton(ctx, &buttons[0], ctx->window_width / 2 - 100, ctx->window_height / 2 - 100, 200, 50, "New Game", onClickNewGame);
     createButton(ctx, &buttons[1], ctx->window_width / 2 - 100, ctx->window_height / 2 - 25, 200, 50, "Load", onClickLoad);
@@ -148,7 +136,6 @@ void initMenuButtons(AppContext* ctx, Button* buttons) {
     createButton(ctx, &buttons[3], ctx->window_width / 2 - 100, ctx->window_height / 2 + 125, 200, 50, "Exit", onClickExit);
 }
 
-// 渲染標題
 void renderTitle(AppContext* ctx) {
     SDL_Surface* surface = TTF_RenderUTF8_Blended(ctx->font, "失落的旋律", white);
     SDL_Texture* texture = SDL_CreateTextureFromSurface(ctx->renderer, surface);
@@ -220,10 +207,6 @@ void onClickStatusPreviousPage(AppContext* ctx) {
     printf("Button 'Status Previous Page' clicked\n");
     // Implement status previous page logic
 }
-
-
-
-
 
 void BackToMainMenu(AppContext* ctx) {
     printf("Button 'Back' clicked\n");
@@ -352,7 +335,6 @@ void Load(AppContext* ctx) {
     }
 }
 
-
 void End() {
     // 結束遊戲的代碼
     printf("Ending the game...\n");
@@ -364,9 +346,6 @@ void Credit() {
     printf("Displaying credits...\n");
     CreditFlag = false; // 退出製作群狀態
 }
-
-
-
 
 //實驗================================================================================================
 typedef struct {
@@ -538,11 +517,11 @@ void GamePlaying(AppContext* ctx) {
         SDL_RenderClear(ctx->renderer);
 
         // 渲染各個區域，確保背景在最下面
-        renderBackground(ctx, &ctx->render_areas[0]);        
-        renderBackground(ctx, &ctx->render_areas[1]);        
-        renderBackground(ctx, &ctx->render_areas[2]);        
-        renderBackground(ctx, &ctx->render_areas[3]);        
-        renderBackground(ctx, &ctx->render_areas[4]);        
+        renderBackground(ctx, &ctx->render_areas[0]);
+        renderBackground(ctx, &ctx->render_areas[1]);
+        renderBackground(ctx, &ctx->render_areas[2]);
+        renderBackground(ctx, &ctx->render_areas[3]);
+        renderBackground(ctx, &ctx->render_areas[4]);
 
         renderImage(ctx, &ctx->render_areas[1]); // 區域2的圖片
         renderButton(ctx, &itemNextPageButton); // 區域4的按鈕
@@ -582,9 +561,3 @@ void GamePlaying(AppContext* ctx) {
         SDL_DestroyTexture(statusTextures[i]);
     }
 }
-
-
-
-
-
-

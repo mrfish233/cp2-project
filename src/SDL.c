@@ -34,13 +34,8 @@ void initSDL(AppContext* ctx) {
         cleanUp(ctx);
         exit(1);
     }
-
-    // 直接設置基準路徑
-    // strncpy(ctx->base_path, BASE_PATH, sizeof(ctx->base_path) - 1);
-    // ctx->base_path[sizeof(ctx->base_path) - 1] = '\0';
 }
 
-// 載入文字和圖像紋理
 void loadTextures(AppContext* ctx) {
     for (int i = 0; i < ctx->num_render_areas; i++) {
         if (ctx->render_areas[i].text_count > 0) {
@@ -70,7 +65,6 @@ void renderBackground(AppContext* ctx, RenderArea* area) {
     }
 }
 
-
 void createRenderArea(AppContext* ctx, int x, int y, int w, int h) {
     printf("Creating render area at (%d, %d) with dimensions %dx%d\n", x, y, w, h);
     ctx->num_render_areas++;
@@ -89,8 +83,6 @@ void createRenderArea(AppContext* ctx, int x, int y, int w, int h) {
     ctx->render_areas[ctx->num_render_areas - 1].video_texture = NULL;
     ctx->render_areas[ctx->num_render_areas - 1].is_video = 0;
 }
-
-
 
 void setRenderAreaContent(AppContext* ctx, int areaIndex, const char* background, char** images, int image_count, char** texts, SDL_Color* textColors, SDL_Rect* textRects, int text_count, const char* video_path, SDL_Rect* imageRect) {
     RenderArea* area = &ctx->render_areas[areaIndex];
@@ -191,7 +183,6 @@ void setRenderAreaContent(AppContext* ctx, int areaIndex, const char* background
     }
 }
 
-// 載入影片
 int loadVideo(const char* filename, AVFormatContext** pFormatContext, AVCodecContext** pCodecContext, int* videoStreamIndex) {
     AVCodec* pCodec;
     AVCodecParameters* pCodecParameters;
@@ -247,7 +238,6 @@ int loadVideo(const char* filename, AVFormatContext** pFormatContext, AVCodecCon
     return 0;
 }
 
-// 渲染所有區域
 void renderAreas(AppContext* ctx) {
     for (int i = 0; i < ctx->num_render_areas; i++) {
         renderBackground(ctx, &ctx->render_areas[i]);
@@ -260,7 +250,6 @@ void renderAreas(AppContext* ctx) {
     }
 }
 
-// 渲染影片
 void renderVideo(AppContext* ctx, RenderArea* area) {
     if (area->is_video) {
         // 設置目標矩形大小，使影片適應渲染區域
@@ -268,7 +257,6 @@ void renderVideo(AppContext* ctx, RenderArea* area) {
         SDL_RenderCopy(ctx->renderer, area->video_texture, NULL, &dstrect);
     }
 }
-
 
 void renderImage(AppContext* ctx, RenderArea* area) {
     for (int i = 0; i < area->image_count; i++) {
@@ -283,7 +271,6 @@ void renderImage(AppContext* ctx, RenderArea* area) {
     }
 }
 
-// 渲染文字
 void renderText(AppContext* ctx, RenderArea* area) {
     for (int i = 0; i < area->text_count; i++) {
         //printf("Rendering text %d\n", i);
@@ -303,7 +290,6 @@ void renderText(AppContext* ctx, RenderArea* area) {
     }
 }
 
-// 清理資源
 void cleanUp(AppContext* ctx) {
     for (int i = 0; i < ctx->num_render_areas; i++) {
         for (int j = 0; j < ctx->render_areas[i].image_count; j++) {
@@ -345,8 +331,6 @@ void cleanUp(AppContext* ctx) {
         free(ctx->render_areas);
     }
 }
-
-
 
 void playVideoFrame(AppContext* ctx, RenderArea* area, const char* videoPath) {
     if (access(videoPath, F_OK) != 0) {
@@ -459,14 +443,9 @@ void playVideoFrame(AppContext* ctx, RenderArea* area, const char* videoPath) {
     avformat_close_input(&pFormatCtx);
 }
 
-
-
-// 停止影片播放函數
 void stopVideo(AppContext* ctx) {
     stopVideoFlag = 1;  // 设置停止标志位
 }
-
-
 
 void createButton(AppContext* ctx, Button* button, int x, int y, int w, int h, const char* text, void (*onClick)(AppContext* ctx)) {
     button->rect.x = x;
@@ -480,8 +459,6 @@ void createButton(AppContext* ctx, Button* button, int x, int y, int w, int h, c
     button->texture = SDL_CreateTextureFromSurface(ctx->renderer, surface);
     SDL_FreeSurface(surface);
 }
-
-
 
 void renderButton(AppContext* ctx, Button* button) {
     // 清除按鈕區域
@@ -504,12 +481,10 @@ void renderButton(AppContext* ctx, Button* button) {
     SDL_DestroyTexture(textTexture);
 }
 
-
 bool isButtonClicked(Button* button, int x, int y) {
     return (x >= button->rect.x && x <= button->rect.x + button->rect.w &&
             y >= button->rect.y && y <= button->rect.y + button->rect.h);
 }
-
 
 void initAudio() {
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
@@ -518,14 +493,12 @@ void initAudio() {
     }
 }
 
-
 void loadSound(const char* file, Mix_Chunk** chunk) {
     *chunk = Mix_LoadWAV(file);
     if (*chunk == NULL) {
         fprintf(stderr, "Failed to load sound effect! SDL_mixer Error: %s\n", Mix_GetError());
     }
 }
-
 
 void playSound(Mix_Chunk* chunk) {
     Mix_PlayChannel(-1, chunk, 0);
@@ -544,12 +517,11 @@ void audioCallback(void* userdata, Uint8* stream, int len) {
     audio->length -= len;
 }
 
-
 void playAudioFrame(AVCodecContext* codecCtx, AVFrame* frame) {
     static struct SwrContext* swr_ctx = NULL;
     static Uint8* audio_buf = NULL;
     static int audio_buf_size = 0;
-    
+
     // 初始化 SwrContext
     if (!swr_ctx) {
         swr_ctx = swr_alloc_set_opts(
@@ -578,7 +550,7 @@ void playAudioFrame(AVCodecContext* codecCtx, AVFrame* frame) {
     int num_samples = frame->nb_samples;
     int num_channels = codecCtx->channels;
     int required_buf_size = num_samples * num_channels * data_size;
-    
+
     // 檢查緩衝區大小並分配內存
     if (!audio_buf || audio_buf_size < required_buf_size) {
         if (audio_buf) free(audio_buf);

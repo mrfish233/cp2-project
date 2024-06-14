@@ -25,8 +25,8 @@
 extern int stopVideoFlag;
 extern int isVideoPlaying;
 
-
 // 結構定義==================================================================================================
+
 typedef struct {
     SDL_Rect rect;
     SDL_Texture* background;
@@ -49,6 +49,7 @@ typedef struct {
     Uint8* pos;
     Uint32 length;
 } AudioData;
+
 typedef struct {
     SDL_Window* window;
     SDL_Renderer* renderer;
@@ -75,7 +76,6 @@ typedef struct AudioBuffer {
     int read_pos;
     int write_pos;
 } AudioBuffer;
-
 
 // 函式宣告=================================================
 
@@ -204,12 +204,11 @@ void renderButton(AppContext* ctx, Button* button);
  */
 bool isButtonClicked(Button* button, int x, int y);
 
-
-
 void initAudio();
 void loadSound(const char* file, Mix_Chunk** chunk);
 void playSound(Mix_Chunk* chunk);
 void playVideoWithAudio(AppContext* ctx, const char* videoPath, RenderArea* area);
 void playAudioFrame(AVCodecContext* codecCtx, AVFrame* frame);
 void audioCallback(void* userdata, Uint8* stream, int len);
+
 #endif
