@@ -287,21 +287,21 @@ void Load(AppContext* ctx) {
     SDL_Rect textRects[4];
     char* texts[4] = {"進度:", "進度:", "進度:", "進度:"};
 
-    createButton(ctx, &saveButtons[0], 10, section_height / 2 - 25, 100, 50, "Save 1", onClickSaveSlot1);
-    createButton(ctx, &loadButtons[0], 120, section_height / 2 - 25, 100, 50, "Load 1", onClickLoadSlot1);
-    textRects[0] = (SDL_Rect){230, section_height / 2 - 25, 100, 50};
+    createButton(ctx, &saveButtons[0], 10, section_height / 2 - 25, 200, 50, "Save 1", onClickSaveSlot1);
+    createButton(ctx, &loadButtons[0], 220, section_height / 2 - 25, 200, 50, "Load 1", onClickLoadSlot1);
+    textRects[0] = (SDL_Rect){430, section_height / 2 - 25, 100, 60};
 
-    createButton(ctx, &saveButtons[1], 10, section_height + section_height / 2 - 25, 100, 50, "Save 2", onClickSaveSlot2);
-    createButton(ctx, &loadButtons[1], 120, section_height + section_height / 2 - 25, 100, 50, "Load 2", onClickLoadSlot2);
-    textRects[1] = (SDL_Rect){230, section_height + section_height / 2 - 25, 100, 50};
+    createButton(ctx, &saveButtons[1], 10, section_height + section_height / 2 - 25, 200, 50, "Save 2", onClickSaveSlot2);
+    createButton(ctx, &loadButtons[1], 220, section_height + section_height / 2 - 25, 200, 50, "Load 2", onClickLoadSlot2);
+    textRects[1] = (SDL_Rect){430, section_height + section_height / 2 - 25, 100, 60};
 
-    createButton(ctx, &saveButtons[2], 10, 2 * section_height + section_height / 2 - 25, 100, 50, "Save 3", onClickSaveSlot3);
-    createButton(ctx, &loadButtons[2], 120, 2 * section_height + section_height / 2 - 25, 100, 50, "Load 3", onClickLoadSlot3);
-    textRects[2] = (SDL_Rect){230, 2 * section_height + section_height / 2 - 25, 100, 50};
+    createButton(ctx, &saveButtons[2], 10, 2 * section_height + section_height / 2 - 25, 200, 50, "Save 3", onClickSaveSlot3);
+    createButton(ctx, &loadButtons[2], 220, 2 * section_height + section_height / 2 - 25, 200, 50, "Load 3", onClickLoadSlot3);
+    textRects[2] = (SDL_Rect){430, 2 * section_height + section_height / 2 - 25, 100, 60};
 
-    createButton(ctx, &saveButtons[3], 10, 3 * section_height + section_height / 2 - 25, 100, 50, "Auto Save", onClickSaveAuto);
-    createButton(ctx, &loadButtons[3], 120, 3 * section_height + section_height / 2 - 25, 100, 50, "Load Auto", onClickLoadAuto);
-    textRects[3] = (SDL_Rect){230, 3 * section_height + section_height / 2 - 25, 100, 50};
+    createButton(ctx, &saveButtons[3], 10, 3 * section_height + section_height / 2 - 25, 200, 50, "Auto Save", onClickSaveAuto);
+    createButton(ctx, &loadButtons[3], 220, 3 * section_height + section_height / 2 - 25, 200, 50, "Load Auto", onClickLoadAuto);
+    textRects[3] = (SDL_Rect){430, 3 * section_height + section_height / 2 - 25, 100, 60};
 
     loadTextures(ctx);
 
@@ -313,7 +313,7 @@ void Load(AppContext* ctx) {
             if (e.type == SDL_QUIT) {
                 quit = true;
                 EndFlag = true;
-            } else if (e.type == SDL_MOUSEBUTTONDOWN) {
+            } else if (e.type == SDL_MOUSEBUTTONDOWN) {  
                 int x = e.button.x;
                 int y = e.button.y;
                 if (isButtonClicked(&backButton, x, y)) {
