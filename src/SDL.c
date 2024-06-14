@@ -447,15 +447,8 @@ void stopVideo(AppContext* ctx) {
     stopVideoFlag = 1;  // 设置停止标志位
 }
 
-void createButton(AppContext* ctx, Button* button, int x, int y, int w, int h, const char* text, void (*onClick)(AppContext* ctx)) {
-    button->rect.x = x;
-    button->rect.y = y;
-    button->rect.w = w;
-    button->rect.h = h;
-    button->onClick = onClick;
-    strncpy(button->text, text, sizeof(button->text) - 1);  // 確保保存文本
-
-    SDL_Surface* surface = TTF_RenderUTF8_Blended(ctx->font, text, (SDL_Color){255, 255, 255, 255});
+void createButton(AppContext* ctx, Button* button) {
+    SDL_Surface* surface = TTF_RenderUTF8_Blended(ctx->font, button->text, (SDL_Color){255, 255, 255, 255});
     button->texture = SDL_CreateTextureFromSurface(ctx->renderer, surface);
     SDL_FreeSurface(surface);
 }
@@ -471,7 +464,7 @@ void renderButton(AppContext* ctx, Button* button) {
     SDL_RenderFillRect(ctx->renderer, &bgRect);
 
     // 渲染按鈕文字
-    SDL_Surface* textSurface = TTF_RenderUTF8_Blended(ctx->font, button->text, (SDL_Color){0, 0, 0, 255});
+    SDL_Surface* textSurface = TTF_RenderUTF8_Blended(ctx->font, button->text, button->textColor);
     SDL_Texture* textTexture = SDL_CreateTextureFromSurface(ctx->renderer, textSurface);
     SDL_Rect textRect = {button->rect.x + (button->rect.w - textSurface->w) / 2, button->rect.y + (button->rect.h - textSurface->h) / 2, textSurface->w, textSurface->h};
     SDL_RenderCopy(ctx->renderer, textTexture, NULL, &textRect);

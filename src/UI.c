@@ -6,7 +6,9 @@ static bool GamePlayingFlag = false;
 static bool LoadFlag        = false;
 static bool CreditFlag      = false;
 
-static const SDL_Color white = {255, 255, 255, 255};
+static const SDL_Color g_white = {255, 255, 255, 255};
+static const SDL_Color g_black = {0, 0, 0, 255};
+static const SDL_Color g_grey  = {128, 128, 128, 255};
 
 static Script  g_script  = {0};
 static Display g_display = {0};
@@ -66,10 +68,18 @@ void onClickMainMenu(AppContext* ctx) {
 }
 
 void Settings(AppContext* ctx) {
-    Button buttons[3];
-    createButton(ctx, &buttons[0], ctx->window_width / 2 - 100, ctx->window_height / 2 - 75, 200, 50, "Resume", onClickResume);
-    createButton(ctx, &buttons[1], ctx->window_width / 2 - 100, ctx->window_height / 2, 200, 50, "Save", onClickSave);
-    createButton(ctx, &buttons[2], ctx->window_width / 2 - 100, ctx->window_height / 2 + 75, 200, 50, "Main Menu", onClickMainMenu);
+    Button buttons[3] = {0};
+
+    char buttonTexts[3][STR_SIZE] = {"Resume", "Save", "Main Menu"};
+    void (*buttonCallbacks[3])(AppContext*) = {onClickResume, onClickSave, onClickMainMenu};
+
+    for (int i = 0; i < 3; i++) {
+        buttons[i].rect    = (SDL_Rect) {ctx->window_width / 2 - 100, ctx->window_height / 2 - 75 + 75 * i, 200, 50};
+        buttons[i].onClick = buttonCallbacks[i];
+        strncpy(buttons[i].text, buttonTexts[i], STR_SIZE);
+
+        createButton(ctx, &buttons[i]);
+    }
 
     bool quit = false;
     SDL_Event e;
@@ -127,14 +137,20 @@ void onClickExit(AppContext* ctx) {
 }
 
 void initMenuButtons(AppContext* ctx, Button* buttons) {
-    createButton(ctx, &buttons[0], ctx->window_width / 2 - 100, ctx->window_height / 2 - 100, 200, 50, "New Game", onClickNewGame);
-    createButton(ctx, &buttons[1], ctx->window_width / 2 - 100, ctx->window_height / 2 - 25, 200, 50, "Load", onClickLoad);
-    createButton(ctx, &buttons[2], ctx->window_width / 2 - 100, ctx->window_height / 2 + 50, 200, 50, "Credit", onClickCredit);
-    createButton(ctx, &buttons[3], ctx->window_width / 2 - 100, ctx->window_height / 2 + 125, 200, 50, "Exit", onClickExit);
+    char buttonTexts[4][STR_SIZE] = {"New Game", "Load", "Credit", "Exit"};
+    void (*buttonCallbacks[4])(AppContext*) = {onClickNewGame, onClickLoad, onClickCredit, onClickExit};
+
+    for (int i = 0; i < 4; i++) {
+        buttons[i].rect    = (SDL_Rect) {ctx->window_width / 2 - 100, ctx->window_height / 2 - 100 + 75 * i, 200, 50};
+        buttons[i].onClick = buttonCallbacks[i];
+        strncpy(buttons[i].text, buttonTexts[i], STR_SIZE);
+
+        createButton(ctx, &buttons[i]);
+    }
 }
 
 void renderTitle(AppContext* ctx) {
-    SDL_Surface* surface = TTF_RenderUTF8_Blended(ctx->font, "失落的旋律", white);
+    SDL_Surface* surface = TTF_RenderUTF8_Blended(ctx->font, "失落的旋律", g_white);
     SDL_Texture* texture = SDL_CreateTextureFromSurface(ctx->renderer, surface);
     SDL_Rect dstrect = {ctx->window_width / 2 - surface->w / 2, 50, surface->w, surface->h};
     SDL_RenderCopy(ctx->renderer, texture, NULL, &dstrect);
@@ -143,7 +159,7 @@ void renderTitle(AppContext* ctx) {
 }
 
 void MainMenu(AppContext* ctx) {
-    Button buttons[4];
+    Button buttons[4] = {0};
     initMenuButtons(ctx, buttons);
 
     bool quit = false;
@@ -250,6 +266,11 @@ void onClickLoadAuto(AppContext* ctx) {
     // 添加自動加載邏輯
 }
 
+void onClickDoNothing(AppContext* ctx) {
+    printf("Button 'Do Nothing' clicked\n");
+    // 不執行任何操作
+}
+
 void End() {
     // 結束遊戲的代碼
     printf("Ending the game...\n");
@@ -300,10 +321,6 @@ void BackToPreviousMenu(AppContext* ctx) {
 }
 
 void Load(AppContext* ctx) {
-    // 創建返回按鈕，回調函數設置為 BackToPreviousMenu
-    Button backButton;
-    createButton(ctx, &backButton, ctx->window_width - 110, 10, 100, 50, "Back", BackToPreviousMenu);
-
     // 創建四個渲染區域，每個區域高度為視窗高度的四分之一
     int section_height = ctx->window_height / 4;
     createRenderArea(ctx, 0, 0, ctx->window_width, section_height); // 第一部分
@@ -311,46 +328,76 @@ void Load(AppContext* ctx) {
     createRenderArea(ctx, 0, 2 * section_height, ctx->window_width, section_height); // 第三部分
     createRenderArea(ctx, 0, 3 * section_height, ctx->window_width, section_height); // 第四部分
 
-    // 設置按鈕和文本框
-    Button saveButtons[4];
-    Button loadButtons[4];
-    SDL_Rect textRects[4];
-    char texts[4][STR_SIZE] = {0};
+    // 創建返回按鈕，回調函數設置為 BackToPreviousMenu
+    Button backButton = {
+        .rect      = {ctx->window_width - 110, 10, 100, 50},
+        .textColor = g_black,
+        .onClick   = BackToPreviousMenu
+    };
 
-    char saveEvent[4][STR_SIZE] = {0};
-    char saveDatetime[4][STR_SIZE] = {0};
-    int hasSaveFile[4] = {0};
+    strncpy(backButton.text, "Back", STR_SIZE);
+
+    createButton(ctx, &backButton);
+
+    // 設置按鈕和文本框
+    Button saveButtons[SAVE_SIZE] = {0};
+    Button loadButtons[SAVE_SIZE] = {0};
+    SDL_Rect textRects[SAVE_SIZE];
+
+    char saveButtonText[SAVE_SIZE][STR_SIZE] = {"Save 1", "Save 2", "Save 3", "Save Auto"};
+    char loadButtonText[SAVE_SIZE][STR_SIZE] = {"Load 1", "Load 2", "Load 3", "Load Auto"};
+
+    void (*saveButtonCallbacks[SAVE_SIZE])(AppContext*) = {
+        onClickSaveSlot1, onClickSaveSlot2, onClickSaveSlot3, onClickSaveAuto
+    };
+    void (*loadButtonCallbacks[SAVE_SIZE])(AppContext*) = {
+        onClickLoadSlot1, onClickLoadSlot2, onClickLoadSlot3, onClickLoadAuto
+    };
+
+    char texts[SAVE_SIZE][STR_SIZE] = {0};
+    char saveEvent[SAVE_SIZE][STR_SIZE] = {0};
+    char saveDatetime[SAVE_SIZE][STR_SIZE] = {0};
+    int hasSaveFile[SAVE_SIZE] = {0};
 
     if (findSaveEvent(&g_script, saveEvent, saveDatetime, hasSaveFile)) {
         printf("Failed to find save event\n");
         return;
     }
 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < SAVE_SIZE; i++) {
+        saveButtons[i].rect = (SDL_Rect) {10,  i * section_height + section_height / 2 - 25, 200, 50};
+        loadButtons[i].rect = (SDL_Rect) {220, i * section_height + section_height / 2 - 25, 200, 50};
+
+        strncpy(saveButtons[i].text, saveButtonText[i], STR_SIZE);
+        strncpy(loadButtons[i].text, loadButtonText[i], STR_SIZE);
+
         if (hasSaveFile[i]) {
             strncat(texts[i], saveEvent[i], STR_SIZE);
             strncat(texts[i], " ", 2);
             strncat(texts[i], saveDatetime[i], STR_SIZE);
+
+            loadButtons[i].textColor = g_black;
+            loadButtons[i].onClick   = loadButtonCallbacks[i];
         } else {
             strncat(texts[i], "Empty", 7);
+
+            loadButtons[i].textColor = g_grey;
+            loadButtons[i].onClick   = onClickDoNothing;
         }
+
+        if (fromMainMenuFlag) {
+            saveButtons[i].textColor = g_grey;
+            saveButtons[i].onClick   = onClickDoNothing;
+        } else {
+            saveButtons[i].textColor = g_black;
+            saveButtons[i].onClick   = saveButtonCallbacks[i];
+        }
+
+        createButton(ctx, &saveButtons[i]);
+        createButton(ctx, &loadButtons[i]);
+
+        textRects[i] = (SDL_Rect) {430, i * section_height + section_height / 2 - 25, 15 * strlen(texts[i]), 40};
     }
-
-    createButton(ctx, &saveButtons[0], 10, section_height / 2 - 25, 200, 50, "Save 1", onClickSaveSlot1);
-    createButton(ctx, &loadButtons[0], 220, section_height / 2 - 25, 200, 50, "Load 1", onClickLoadSlot1);
-    textRects[0] = (SDL_Rect){430, section_height / 2 - 25, 15 * strlen(texts[0]), 40};
-
-    createButton(ctx, &saveButtons[1], 10, section_height + section_height / 2 - 25, 200, 50, "Save 2", onClickSaveSlot2);
-    createButton(ctx, &loadButtons[1], 220, section_height + section_height / 2 - 25, 200, 50, "Load 2", onClickLoadSlot2);
-    textRects[1] = (SDL_Rect){430, section_height + section_height / 2 - 25, 15 * strlen(texts[1]), 40};
-
-    createButton(ctx, &saveButtons[2], 10, 2 * section_height + section_height / 2 - 25, 200, 50, "Save 3", onClickSaveSlot3);
-    createButton(ctx, &loadButtons[2], 220, 2 * section_height + section_height / 2 - 25, 200, 50, "Load 3", onClickLoadSlot3);
-    textRects[2] = (SDL_Rect){430, 2 * section_height + section_height / 2 - 25, 15 * strlen(texts[2]), 40};
-
-    createButton(ctx, &saveButtons[3], 10, 3 * section_height + section_height / 2 - 25, 200, 50, "Save Auto", onClickSaveAuto);
-    createButton(ctx, &loadButtons[3], 220, 3 * section_height + section_height / 2 - 25, 200, 50, "Load Auto", onClickLoadAuto);
-    textRects[3] = (SDL_Rect){430, 3 * section_height + section_height / 2 - 25, 15 * strlen(texts[3]), 40};
 
     loadTextures(ctx);
 
@@ -389,7 +436,7 @@ void Load(AppContext* ctx) {
         for (int i = 0; i < 4; i++) {
             renderButton(ctx, &saveButtons[i]);
             renderButton(ctx, &loadButtons[i]);
-            SDL_Surface* surface = TTF_RenderUTF8_Blended(ctx->font, texts[i], white);
+            SDL_Surface* surface = TTF_RenderUTF8_Blended(ctx->font, texts[i], g_white);
             SDL_Texture* texture = SDL_CreateTextureFromSurface(ctx->renderer, surface);
             SDL_RenderCopy(ctx->renderer, texture, NULL, &textRects[i]);
             SDL_FreeSurface(surface);
@@ -453,8 +500,16 @@ void handleSignal(AppContext* ctx, int numButtons, bool buttonStates[]) {
                 onClick = onClickOption5;
                 break;
         }
-        createButton(ctx, &optionButtons[i].button, ctx->window_width / 2 - 100, 100 + i * 60, 200, 50, buttonText, buttonStates[i] ? onClick : NULL);
+
         optionButtons[i].selectable = buttonStates[i];
+
+        optionButtons[i].button.rect = (SDL_Rect) {ctx->window_width / 2 - 100, 100 + i * 60, 200, 50};
+        optionButtons[i].button.onClick = buttonStates[i] ? onClick : onClickDoNothing;
+
+        strncpy(optionButtons[i].button.text, buttonText, STR_SIZE);
+
+        createButton(ctx, &optionButtons[i].button);
+        // optionButtons[i].selectable = buttonStates[i];
     }
     showOptionButtons = true;
 }
@@ -506,7 +561,11 @@ void GamePlaying(AppContext* ctx) {
     setRenderAreaContent(ctx, 4, "example-game/assets/background/church.png", NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
 
     // 區域1: 設置背景和按鈕
-    createButton(ctx, &settingButton, 10, 10, 100, 50, "Setting", onClickSetting);
+    settingButton.rect = (SDL_Rect) {10, 10, 100, 50};
+    settingButton.onClick = onClickSetting;
+    strncpy(settingButton.text, "Setting", STR_SIZE);
+
+    createButton(ctx, &settingButton);
 
     // 區域2: 設置圖片
     char* images[] = {"example-game/assets/character/lulu/tachie/angry.png"};
@@ -514,7 +573,7 @@ void GamePlaying(AppContext* ctx) {
     setRenderAreaContent(ctx, 1, NULL, images, 1, NULL, NULL, NULL, 0, NULL, &imageRect);
 
     // 區域3: 設置文字框
-    SDL_Surface* textSurface = TTF_RenderUTF8_Blended(ctx->font, "text put here", white);
+    SDL_Surface* textSurface = TTF_RenderUTF8_Blended(ctx->font, "text put here", g_white);
     SDL_Texture* textTexture = SDL_CreateTextureFromSurface(ctx->renderer, textSurface);
     SDL_Rect textRect = {section_width * 0.2 + 10, section_height * 0.8 + 10, textSurface->w, textSurface->h};
     SDL_FreeSurface(textSurface);
@@ -524,31 +583,53 @@ void GamePlaying(AppContext* ctx) {
     SDL_Texture* itemTextures[5];
     SDL_Rect itemRects[5];
     for (int i = 0; i < 5; i++) {
-        SDL_Surface* itemSurface = TTF_RenderUTF8_Blended(ctx->font, itemTexts[i], white);
+        SDL_Surface* itemSurface = TTF_RenderUTF8_Blended(ctx->font, itemTexts[i], g_white);
         itemTextures[i] = SDL_CreateTextureFromSurface(ctx->renderer, itemSurface);
         itemRects[i] = (SDL_Rect){section_width * 0.8 + 10, 30 * i, itemSurface->w, itemSurface->h};
         SDL_FreeSurface(itemSurface);
     }
 
     // 區域4: 設置按鈕
-    Button itemNextPageButton, itemPreviousPageButton;
-    createButton(ctx, &itemPreviousPageButton, section_width * 0.8 + 10, section_height * 0.4 - 60, 50, 50, "<", onClickItemPreviousPage);
-    createButton(ctx, &itemNextPageButton, section_width * 0.8 + 70, section_height * 0.4 - 60, 50, 50, ">", onClickItemNextPage);
+    Button itemNextPageButton     = {
+        .rect    = {section_width * 0.8 + 70, section_height * 0.4 - 60, 50, 50},
+        .onClick = onClickItemNextPage
+    };
+    Button itemPreviousPageButton = {
+        .rect    = {section_width * 0.8 + 10, section_height * 0.4 - 60, 50, 50},
+        .onClick = onClickItemPreviousPage
+    };
+
+    strncpy(itemNextPageButton.text, ">", STR_SIZE);
+    strncpy(itemPreviousPageButton.text, "<", STR_SIZE);
+
+    createButton(ctx, &itemPreviousPageButton);
+    createButton(ctx, &itemNextPageButton);
 
     // 區域5: 設置狀態欄
     char* statusTexts[] = {"status1", "status2", "status3", "status4", "status5"};
     SDL_Texture* statusTextures[5];
     SDL_Rect statusRects[5];
     for (int i = 0; i < 5; i++) {
-        SDL_Surface* statusSurface = TTF_RenderUTF8_Blended(ctx->font, statusTexts[i], white);
+        SDL_Surface* statusSurface = TTF_RenderUTF8_Blended(ctx->font, statusTexts[i], g_white);
         statusTextures[i] = SDL_CreateTextureFromSurface(ctx->renderer, statusSurface);
         statusRects[i] = (SDL_Rect){section_width * 0.8 + 10, section_height * 0.4 + 30 * i, statusSurface->w, statusSurface->h};
         SDL_FreeSurface(statusSurface);
     }
 
-    Button statusNextPageButton, statusPreviousPageButton;
-    createButton(ctx, &statusPreviousPageButton, section_width * 0.8 + 10, section_height * 0.8 - 60, 50, 50, "<", onClickStatusPreviousPage);
-    createButton(ctx, &statusNextPageButton, section_width * 0.8 + 70, section_height * 0.8 - 60, 50, 50, ">", onClickStatusNextPage);
+    Button statusNextPageButton = {
+        .rect    = {section_width * 0.8 + 70, section_height * 0.8 - 60, 50, 50},
+        .onClick = onClickStatusNextPage
+    };
+    Button statusPreviousPageButton = {
+        .rect    = {section_width * 0.8 + 10, section_height * 0.8 - 60, 50, 50},
+        .onClick = onClickStatusPreviousPage
+    };
+
+    strncpy(statusNextPageButton.text, ">", STR_SIZE);
+    strncpy(statusPreviousPageButton.text, "<", STR_SIZE);
+
+    createButton(ctx, &statusPreviousPageButton);
+    createButton(ctx, &statusNextPageButton);
 
     // 新增變數
     bool showMessageFlag = false;

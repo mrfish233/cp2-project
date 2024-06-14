@@ -42,6 +42,8 @@ void onClickSaveSlot3(AppContext* ctx);
 void onClickSaveAuto(AppContext* ctx);
 void onClickLoadAuto(AppContext* ctx);
 
+void onClickDoNothing(AppContext* ctx);
+
 //主介面
 
 void renderTitle(AppContext* ctx);

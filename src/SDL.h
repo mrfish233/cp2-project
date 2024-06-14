@@ -66,7 +66,7 @@ typedef struct {
     SDL_Rect rect;
     SDL_Texture* texture;
     void (*onClick)(AppContext* ctx); // 按鈕點擊事件的回調函數
-    char text[100];  // 按鈕顯示的文字
+    char text[512];  // 按鈕顯示的文字
     SDL_Color textColor;
 } Button;
 
@@ -178,14 +178,8 @@ void playVideoFrame(AppContext* ctx, RenderArea* area, const char* videoPath);
  * 初始化按鈕
  * @param ctx 應用程式上下文
  * @param button 按鈕結構
- * @param x 按鈕的X座標
- * @param y 按鈕的Y座標
- * @param w 按鈕的寬度
- * @param h 按鈕的高度
- * @param text 按鈕顯示的文字
- * @param onClick 按鈕點擊時的回調函數
- */  
-void createButton(AppContext* ctx, Button* button, int x, int y, int w, int h, const char* text, void (*onClick)(AppContext* ctx));
+ */
+void createButton(AppContext* ctx, Button* button);
 
 /**
  * 渲染按鈕
