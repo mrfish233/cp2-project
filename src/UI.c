@@ -437,6 +437,33 @@ void handleSignal(AppContext* ctx, int numButtons, bool buttonStates[]) {
     showOptionButtons = true;
 }
 
+
+
+void renderMessages(AppContext* ctx, char** messages, int messageCount) {
+    SDL_Color white = {255, 255, 255, 255};
+    int textHeight = 0;
+
+    for (int i = 0; i < messageCount; i++) {
+        SDL_Surface* messageSurface = TTF_RenderUTF8_Blended(ctx->font, messages[i], white);
+        SDL_Texture* messageTexture = SDL_CreateTextureFromSurface(ctx->renderer, messageSurface);
+
+        int textWidth = messageSurface->w;
+        textHeight = messageSurface->h;
+        SDL_FreeSurface(messageSurface);
+
+        SDL_Rect messageRect = {
+            (ctx->window_width - textWidth) / 5*2,
+            (ctx->window_height - textHeight) / 5 + (i * (textHeight + 10)),
+            textWidth,
+            textHeight
+        };
+
+        SDL_RenderCopy(ctx->renderer, messageTexture, NULL, &messageRect);
+        SDL_DestroyTexture(messageTexture);
+    }
+}
+
+
 void GamePlaying(AppContext* ctx) {
     // 創建五個渲染區域，根據您的設計進行佈局
     int section_width = ctx->window_width;
@@ -461,7 +488,7 @@ void GamePlaying(AppContext* ctx) {
 
     // 區域2: 設置圖片
     char* images[] = {"example-game/assets/character/lulu/tachie/angry.png"};
-    SDL_Rect imageRect = {0, section_height * 0.6 + 10, section_width* 0.2, section_height * 0.4}; // 調整到左下區
+    SDL_Rect imageRect = {0, section_height * 0.6 + 10, section_width * 0.2, section_height * 0.4}; // 調整到左下區
     setRenderAreaContent(ctx, 1, NULL, images, 1, NULL, NULL, NULL, 0, NULL, &imageRect);
 
     // 區域3: 設置文字框
@@ -501,6 +528,13 @@ void GamePlaying(AppContext* ctx) {
     createButton(ctx, &statusPreviousPageButton, section_width * 0.8 + 10, section_height * 0.8 - 60, 50, 50, "<", onClickStatusPreviousPage);
     createButton(ctx, &statusNextPageButton, section_width * 0.8 + 70, section_height * 0.8 - 60, 50, 50, ">", onClickStatusNextPage);
 
+    // 新增變數
+    bool showMessageFlag = false;
+    Uint32 messageStartTime = 0;
+    Uint32 messageDuration = 2000; // 2秒
+    char* messages[5] = {"獲得 橘子", "獲得 蘋果", "獲得 草莓", "獲得 檸檬", "獲得 西瓜"};
+    int messageCount = 0;
+
     loadTextures(ctx);
 
     // 渲染循環
@@ -535,6 +569,10 @@ void GamePlaying(AppContext* ctx) {
             } else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_RETURN) {
                 bool buttonStates[4] = {true, true, false, true}; // 設定按鈕狀態
                 handleSignal(ctx, 4, buttonStates); // 顯示4個按鈕
+            } else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_LSHIFT) {
+                showMessageFlag = true;
+                messageStartTime = SDL_GetTicks(); // 記錄消息顯示的開始時間
+                messageCount = 5; // 顯示5個消息
             }
         }
 
@@ -576,6 +614,15 @@ void GamePlaying(AppContext* ctx) {
             }
         }
 
+        // 如果顯示消息
+        if (showMessageFlag) {
+            if (SDL_GetTicks() - messageStartTime < messageDuration) {
+                renderMessages(ctx, messages, messageCount);
+            } else {
+                showMessageFlag = false; // 超過顯示時長後隱藏消息
+            }
+        }
+
         SDL_RenderPresent(ctx->renderer);
     }
 
@@ -586,3 +633,11 @@ void GamePlaying(AppContext* ctx) {
         SDL_DestroyTexture(statusTextures[i]);
     }
 }
+
+
+
+
+
+
+
+
