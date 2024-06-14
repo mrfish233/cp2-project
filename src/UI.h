@@ -2,6 +2,9 @@
 #define UI_H
 
 #include "SDL.h"
+#include "script.h"
+#include "play_script.h"
+#include "save_and_load.h"
 
 int startEngine(char *dir);
 

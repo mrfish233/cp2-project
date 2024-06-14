@@ -1,18 +1,25 @@
 #include "UI.h"
 
-// 全域flag
-bool newGameFlag = false;
-bool EndFlag = false;
-bool GamePlayingFlag = false;
-bool LoadFlag = false;
-bool CreditFlag = false;
+static bool newGameFlag     = false;
+static bool EndFlag         = false;
+static bool GamePlayingFlag = false;
+static bool LoadFlag        = false;
+static bool CreditFlag      = false;
 
-SDL_Color white = {255, 255, 255, 255}; // 定義全域變數
-SDL_Color black = {0, 0, 0, 255};
+static const SDL_Color white = {255, 255, 255, 255};
+
+static Script  g_script  = {0};
+static Display g_display = {0};
 
 int startEngine(char *dir) {
     AppContext ctx = { NULL, NULL, NULL, 1300, 700, NULL, 0, 0, 0 };
     initSDL(&ctx);
+
+    if (initGame(&g_script, &g_display, dir)) {
+        cleanUp(&ctx);
+        clearScript(&g_script);
+        return 1;
+    }
 
     // 創建新的渲染區域
     createRenderArea(&ctx, 0, 0, ctx.window_width, ctx.window_height); // 顯示主菜單的區域
@@ -35,6 +42,7 @@ int startEngine(char *dir) {
     }
 
     cleanUp(&ctx);
+    clearScript(&g_script);
     return 0;
 }
 
@@ -49,8 +57,6 @@ void onClickResume(AppContext* ctx) {
     LoadFlag = false;  // 取消 Load 狀態
     GamePlayingFlag = true; // 設置 GamePlaying 狀態
 }
-
-
 
 void onClickMainMenu(AppContext* ctx) {
     printf("Button 'Main Menu' clicked\n");
@@ -109,8 +115,6 @@ void onClickSetting(AppContext* ctx) {
     printf("Entering Settings\n"); // 添加診斷輸出
     Settings(ctx); // 進入設定狀態
 }
-
-
 
 void onClickCredit(AppContext* ctx) {
     printf("Button 'Credit' clicked\n");
@@ -246,7 +250,6 @@ void onClickLoadAuto(AppContext* ctx) {
     // 添加自動加載邏輯
 }
 
-
 void End() {
     // 結束遊戲的代碼
     printf("Ending the game...\n");
@@ -261,9 +264,9 @@ void Credit() {
 
 //實驗================================================================================================
 
-
 bool fromMainMenuFlag = false;
-bool fromSettingFlag = false;
+bool fromSettingFlag  = false;
+
 typedef struct {
     Button button;
     bool selectable;
@@ -312,23 +315,42 @@ void Load(AppContext* ctx) {
     Button saveButtons[4];
     Button loadButtons[4];
     SDL_Rect textRects[4];
-    char* texts[4] = {"進度:", "進度:", "進度:", "進度:"};
+    char texts[4][STR_SIZE] = {0};
+
+    char saveEvent[4][STR_SIZE] = {0};
+    char saveDatetime[4][STR_SIZE] = {0};
+    int hasSaveFile[4] = {0};
+
+    if (findSaveEvent(&g_script, saveEvent, saveDatetime, hasSaveFile)) {
+        printf("Failed to find save event\n");
+        return;
+    }
+
+    for (int i = 0; i < 4; i++) {
+        if (hasSaveFile[i]) {
+            strncat(texts[i], saveEvent[i], STR_SIZE);
+            strncat(texts[i], " ", 2);
+            strncat(texts[i], saveDatetime[i], STR_SIZE);
+        } else {
+            strncat(texts[i], "Empty", 7);
+        }
+    }
 
     createButton(ctx, &saveButtons[0], 10, section_height / 2 - 25, 200, 50, "Save 1", onClickSaveSlot1);
     createButton(ctx, &loadButtons[0], 220, section_height / 2 - 25, 200, 50, "Load 1", onClickLoadSlot1);
-    textRects[0] = (SDL_Rect){430, section_height / 2 - 25, 100, 60};
+    textRects[0] = (SDL_Rect){430, section_height / 2 - 25, 15 * strlen(texts[0]), 40};
 
     createButton(ctx, &saveButtons[1], 10, section_height + section_height / 2 - 25, 200, 50, "Save 2", onClickSaveSlot2);
     createButton(ctx, &loadButtons[1], 220, section_height + section_height / 2 - 25, 200, 50, "Load 2", onClickLoadSlot2);
-    textRects[1] = (SDL_Rect){430, section_height + section_height / 2 - 25, 100, 60};
+    textRects[1] = (SDL_Rect){430, section_height + section_height / 2 - 25, 15 * strlen(texts[1]), 40};
 
     createButton(ctx, &saveButtons[2], 10, 2 * section_height + section_height / 2 - 25, 200, 50, "Save 3", onClickSaveSlot3);
     createButton(ctx, &loadButtons[2], 220, 2 * section_height + section_height / 2 - 25, 200, 50, "Load 3", onClickLoadSlot3);
-    textRects[2] = (SDL_Rect){430, 2 * section_height + section_height / 2 - 25, 100, 60};
+    textRects[2] = (SDL_Rect){430, 2 * section_height + section_height / 2 - 25, 15 * strlen(texts[2]), 40};
 
-    createButton(ctx, &saveButtons[3], 10, 3 * section_height + section_height / 2 - 25, 200, 50, "Auto Save", onClickSaveAuto);
+    createButton(ctx, &saveButtons[3], 10, 3 * section_height + section_height / 2 - 25, 200, 50, "Save Auto", onClickSaveAuto);
     createButton(ctx, &loadButtons[3], 220, 3 * section_height + section_height / 2 - 25, 200, 50, "Load Auto", onClickLoadAuto);
-    textRects[3] = (SDL_Rect){430, 3 * section_height + section_height / 2 - 25, 100, 60};
+    textRects[3] = (SDL_Rect){430, 3 * section_height + section_height / 2 - 25, 15 * strlen(texts[3]), 40};
 
     loadTextures(ctx);
 
@@ -340,7 +362,7 @@ void Load(AppContext* ctx) {
             if (e.type == SDL_QUIT) {
                 quit = true;
                 EndFlag = true;
-            } else if (e.type == SDL_MOUSEBUTTONDOWN) {  
+            } else if (e.type == SDL_MOUSEBUTTONDOWN) {
                 int x = e.button.x;
                 int y = e.button.y;
                 if (isButtonClicked(&backButton, x, y)) {
@@ -379,8 +401,8 @@ void Load(AppContext* ctx) {
 }
 
 // 定義全域變數
-Button settingButton;
-OptionButton optionButtons[5];
+Button settingButton = {0};
+OptionButton optionButtons[5] = {0};
 bool showOptionButtons = false;
 
 // 各選項按鈕的回調函數

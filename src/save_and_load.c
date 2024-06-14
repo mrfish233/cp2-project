@@ -1,5 +1,67 @@
 #include "save_and_load.h"
 
+int32_t findSaveEvent(Script *script, char save_event[SAVE_SIZE][STR_SIZE], char save_datetime[SAVE_SIZE][STR_SIZE], int32_t hasSaveFile[SAVE_SIZE]) {
+    for (int32_t i = 0; i < SAVE_SIZE; i++) {
+        char save_str[STR_SIZE] = {0};
+
+        if (snprintf(save_str, STR_SIZE, SAVE_FILE_FORMAT, script->dir, i) < 0) {
+            return 1;
+        }
+
+        if (access(save_str, F_OK) != 0) {
+            hasSaveFile[i] = 0;
+            continue;
+        }
+
+        cJSON *root = NULL;
+
+        int32_t result = loadJSONData(&root, script->dir, i);
+
+        if (result == 2) {
+            hasSaveFile[i] = 0;
+            continue;
+        }
+        else if (result != 0) {
+            return 1;
+        }
+
+        hasSaveFile[i] = 1;
+
+        // Event
+
+        cJSON *event = cJSON_GetObjectItem(root, "event");
+
+        if (event == NULL) {
+            cJSON_Delete(root);
+            return 1;
+        }
+
+        Event *e = getEvent(script, event->valuestring);
+
+        if (e == NULL) {
+            cJSON_Delete(root);
+            return 1;
+        }
+
+        strncpy(save_event[i], e->id, STR_SIZE);
+
+        // Datetime
+
+        cJSON *datetime = cJSON_GetObjectItem(root, "datetime");
+
+        if (datetime == NULL) {
+            cJSON_Delete(root);
+            return 1;
+        }
+
+        strncpy(save_datetime[i], datetime->valuestring, STR_SIZE);
+
+        cJSON_Delete(root);
+    }
+
+    return 0;
+}
+
 int32_t saveScript(Script *script, SaveSlot slot) {
     if (script == NULL) {
         return 1;
@@ -31,7 +93,7 @@ int32_t saveScript(Script *script, SaveSlot slot) {
     FILE *save_file = NULL;
     char save_str[STR_SIZE] = {0};
 
-    if (snprintf(save_str, STR_SIZE, "%s/save%d.json", script->dir, slot) < 0) {
+    if (snprintf(save_str, STR_SIZE, SAVE_FILE_FORMAT, script->dir, slot) < 0) {
         free(json);
         return 1;
     }
@@ -54,43 +116,9 @@ int32_t loadScript(Script *script, SaveSlot slot) {
         return 1;
     }
 
-    // Load the JSON object from a file
+    cJSON *root = NULL;
 
-    FILE *save_file = NULL;
-    char save_str[STR_SIZE] = {0};
-
-    if (snprintf(save_str, STR_SIZE, "%s/save%d.json", script->dir, slot) < 0) {
-        return 1;
-    }
-
-    if (openFile(&save_file, save_str, "r") != 0) {
-        return 1;
-    }
-
-    int32_t size = 0;
-
-    fseek(save_file, 0, SEEK_END);
-    size = ftell(save_file);
-    fseek(save_file, 0, SEEK_SET);
-
-    char *json = (char *) calloc(size + 1, sizeof(char));
-
-    if (json == NULL) {
-        closeFile(save_file);
-        return 1;
-    }
-
-    fread(json, sizeof(char), size, save_file);
-
-    closeFile(save_file);
-
-    // Parse the JSON object
-
-    cJSON *root = cJSON_Parse(json);
-
-    free(json);
-
-    if (root == NULL) {
+    if (loadJSONData(&root, script->dir, slot) != 0) {
         return 1;
     }
 
@@ -225,6 +253,45 @@ int32_t loadScript(Script *script, SaveSlot slot) {
     }
 
     cJSON_Delete(root);
+
+    return 0;
+}
+
+int32_t loadJSONData(cJSON **root, char *dir, SaveSlot slot) {
+    FILE *save_file = NULL;
+    char save_str[STR_SIZE] = {0};
+
+    if (snprintf(save_str, STR_SIZE, SAVE_FILE_FORMAT, dir, slot) < 0) {
+        return 1;
+    }
+
+    if (openFile(&save_file, save_str, "r") != 0) {
+        return 2;
+    }
+
+    int32_t size = 0;
+
+    fseek(save_file, 0, SEEK_END);
+    size = ftell(save_file);
+    fseek(save_file, 0, SEEK_SET);
+
+    char *json = (char *) calloc(size + 1, sizeof(char));
+
+    if (json == NULL) {
+        closeFile(save_file);
+        return 1;
+    }
+
+    fread(json, sizeof(char), size, save_file);
+
+    *root = cJSON_Parse(json);
+
+    closeFile(save_file);
+    free(json);
+
+    if (*root == NULL) {
+        return 1;
+    }
 
     return 0;
 }
