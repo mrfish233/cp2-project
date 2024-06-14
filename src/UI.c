@@ -50,11 +50,7 @@ void onClickResume(AppContext* ctx) {
     GamePlayingFlag = true; // 設置 GamePlaying 狀態
 }
 
-void onClickSave(AppContext* ctx) {
-    printf("Button 'Save' clicked\n");
-    LoadFlag = true;  // 設置 Load 狀態
-    GamePlayingFlag = false; // 取消 GamePlaying 狀態
-}
+
 
 void onClickMainMenu(AppContext* ctx) {
     printf("Button 'Main Menu' clicked\n");
@@ -114,10 +110,7 @@ void onClickSetting(AppContext* ctx) {
     Settings(ctx); // 進入設定狀態
 }
 
-void onClickLoad(AppContext* ctx) {
-    printf("Button 'Load' clicked\n");
-    LoadFlag = true;
-}
+
 
 void onClickCredit(AppContext* ctx) {
     printf("Button 'Credit' clicked\n");
@@ -253,10 +246,60 @@ void onClickLoadAuto(AppContext* ctx) {
     // 添加自動加載邏輯
 }
 
+
+void End() {
+    // 結束遊戲的代碼
+    printf("Ending the game...\n");
+    exit(0); // 退出程序
+}
+
+void Credit() {
+    // 顯示製作群的代碼
+    printf("Displaying credits...\n");
+    CreditFlag = false; // 退出製作群狀態
+}
+
+//實驗================================================================================================
+
+
+bool fromMainMenuFlag = false;
+bool fromSettingFlag = false;
+typedef struct {
+    Button button;
+    bool selectable;
+} OptionButton;
+
+void onClickLoad(AppContext* ctx) {
+    printf("Button 'Load' clicked\n");
+    LoadFlag = true;  // 設置 Load 狀態
+    fromMainMenuFlag = true; // 標記從主菜單進入 Load 界面
+}
+
+void onClickSave(AppContext* ctx) {
+    printf("Button 'Save' clicked\n");
+    LoadFlag = true;  // 設置 Load 狀態
+    GamePlayingFlag = false; // 取消 GamePlaying 狀態
+    fromSettingFlag = true; // 標記從設定進入 Load 界面
+}
+
+void BackToPreviousMenu(AppContext* ctx) {
+    printf("Button 'Back' clicked\n");
+    LoadFlag = false; // 取消 Load 狀態
+    if (fromSettingFlag) {
+        fromSettingFlag = false; // 重置標誌
+        Settings(ctx); // 返回設定界面
+    } else if (fromMainMenuFlag) {
+        fromMainMenuFlag = false; // 重置標誌
+        MainMenu(ctx); // 返回主菜單界面
+    } else {
+        GamePlayingFlag = true; // 返回 GamePlaying 狀態
+    }
+}
+
 void Load(AppContext* ctx) {
-    // 創建返回主菜單的按鈕
+    // 創建返回按鈕，回調函數設置為 BackToPreviousMenu
     Button backButton;
-    createButton(ctx, &backButton, ctx->window_width - 110, 10, 100, 50, "Back", BackToMainMenu);
+    createButton(ctx, &backButton, ctx->window_width - 110, 10, 100, 50, "Back", BackToPreviousMenu);
 
     // 創建四個渲染區域，每個區域高度為視窗高度的四分之一
     int section_height = ctx->window_height / 4;
@@ -334,24 +377,6 @@ void Load(AppContext* ctx) {
         SDL_RenderPresent(ctx->renderer);
     }
 }
-
-void End() {
-    // 結束遊戲的代碼
-    printf("Ending the game...\n");
-    exit(0); // 退出程序
-}
-
-void Credit() {
-    // 顯示製作群的代碼
-    printf("Displaying credits...\n");
-    CreditFlag = false; // 退出製作群狀態
-}
-
-//實驗================================================================================================
-typedef struct {
-    Button button;
-    bool selectable;
-} OptionButton;
 
 // 定義全域變數
 Button settingButton;

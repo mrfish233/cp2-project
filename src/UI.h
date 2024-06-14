@@ -13,7 +13,7 @@ void MainMenu(AppContext* ctx);
 void Credit();
 void BackToMainMenu(AppContext* ctx);
 void Settings(AppContext* ctx);
-
+void BackToPreviousMenu(AppContext* ctx);
 //Button組
 
 void onClickNewGame(AppContext* ctx) ;

@@ -471,8 +471,7 @@ void renderButton(AppContext* ctx, Button* button) {
     SDL_RenderFillRect(ctx->renderer, &bgRect);
 
     // 渲染按鈕文字
-    SDL_Surface* textSurface = TTF_RenderUTF8_Blended(ctx->font, button->text, button->textColor);
-    
+    SDL_Surface* textSurface = TTF_RenderUTF8_Blended(ctx->font, button->text, (SDL_Color){0, 0, 0, 255});
     SDL_Texture* textTexture = SDL_CreateTextureFromSurface(ctx->renderer, textSurface);
     SDL_Rect textRect = {button->rect.x + (button->rect.w - textSurface->w) / 2, button->rect.y + (button->rect.h - textSurface->h) / 2, textSurface->w, textSurface->h};
     SDL_RenderCopy(ctx->renderer, textTexture, NULL, &textRect);
