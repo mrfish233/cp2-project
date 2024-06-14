@@ -12,16 +12,12 @@ int32_t isValidScript(Script *script) {
      * Check player
      */
 
-    Character *player = getCharacter(script, script->player->character);
-
-    if (player == NULL) {
+    if (getCharacter(script, script->player->character) == NULL) {
         printf("Player character '%s' not found\n", script->player->character);
         valid = 0;
     }
 
-    Event *event = getEvent(script, script->player->start_event);
-
-    if (event == NULL) {
+    if (getEvent(script, script->player->start_event) == NULL) {
         printf("Player start event '%s' not found\n", script->player->start_event);
         valid = 0;
     }
@@ -33,20 +29,24 @@ int32_t isValidScript(Script *script) {
     for (int32_t i = 0; i < script->character_size; i++) {
         Character *chr = &(script->characters[i]);
 
-        char path[STR_SIZE] = {0};
+        if (chr->tachie_size > 0) {
+            for (int32_t j = 0; j < chr->tachie_size; j++) {
+                Tachie *tachie = &(chr->tachies[j]);
 
-        snprintf(path, STR_SIZE * 2, "%s/%s", script->dir, chr->tachie);
+                char path[STR_SIZE] = {0};
 
-        if (access(path, F_OK) != 0) {
-            printf("Character '%s' tachie not found: %s\n", chr->id, chr->tachie);
-            valid = 0;
+                snprintf(path, STR_SIZE * 2, "%s/%s", script->dir, tachie->path);
+
+                if (access(path, F_OK) != 0) {
+                    printf("Character '%s' tachie '%s' not found: %s\n", chr->id, tachie->name, tachie->path);
+                    valid = 0;
+                }
+            }
         }
 
         if (chr->status_size > 0) {
             for (int32_t j = 0; j < chr->status_size; j++) {
-                StatusInfo *status = getStatusInfo(script, chr->status[j].status_name);
-
-                if (status == NULL) {
+                if (getStatusInfo(script, chr->status[j].status_name) == NULL) {
                     printf("Character '%s' status '%s' not found\n", chr->id, chr->status[j].status_name);
                     valid = 0;
                 }
@@ -55,9 +55,7 @@ int32_t isValidScript(Script *script) {
 
         if (chr->inventory_size > 0) {
             for (int32_t j = 0; j < chr->inventory_size; j++) {
-                Item *item = getItem(script, chr->inventory[j]);
-
-                if (item == NULL) {
+                if (getItem(script, chr->inventory[j]) == NULL) {
                     printf("Character '%s' inventory item '%s' not found\n", chr->id, chr->inventory[j]);
                     valid = 0;
                 }
@@ -134,17 +132,13 @@ int32_t isValidScript(Script *script) {
         }
 
         if (update->condition_type == CONDITION_ITEM) {
-            Item *item = getItem(script, update->condition);
-
-            if (item == NULL) {
+            if (getItem(script, update->condition) == NULL) {
                 printf("Update '%s' item '%s' not found\n", update->id, update->condition);
                 valid = 0;
             }
         }
         else if (update->condition_type == CONDITION_STATUS) {
-            StatusInfo *status = getStatusInfo(script, update->condition);
-
-            if (status == NULL) {
+            if (getStatusInfo(script, update->condition) == NULL) {
                 printf("Update '%s' status '%s' not found\n", update->id, update->condition);
                 valid = 0;
             }
@@ -176,17 +170,13 @@ int32_t isValidScript(Script *script) {
             valid = 0;
         }
 
-        Event *event = getEvent(script, trigger->event);
-
-        if (event == NULL) {
+        if (getEvent(script, trigger->event) == NULL) {
             printf("Trigger '%s' event '%s' not found\n", trigger->id, trigger->event);
             valid = 0;
         }
 
         if (trigger->condition_type == CONDITION_ITEM) {
-            Item *item = getItem(script, trigger->condition);
-
-            if (item == NULL) {
+            if (getItem(script, trigger->condition) == NULL) {
                 printf("Trigger '%s' item '%s, not found\n", trigger->id, trigger->condition);
                 valid = 0;
             }
@@ -239,16 +229,12 @@ int32_t isValidScript(Script *script) {
     for (int32_t i = 0; i < script->event_size; i++) {
         Event *event = &(script->events[i]);
 
-        Scene *scene = getScene(script, event->scene);
-
-        if (scene == NULL) {
+        if (getScene(script, event->scene) == NULL) {
             printf("Event '%s' scene '%s' not found\n", event->id, event->scene);
             valid = 0;
         }
 
-        Dialogue *dialogue = getDialogue(script, event->dialogue);
-
-        if (dialogue == NULL) {
+        if (getDialogue(script, event->dialogue) == NULL) {
             printf("Event '%s' dialogue '%s' not found\n", event->id, event->dialogue);
             valid = 0;
         }
@@ -326,17 +312,13 @@ int32_t isValidScript(Script *script) {
             }
         }
         else if (dialogue->next_type == DIALOGUE_NORMAL) {
-            Dialogue *next = getDialogue(script, dialogue->next);
-
-            if (next == NULL) {
+            if (getDialogue(script, dialogue->next) == NULL) {
                 printf("Dialogue '%s' next dialogue '%s' not found\n", dialogue->id, dialogue->next);
                 valid = 0;
             }
         }
         else if (dialogue->next_type == DIALOGUE_EVENT) {
-            Event *next = getEvent(script, dialogue->next);
-
-            if (next == NULL) {
+            if (getEvent(script, dialogue->next) == NULL) {
                 printf("Dialogue '%s' next event '%s' not found\n", dialogue->id, dialogue->next);
                 valid = 0;
             }
@@ -356,8 +338,37 @@ int32_t isValidScript(Script *script) {
             Option *option = &(dialogue->options[j]);
 
             if (strlen(option->condition) > 0) {
-                if (getCondition(script, option->condition) == NULL) {
+                Condition *condition = getCondition(script, option->condition);
+
+                if (condition == NULL) {
                     printf("Dialogue '%s' option '%s' condition '%s' not found\n", dialogue->id, option->text, option->condition);
+                    valid = 0;
+                }
+
+                if (condition->condition_type == CONDITION_ITEM) {
+                    if (getItem(script, condition->condition) == NULL) {
+                        printf("Dialogue '%s' option '%s' condition item '%s' not found\n", dialogue->id, option->text, condition->condition);
+                        valid = 0;
+                    }
+
+                    if (condition->logic != LOGIC_EQ && condition->logic != LOGIC_NE) {
+                        printf("Dialogue '%s' option '%s' condition item logic must be EQ or NE\n", dialogue->id, option->text);
+                        valid = 0;
+                    }
+                }
+                else if (condition->condition_type == CONDITION_STATUS) {
+                    if (getStatusInfo(script, condition->condition) == NULL) {
+                        printf("Dialogue '%s' option '%s' condition status '%s' not found\n", dialogue->id, option->text, condition->condition);
+                        valid = 0;
+                    }
+
+                    if (condition->logic == LOGIC_NONE) {
+                        printf("Dialogue '%s' option '%s' condition status logic must exist\n", dialogue->id, option->text);
+                        valid = 0;
+                    }
+                }
+                else {
+                    printf("Dialogue '%s' option '%s' invalid condition type\n", dialogue->id, option->text);
                     valid = 0;
                 }
             }
@@ -440,6 +451,20 @@ Character *getCharacter(Script *script, char *character_id) {
     for (int32_t i = 0; i < script->character_size; i++) {
         if (strcmp(script->characters[i].id, character_id) == 0) {
             return &(script->characters[i]);
+        }
+    }
+
+    return NULL;
+}
+
+Tachie *getCharacterTachie(Character *character, char *tachie_name) {
+    if (character == NULL || tachie_name == NULL) {
+        return NULL;
+    }
+
+    for (int32_t i = 0; i < character->tachie_size; i++) {
+        if (strcmp(character->tachies[i].name, tachie_name) == 0) {
+            return &(character->tachies[i]);
         }
     }
 

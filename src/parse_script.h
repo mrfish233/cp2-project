@@ -13,7 +13,8 @@
  * Script table enum, contains all the tables in the script.
  * @param TABLE_NONE: no table
  * @param TABLE_PLAYER: player table
- * @param TABLE_CHARACTER: character table
+ * @param TABLE_CHARACTER: character table\
+ * @param TABLE_TACHIE: tachie table
  * @param TABLE_STATUS_INFO: status info table
  * @param TABLE_STATUS: status table
  * @param TABLE_ITEM: item table
@@ -28,6 +29,7 @@ typedef enum _TableName {
     TABLE_NONE = 0,
     TABLE_PLAYER,
     TABLE_CHARACTER,
+    TABLE_TACHIE,
     TABLE_STATUS_INFO,
     TABLE_STATUS,
     TABLE_ITEM,

@@ -56,6 +56,9 @@ int32_t initDisplay(Display *display) {
     display->path_background[0] = '\0';
     display->path_tachie[0]     = '\0';
 
+    display->path_bgm[0] = '\0';
+    display->path_sfx[0] = '\0';
+
     display->character[0] = '\0';
     display->dialogue[0]  = '\0';
 
@@ -256,6 +259,8 @@ int32_t updateDialogue(Script *script, Display *display) {
             return 1;
         }
 
+        snprintf(display->path_bgm, STR_SIZE * 2, "%s/%s", script->dir, event->bgm);
+
         // Get the scene and background
 
         scene = getScene(script, event->scene);
@@ -265,7 +270,7 @@ int32_t updateDialogue(Script *script, Display *display) {
             return 1;
         }
 
-        strncpy(display->path_background, scene->background, STR_SIZE);
+        snprintf(display->path_background, STR_SIZE * 2, "%s/%s", script->dir, scene->background);
 
         // Get the dialogue
 
@@ -288,6 +293,8 @@ int32_t updateDialogue(Script *script, Display *display) {
             printf("error: dialogue '%s' not found\n", script->current_dialogue_id);
             return 1;
         }
+
+        snprintf(display->path_sfx, STR_SIZE * 2, "%s/%s", script->dir, dialogue->sfx);
 
         if (dialogue->next_type == DIALOGUE_EVENT) {
             event = getEvent(script, dialogue->next);
@@ -380,7 +387,21 @@ int32_t updateDialogue(Script *script, Display *display) {
             return 1;
         }
 
-        strncpy(display->path_tachie, character->tachie, STR_SIZE);
+        Tachie *tachie = NULL;
+
+        if (strlen(dialogue->tachie) == 0) {
+            tachie = getCharacterTachie(character, "default");
+        }
+        else {
+            tachie = getCharacterTachie(character, dialogue->tachie);
+        }
+
+        if (tachie == NULL) {
+            printf("error: tachie '%s' not found\n", dialogue->tachie);
+            return 1;
+        }
+
+        snprintf(display->path_tachie, STR_SIZE * 2, "%s/%s", script->dir, tachie->path);
         strncpy(display->character, character->name, STR_SIZE);
     }
     else {
@@ -434,6 +455,26 @@ int32_t updateDialogue(Script *script, Display *display) {
             if (updateCharacterData(script, dialogue->updates[i]) != 0) {
                 printf("error: failed to update character data\n");
                 return 1;
+            }
+
+            Update *update = getUpdate(script, dialogue->updates[i]);
+
+            if (update == NULL) {
+                printf("error: update '%s' not found\n", dialogue->updates[i]);
+                return 1;
+            }
+
+            if (update->condition_type == CONDITION_ITEM) {
+                Item *item = getItem(script, update->condition);
+
+                if (item == NULL) {
+                    printf("error: item '%s' not found\n", update->condition);
+                    return 1;
+                }
+
+                if (item->hidden == 1) {
+                    continue;
+                }
             }
 
             processUpdateString(script, dialogue->updates[i], display->updates[display->update_size], STR_SIZE);
