@@ -47,52 +47,62 @@ start_event = "walking-on-street"
 
 [character.lulu]
 name = "露露"
-avatar = "assets/character/lulu/avatar.bmp"
-tachie = "assets/character/lulu/tachie.bmp"
 inventory = [
     "baton",
     "tone-of-harmony",
     "whispers-of-unharmony"
 ]
 
+[character.lulu.tachie]
+default = "assets/character/lulu/tachie/default.png"
+happy = "assets/character/lulu/tachie/happy.png"
+sad = "assets/character/lulu/tachie/sad.png"
+angry = "assets/character/lulu/tachie/angry.png"
+
 [character.lulu.status]
 hp = 10
 san = 40
-coin = 20
+coin = 50
 humanity = 0
 death = 0
 
-[character.belwett]
-name = "貝爾維特"
-avatar = "assets/characters/belwett/avatar.bmp"
-tachie = "assets/characters/belwett/tachie.bmp"
-inventory = []
+# [character.belwett]
+# name = "貝爾維特"
+# inventory = []
 
-[character.belwett.status]
-hp = 10
-san = 40
-coin = 20
-like = 50
-humanity = 0
+# [character.belwett.tachie]
+# default = "assets/character/lulu/tachie/default.png"
 
-[character.alfred]
-name = "阿爾弗雷德"
-avatar = "assets/characters/alfred/avatar.bmp"
-tachie = "assets/characters/alfred/tachie.bmp"
-inventory = []
+# [character.belwett.status]
+# hp = 10
+# san = 40
+# coin = 20
+# like = 50
+# humanity = 0
 
-[character.alfred.status]
-hp = 10
-san = 40
-coin = 20
-like = 50
-humanity = 0
+# [character.alfred]
+# name = "阿爾弗雷德"
+# inventory = []
+
+# [character.alfred.tachie]
+# default = "assets/character/lulu/tachie/default.png"
+
+# [character.alfred.status]
+# hp = 10
+# san = 40
+# coin = 20
+# like = 50
+# humanity = 0
 
 [character.auntie]
 name = "阿姨"
-avatar = "assets/characters/unknown/avatar.bmp"
-tachie = "assets/characters/unknown/tachie.bmp"
-inventory = []
+inventory = [
+    "cabbage",
+    "apple"
+]
+
+[character.auntie.tachie]
+default = "assets/character/auntie/tachie/default.png"
 
 [character.auntie.status]
 hp = 10
@@ -106,57 +116,58 @@ humanity = 0
 [item.baton]
 name = "指揮棒"
 desc = "指揮棒"
-icon = "assets/items/old-ivory-baton.bmp"
+# icon = "assets/items/old-ivory-baton.bmp"
 hidden = false
 
 [item.tone-of-harmony]
 name = "和諧之音"
 desc = "和諧之音"
-icon = "assets/items/tone-of-harmony.bmp"
+# icon = "assets/items/tone-of-harmony.bmp"
 hidden = false
 
 [item.whispers-of-unharmony]
 name = "不諧低語"
 desc = "不諧低語"
-icon = "assets/items/whispers-of-unharmony.bmp"
+# icon = "assets/items/whispers-of-unharmony.bmp"
 hidden = false
 
 [item.cabbage]
 name = "高麗菜"
 desc = "高麗菜"
-icon = "assets/items/cabbage.bmp"
-hidden = false
+# icon = "assets/items/cabbage.bmp"
+hidden = true
 
 [item.apple]
 name = "蘋果"
 desc = "蘋果"
-icon = "assets/items/apple.bmp"
+# icon = "assets/items/apple.bmp"
 hidden = false
 
 [item.meat]
 name = "牛肉"
 desc = "牛肉"
-icon = "assets/items/meat.bmp"
+# icon = "assets/items/meat.bmp"
 hidden = false
 
 [item.blood]
 name = "血"
 desc = "血"
-icon = "assets/items/blood.bmp"
+# icon = "assets/items/blood.bmp"
 hidden = false
 
 # 场景 scene
 
 [scene.street]
 name = "街道"
-background = "asset/scene/street.bmp"
+# background = "asset/scene/street.bmp"
+background = "assets/background/street.png"
 
 # 條件式結局 trigger
 
 [trigger.kill-everyone]
 character = "lulu"
 status = "humanity"
-value = -30
+value = -50
 logic = "LE"
 event = "everyone-dead"
 
@@ -180,7 +191,8 @@ event = "everyone-dead"
 [event.walking-on-street]
 scene = "street"
 dialogue = "walking-on-street-1"
-bgm = "assets/bgm/street.mp3"
+# dialogue = "free-veggie-and-fruit-2"
+# bgm = "assets/bgm/street.mp3"
 
 [dialogue.walking-on-street-1]
 text = "陽光普照。"
@@ -199,17 +211,24 @@ text = "一名白髮的少女躍著輕快的步伐清風拂過她的髮梢，裙
 next = "walking-on-street-5"
 
 [dialogue.walking-on-street-5]
+character = "lulu"
+tachie = "happy"
+text = "這樣的街道，這樣的人群，這樣的氣氛，真是美好啊！"
+next = "walking-on-street-6"
+
+[dialogue.walking-on-street-6]
 character = "auntie"
 text = "露露啊，這次一樣三斤高麗菜兩顆蘋果嗎？"
-[[dialogue.walking-on-street-5.option]]
+[[dialogue.walking-on-street-6.option]]
 condition = "lulu-coin-ge-50"
 text = "「這次我想要一斤牛肉！」"
 next = "free-meat-1"
-[[dialogue.walking-on-street-5.option]]
+hidden = true
+[[dialogue.walking-on-street-6.option]]
 condition = "lulu-coin-ge-20"
 text = "「沒錯！謝謝阿姨！」"
 next = "free-veggie-and-fruit-1"
-[[dialogue.walking-on-street-5.option]]
+[[dialogue.walking-on-street-6.option]]
 text = "「這次沒帶錢···」"
 next = "free-veggie-1"
 
@@ -233,7 +252,7 @@ next = "free-meat-2"
 [dialogue.free-meat-2]
 character = "auntie"
 text = "這樣吧，這肉我就送你了！"
-event = "street-scream-1"
+event = "street-scream"
 update = [
     "lulu-item-add-meat"
 ]
@@ -246,7 +265,7 @@ next = "free-veggie-and-fruit-2"
 [dialogue.free-veggie-and-fruit-2]
 character = "auntie"
 text = "這樣吧，這菜和水果我就送你了！"
-event = "street-scream-1"
+event = "street-scream"
 update = [
     "lulu-item-add-cabbage",
     "lulu-item-add-apple"
@@ -260,7 +279,7 @@ next = "free-veggie-2"
 [dialogue.free-veggie-2]
 character = "auntie"
 text = "這樣吧，我就送你一些菜吧！"
-event = "street-scream-1"
+event = "street-scream"
 update = [
     "lulu-item-add-cabbage"
 ]
@@ -282,6 +301,10 @@ change = 1
 
 ## 事件：尖叫
 
+[event.street-scream]
+scene = "street"
+dialogue = "street-scream-1"
+
 [dialogue.street-scream-1]
 text = "突然，一聲尖叫打破了街道的寧靜。"
 next = "street-scream-2"
@@ -299,8 +322,8 @@ next = "street-scream-ignore-1"
 text = "追上去"
 next = "street-scream-chase-1"
 
-[dialogue.street-scream-ignore]
-text = "你視若無睹。"
+[dialogue.street-scream-ignore-1]
+text = "你視若無睹。你視若無睹。"
 next = "street-scream-ignore-2"
 update = [
     "lulu-humanity-sub-50"
@@ -311,7 +334,7 @@ text = "你視若無睹。之後呢？"
 end = ""
 
 [dialogue.street-scream-chase-1]
-text = "你追上去。"
+text = "你追上去。你追上去。"
 next = "street-scream-chase-2"
 update = [
     "lulu-humanity-plus-50"
