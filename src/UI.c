@@ -704,6 +704,9 @@ void GamePlaying(AppContext* ctx) {
 
                     SDL_FreeSurface(statusSurface);
                 }
+                else {
+                    SDL_DestroyTexture(statusTextures[i]);
+                }
             }
 
             update = false;
@@ -842,6 +845,9 @@ void GamePlaying(AppContext* ctx) {
                             };
 
                             SDL_FreeSurface(statusSurface);
+                        }
+                        else {
+                            SDL_DestroyTexture(statusTextures[i]);
                         }
                     }
                 }
