@@ -6,6 +6,10 @@ static bool GamePlayingFlag = false;
 static bool LoadFlag        = false;
 static bool CreditFlag      = false;
 
+static bool fromMainMenuFlag = false;
+static bool fromSettingFlag  = false;
+static bool continueFlag     = false;
+
 static const SDL_Color g_white = {255, 255, 255, 255};
 static const SDL_Color g_black = {0, 0, 0, 255};
 static const SDL_Color g_grey  = {128, 128, 128, 255};
@@ -14,8 +18,8 @@ static Script  g_script  = {0};
 static Display g_display = {0};
 
 int startEngine(char *dir) {
-    AppContext ctx = { NULL, NULL, NULL, 1600, 900, NULL, 0, 0, 0 };
-    // AppContext ctx = { NULL, NULL, NULL, 1024, 576, NULL, 0, 0, 0 };
+    // AppContext ctx = { NULL, NULL, NULL, 1600, 900, NULL, 0, 0, 0 };
+    AppContext ctx = { NULL, NULL, NULL, 1024, 576, NULL, 0, 0, 0 };
     initSDL(&ctx);
 
     if (initGame(&g_script, &g_display, dir) != 0) {
@@ -53,6 +57,7 @@ void onClickResume(AppContext* ctx) {
     printf("Button 'Resume' clicked\n");
     LoadFlag = false;  // 取消 Load 狀態
     GamePlayingFlag = true; // 設置 GamePlaying 狀態
+    continueFlag = true; // 標記從 Load 界面進入 GamePlaying 狀態
 }
 
 void onClickMainMenu(AppContext* ctx) {
@@ -267,9 +272,6 @@ void Credit() {
     printf("Displaying credits...\n");
     CreditFlag = false; // 退出製作群狀態
 }
-
-bool fromMainMenuFlag = false;
-bool fromSettingFlag  = false;
 
 Button settingButton = {0};
 
@@ -570,12 +572,17 @@ void GamePlaying(AppContext* ctx) {
 
     while (!quit) {
         if (update) {
-            if (updateScriptData(&g_script, &g_display)) {
-                printf("Failed to update dialogue\n");
-                quit = true;
-                EndFlag = true;
-                break;
+            // Do not update the dialogue if continueFlag is true
+            if (!continueFlag) {
+                if (updateScriptData(&g_script, &g_display)) {
+                    printf("Failed to update dialogue\n");
+                    quit = true;
+                    EndFlag = true;
+                    break;
+                }
             }
+
+            continueFlag = false;
 
             // Check if the event has been changed, if so, save the script
 
