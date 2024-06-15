@@ -284,15 +284,10 @@ void Credit() {
     CreditFlag = false; // 退出製作群狀態
 }
 
-//實驗================================================================================================
-
 bool fromMainMenuFlag = false;
 bool fromSettingFlag  = false;
 
-typedef struct {
-    Button button;
-    bool selectable;
-} OptionButton;
+Button settingButton = {0};
 
 void onClickLoad(AppContext* ctx) {
     printf("Button 'Load' clicked\n");
@@ -448,58 +443,6 @@ void Load(AppContext* ctx) {
     }
 }
 
-// 定義全域變數
-Button settingButton = {0};
-OptionButton optionButtons[5] = {0};
-bool showOptionButtons = false;
-
-// 各選項按鈕的回調函數
-void onClickOption1(AppContext* ctx) {
-    printf("Button 'Option 1' clicked\n");
-}
-
-void onClickOption2(AppContext* ctx) {
-    printf("Button 'Option 2' clicked\n");
-}
-
-void onClickOption3(AppContext* ctx) {
-    printf("Button 'Option 3' clicked\n");
-}
-
-void onClickOption4(AppContext* ctx) {
-    printf("Button 'Option 4' clicked\n");
-}
-
-void onClickOption5(AppContext* ctx) {
-    printf("Button 'Option 5' clicked\n");
-}
-
-// 處理信號並顯示按鈕
-void handleSignal(AppContext* ctx, int numButtons, bool buttonStates[]) {
-    for (int i = 0; i < numButtons; i++) {
-        // const char* buttonText = g_display.options[i];
-
-        void (*onClickCallback[5])(AppContext*) = {
-            onClickOption1, onClickOption2, onClickOption3, onClickOption4, onClickOption5
-        };
-
-        optionButtons[i].selectable = buttonStates[i];
-
-        optionButtons[i].button.rect = (SDL_Rect) {
-            ctx->window_width / 4, ctx->window_height / 4 + i * 60, ctx->window_width / 2, 50
-        };
-        optionButtons[i].button.onClick = buttonStates[i] ? onClickCallback[i] : onClickDoNothing;
-
-        strncpy(optionButtons[i].button.text, g_display.options[i], STR_SIZE);
-
-        createButton(ctx, &optionButtons[i].button);
-        // optionButtons[i].selectable = buttonStates[i];
-    }
-    showOptionButtons = true;
-}
-
-
-
 void renderMessages(AppContext* ctx, char** messages, int messageCount) {
     SDL_Color white = {255, 255, 255, 255};
     int textHeight = 0;
@@ -572,6 +515,10 @@ void GamePlaying(AppContext* ctx) {
     SDL_Surface* nameSurface = NULL;
     SDL_Texture* nameTexture = NULL;
     SDL_Rect nameRect = {0};
+
+    Button optionButtons[5] = {0};
+
+    bool showOptionButtons = false;
 
     // 區域4: 設置物品欄
     char* itemTexts[] = {"item1", "item2", "item3", "item4", "item5"};
@@ -708,6 +655,12 @@ void GamePlaying(AppContext* ctx) {
             textRect = (SDL_Rect) {section_width * 0.2 + 10, section_height * 0.8 + 10, textSurface->w, textSurface->h};
             SDL_FreeSurface(textSurface);
 
+            // Options
+
+            if (g_display.option_flag) {
+                showOptionButtons = true;
+            }
+
             update = false;
         }
 
@@ -726,8 +679,6 @@ void GamePlaying(AppContext* ctx) {
         renderButton(ctx, &statusPreviousPageButton);
         renderButton(ctx, &settingButton); // 區域1的按鈕
 
-        // renderText(ctx, &textRect); // 渲染區域3的文字
-
         SDL_RenderCopy(ctx->renderer, textTexture, NULL, &textRect); // 渲染區域3的文字
         SDL_RenderCopy(ctx->renderer, nameTexture, NULL, &nameRect); // 渲染區域3的名字
 
@@ -739,12 +690,22 @@ void GamePlaying(AppContext* ctx) {
         // 如果顯示選項按鈕
         if (showOptionButtons) {
             for (int i = 0; i < g_display.option_size; i++) {
-                if (optionButtons[i].selectable == false) {
-                    optionButtons[i].button.textColor = g_grey;
-                    optionButtons[i].button.onClick   = onClickDoNothing;
+                optionButtons[i].rect.x = ctx->window_width  / 4;
+                optionButtons[i].rect.y = ctx->window_height / 4 + i * 60;
+                optionButtons[i].rect.w = ctx->window_width  / 2;
+                optionButtons[i].rect.h = 50;
+
+                strncpy(optionButtons[i].text, g_display.options[i], STR_SIZE);
+
+                if (g_display.options_selectable[i]) {
+                    optionButtons[i].textColor = g_black;
+                } else {
+                    optionButtons[i].textColor = g_grey;
                 }
 
-                renderButton(ctx, &optionButtons[i].button);
+                optionButtons[i].onClick = NULL;
+
+                renderButton(ctx, &optionButtons[i]);
             }
         }
 
@@ -760,45 +721,45 @@ void GamePlaying(AppContext* ctx) {
         SDL_RenderPresent(ctx->renderer);
 
         while (SDL_PollEvent(&e) != 0) {
-            // printf("in while loop\n");
             if (e.type == SDL_QUIT) {
                 quit = true;
                 EndFlag = true;
-            } else if (e.type == SDL_MOUSEBUTTONDOWN) {
+            }
+            else if (e.type == SDL_MOUSEBUTTONDOWN) {
                 int x = e.button.x;
                 int y = e.button.y;
                 if (isButtonClicked(&settingButton, x, y)) {
                     settingButton.onClick(ctx);
                     quit = true;
-                } else if (isButtonClicked(&itemNextPageButton, x, y)) {
+                }
+                else if (isButtonClicked(&itemNextPageButton, x, y)) {
                     itemNextPageButton.onClick(ctx);
-                } else if (isButtonClicked(&itemPreviousPageButton, x, y)) {
+                }
+                else if (isButtonClicked(&itemPreviousPageButton, x, y)) {
                     itemPreviousPageButton.onClick(ctx);
-                } else if (isButtonClicked(&statusNextPageButton, x, y)) {
+                }
+                else if (isButtonClicked(&statusNextPageButton, x, y)) {
                     statusNextPageButton.onClick(ctx);
-                } else if (isButtonClicked(&statusPreviousPageButton, x, y)) {
+                }
+                else if (isButtonClicked(&statusPreviousPageButton, x, y)) {
                     statusPreviousPageButton.onClick(ctx);
-                } else if (showOptionButtons) {
-                    for (int i = 0; i < 4; i++) {
-                        if (optionButtons[i].selectable && isButtonClicked(&optionButtons[i].button, x, y)) {
-                            optionButtons[i].button.onClick(ctx);
+                }
+                else if (showOptionButtons) {
+                    for (int i = 0; i < g_display.option_size; i++) {
+                        if (g_display.options_selectable[i] && isButtonClicked(&optionButtons[i], x, y)) {
+                            g_display.option_select = i + 1;
+                            showOptionButtons = false;
+                            update = true;
+                            break;
                         }
                     }
-                } else {
+                }
+                else {
                     // Continue dialogue
                     update = true;
                 }
-            // } else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_RETURN) {
-            } else if (g_display.option_flag) {
-                showOptionButtons = true;
-
-                bool buttonStates[5] = {0};
-                for (int i = 0; i < 5; i++) {
-                    buttonStates[i] = g_display.options_selectable[i];
-                }
-
-                handleSignal(ctx, g_display.option_size, buttonStates); // 顯示4個按鈕
-            } else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_LSHIFT) {
+            }
+            else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_LSHIFT) {
                 showMessageFlag = true;
                 messageStartTime = SDL_GetTicks(); // 記錄消息顯示的開始時間
                 messageCount = 5; // 顯示5個消息
@@ -815,11 +776,3 @@ void GamePlaying(AppContext* ctx) {
         SDL_DestroyTexture(statusTextures[i]);
     }
 }
-
-
-
-
-
-
-
-

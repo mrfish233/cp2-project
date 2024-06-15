@@ -326,7 +326,7 @@ int32_t updateDialogue(Script *script, Display *display) {
             dialogue = next;
         }
         else if (dialogue->next_type == DIALOGUE_OPTION) {
-            if (display->option_select < 0 || display->option_select > display->option_size) {
+            if (display->option_select <= 0 || display->option_select > display->option_size) {
                 printf("error: invalid option\n");
                 return 1;
             }
