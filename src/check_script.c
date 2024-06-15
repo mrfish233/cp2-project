@@ -344,8 +344,7 @@ int32_t isValidScript(Script *script) {
                     printf("Dialogue '%s' option '%s' condition '%s' not found\n", dialogue->id, option->text, option->condition);
                     valid = 0;
                 }
-
-                if (condition->condition_type == CONDITION_ITEM) {
+                else if (condition->condition_type == CONDITION_ITEM) {
                     if (getItem(script, condition->condition) == NULL) {
                         printf("Dialogue '%s' option '%s' condition item '%s' not found\n", dialogue->id, option->text, condition->condition);
                         valid = 0;

@@ -35,20 +35,6 @@ void onClickSetting(AppContext* ctx);
 
 void initMenuButtons(AppContext* ctx, Button* buttons);
 
-void onClickSaveSlot1(AppContext* ctx);
-void onClickLoadSlot1(AppContext* ctx);
-
-void onClickSaveSlot2(AppContext* ctx);
-void onClickLoadSlot2(AppContext* ctx);
-
-void onClickLoadSlot3(AppContext* ctx);
-void onClickSaveSlot3(AppContext* ctx);
-
-void onClickSaveAuto(AppContext* ctx);
-void onClickLoadAuto(AppContext* ctx);
-
-void onClickDoNothing(AppContext* ctx);
-
 //主介面
 
 void renderTitle(AppContext* ctx);

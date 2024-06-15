@@ -130,6 +130,7 @@ int32_t loadScript(Script *script, SaveSlot slot) {
     }
 
     strncpy(script->current_event_id, event->valuestring, STR_SIZE);
+    memset(script->current_dialogue_id, 0, STR_SIZE);
 
     cJSON *characters = cJSON_GetObjectItem(root, "characters");
 

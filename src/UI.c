@@ -18,8 +18,8 @@ static Script  g_script  = {0};
 static Display g_display = {0};
 
 int startEngine(char *dir) {
-    // AppContext ctx = { NULL, NULL, NULL, 1600, 900, NULL, 0, 0, 0 };
-    AppContext ctx = { NULL, NULL, NULL, 1024, 576, NULL, 0, 0, 0 };
+    AppContext ctx = { NULL, NULL, NULL, 1600, 900, NULL, 0, 0, 0 };
+    // AppContext ctx = { NULL, NULL, NULL, 1024, 576, NULL, 0, 0, 0 };
     initSDL(&ctx);
 
     if (initGame(&g_script, &g_display, dir) != 0) {
@@ -217,51 +217,6 @@ void BackToMainMenu(AppContext* ctx) {
     LoadFlag = false;  // 返回主菜單，將LoadFlag設置為false
 }
 
-void onClickSaveSlot1(AppContext* ctx) {
-    printf("Button 'Save 1' clicked\n");
-    // 添加保存邏輯
-}
-
-void onClickLoadSlot1(AppContext* ctx) {
-    printf("Button 'Load 1' clicked\n");
-    // 添加加載邏輯
-}
-
-void onClickSaveSlot2(AppContext* ctx) {
-    printf("Button 'Save 2' clicked\n");
-    // 添加保存邏輯
-}
-
-void onClickLoadSlot2(AppContext* ctx) {
-    printf("Button 'Load 2' clicked\n");
-    // 添加加載邏輯
-}
-
-void onClickSaveSlot3(AppContext* ctx) {
-    printf("Button 'Save 3' clicked\n");
-    // 添加保存邏輯
-}
-
-void onClickLoadSlot3(AppContext* ctx) {
-    printf("Button 'Load 3' clicked\n");
-    // 添加加載邏輯
-}
-
-void onClickSaveAuto(AppContext* ctx) {
-    printf("Button 'Auto Save' clicked\n");
-    // 添加自動保存邏輯
-}
-
-void onClickLoadAuto(AppContext* ctx) {
-    printf("Button 'Load Auto' clicked\n");
-    // 添加自動加載邏輯
-}
-
-void onClickDoNothing(AppContext* ctx) {
-    printf("Button 'Do Nothing' clicked\n");
-    // 不執行任何操作
-}
-
 void End() {
     // 結束遊戲的代碼
     printf("Ending the game...\n");
@@ -319,17 +274,9 @@ void Load(AppContext* ctx) {
     // 設置按鈕和文本框
     Button saveButtons[SAVE_SIZE] = {0};
     Button loadButtons[SAVE_SIZE] = {0};
-    SDL_Rect textRects[SAVE_SIZE];
 
     char saveButtonText[SAVE_SIZE][STR_SIZE] = {"Save 1", "Save 2", "Save 3", "Save Auto"};
     char loadButtonText[SAVE_SIZE][STR_SIZE] = {"Load 1", "Load 2", "Load 3", "Load Auto"};
-
-    void (*saveButtonCallbacks[SAVE_SIZE])(AppContext*) = {
-        onClickSaveSlot1, onClickSaveSlot2, onClickSaveSlot3, onClickSaveAuto
-    };
-    void (*loadButtonCallbacks[SAVE_SIZE])(AppContext*) = {
-        onClickLoadSlot1, onClickLoadSlot2, onClickLoadSlot3, onClickLoadAuto
-    };
 
     char texts[SAVE_SIZE][STR_SIZE] = {0};
     char saveEvent[SAVE_SIZE][STR_SIZE] = {0};
@@ -340,6 +287,10 @@ void Load(AppContext* ctx) {
         printf("Failed to find save event\n");
         return;
     }
+
+    SDL_Surface* text_surface = NULL;
+    SDL_Texture* text_textures[SAVE_SIZE] = {0};
+    SDL_Rect text_rects[SAVE_SIZE] = {0};
 
     for (int i = 0; i < SAVE_SIZE; i++) {
         saveButtons[i].rect = (SDL_Rect) {10,  i * section_height + section_height / 2 - 25, 200, 50};
@@ -354,26 +305,30 @@ void Load(AppContext* ctx) {
             strncat(texts[i], saveDatetime[i], STR_SIZE);
 
             loadButtons[i].textColor = g_black;
-            loadButtons[i].onClick   = loadButtonCallbacks[i];
         } else {
             strncat(texts[i], "Empty", 7);
 
             loadButtons[i].textColor = g_grey;
-            loadButtons[i].onClick   = onClickDoNothing;
         }
 
         if (fromMainMenuFlag) {
             saveButtons[i].textColor = g_grey;
-            saveButtons[i].onClick   = onClickDoNothing;
         } else {
             saveButtons[i].textColor = g_black;
-            saveButtons[i].onClick   = saveButtonCallbacks[i];
         }
+
+        saveButtons[i].onClick = NULL;
+        loadButtons[i].onClick = NULL;
 
         createButton(ctx, &saveButtons[i]);
         createButton(ctx, &loadButtons[i]);
 
-        textRects[i] = (SDL_Rect) {430, i * section_height + section_height / 2 - 25, 15 * strlen(texts[i]), 40};
+        text_surface     = TTF_RenderUTF8_Blended(ctx->font, texts[i], g_white);
+        text_textures[i] = SDL_CreateTextureFromSurface(ctx->renderer, text_surface);
+        text_rects[i]    = (SDL_Rect) {
+            430, i * section_height + section_height / 2 - 25, text_surface->w, text_surface->h
+        };
+        SDL_FreeSurface(text_surface);
     }
 
     loadTextures(ctx);
@@ -395,10 +350,53 @@ void Load(AppContext* ctx) {
                 } else {
                     for (int i = 0; i < 4; i++) {
                         if (isButtonClicked(&saveButtons[i], x, y)) {
-                            saveButtons[i].onClick(ctx);
+                            if (fromMainMenuFlag) {
+                                continue;
+                            }
+
+                            if (saveScript(&g_script, i) != 0) {
+                                printf("Failed to save script\n");
+                                quit = true;
+                                EndFlag = true;
+                                break;
+                            }
+
+                            memset(texts[i], 0, STR_SIZE);
+                            strncat(texts[i], saveEvent[i], STR_SIZE);
+                            strncat(texts[i], " ", 2);
+                            strncat(texts[i], saveDatetime[i], STR_SIZE);
+
+                            if (findSaveEvent(&g_script, saveEvent, saveDatetime, hasSaveFile)) {
+                                printf("Failed to find save event\n");
+                                quit = true;
+                                break;
+                            }
+
+                            memset(texts[i], 0, STR_SIZE);
+                            strncat(texts[i], saveEvent[i], STR_SIZE);
+                            strncat(texts[i], " ", 2);
+                            strncat(texts[i], saveDatetime[i], STR_SIZE);
+
+                            text_surface = TTF_RenderUTF8_Blended(ctx->font, texts[i], g_white);
+                            text_textures[i] = SDL_CreateTextureFromSurface(ctx->renderer, text_surface);
+                            text_rects[i] = (SDL_Rect) {430, i * section_height + section_height / 2 - 25, text_surface->w, text_surface->h};
+                            SDL_FreeSurface(text_surface);
                         }
                         if (isButtonClicked(&loadButtons[i], x, y)) {
-                            loadButtons[i].onClick(ctx);
+                            if (!hasSaveFile[i]) {
+                                continue;
+                            }
+
+                            if (loadScript(&g_script, i) != 0) {
+                                printf("Failed to load script\n");
+                                quit = true;
+                                EndFlag = true;
+                                break;
+                            }
+
+                            LoadFlag = false;
+                            GamePlayingFlag = true;
+                            quit = true;
                         }
                     }
                 }
@@ -413,11 +411,7 @@ void Load(AppContext* ctx) {
         for (int i = 0; i < 4; i++) {
             renderButton(ctx, &saveButtons[i]);
             renderButton(ctx, &loadButtons[i]);
-            SDL_Surface* surface = TTF_RenderUTF8_Blended(ctx->font, texts[i], g_white);
-            SDL_Texture* texture = SDL_CreateTextureFromSurface(ctx->renderer, surface);
-            SDL_RenderCopy(ctx->renderer, texture, NULL, &textRects[i]);
-            SDL_FreeSurface(surface);
-            SDL_DestroyTexture(texture);
+            SDL_RenderCopy(ctx->renderer, text_textures[i], NULL, &text_rects[i]);
         }
 
         SDL_RenderPresent(ctx->renderer);
