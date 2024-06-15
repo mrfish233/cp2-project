@@ -17,10 +17,17 @@ static const SDL_Color g_grey  = {128, 128, 128, 255};
 static Script  g_script  = {0};
 static Display g_display = {0};
 
+Mix_Chunk *popSfx  = NULL;
+Mix_Chunk *pageSfx = NULL;
+
 int startEngine(char *dir) {
     AppContext ctx = { NULL, NULL, NULL, 1600, 900, NULL, 0, 0, 0 };
     // AppContext ctx = { NULL, NULL, NULL, 1024, 576, NULL, 0, 0, 0 };
     initSDL(&ctx);
+
+    initAudio();
+    loadSound("resources/sounds/pop.mp3", &popSfx);
+    loadSound("resources/sounds/page.mp3", &pageSfx);
 
     if (initGame(&g_script, &g_display, dir) != 0) {
         cleanUp(&ctx);
@@ -97,6 +104,8 @@ void Settings(AppContext* ctx) {
                 int y = e.button.y;
                 for (int i = 0; i < 3; i++) {
                     if (isButtonClicked(&buttons[i], x, y)) {
+                        playSound(popSfx);
+
                         buttons[i].onClick(ctx);
                         quit = true;
                         break;
@@ -174,6 +183,8 @@ void MainMenu(AppContext* ctx) {
                 int y = e.button.y;
 
                 if (isButtonClicked(&buttons[BUTTON_NEW_GAME], x, y)) {
+                    playSound(popSfx);
+
                     if (resetGame(&g_script, &g_display) != 0) {
                         printf("Failed to reset game\n");
                         EndFlag = true;
@@ -184,13 +195,19 @@ void MainMenu(AppContext* ctx) {
                     GamePlayingFlag = true;
                     quit = true;
                 } else if (isButtonClicked(&buttons[BUTTON_LOAD], x, y)) {
+                    playSound(popSfx);
+
                     LoadFlag = true;
                     fromMainMenuFlag = true;
                     quit = true;
                 } else if (isButtonClicked(&buttons[BUTTON_CREDIT], x, y)) {
+                    playSound(popSfx);
+
                     CreditFlag = true;
                     quit = true;
                 } else if (isButtonClicked(&buttons[BUTTON_EXIT], x, y)) {
+                    playSound(popSfx);
+
                     EndFlag = true;
                     quit = true;
                 }
@@ -345,6 +362,8 @@ void Load(AppContext* ctx) {
                 int x = e.button.x;
                 int y = e.button.y;
                 if (isButtonClicked(&backButton, x, y)) {
+                    playSound(popSfx);
+
                     backButton.onClick(ctx);
                     quit = true;
                 } else {
@@ -353,6 +372,8 @@ void Load(AppContext* ctx) {
                             if (fromMainMenuFlag) {
                                 continue;
                             }
+
+                            playSound(popSfx);
 
                             if (saveScript(&g_script, i) != 0) {
                                 printf("Failed to save script\n");
@@ -386,6 +407,8 @@ void Load(AppContext* ctx) {
                             if (!hasSaveFile[i]) {
                                 continue;
                             }
+
+                            playSound(popSfx);
 
                             if (loadScript(&g_script, i) != 0) {
                                 printf("Failed to load script\n");
@@ -766,11 +789,14 @@ void GamePlaying(AppContext* ctx) {
                 int x = e.button.x;
                 int y = e.button.y;
                 if (isButtonClicked(&settingButton, x, y)) {
+                    playSound(popSfx);
+
                     settingButton.onClick(ctx);
                     quit = true;
                 }
                 else if (isButtonClicked(&itemNextPageButton, x, y) ||
                          isButtonClicked(&itemPreviousPageButton, x, y)) {
+                    playSound(pageSfx);
 
                     if (isButtonClicked(&itemNextPageButton, x, y)) {
                         g_display.inventory_page++;
@@ -794,6 +820,7 @@ void GamePlaying(AppContext* ctx) {
                 }
                 else if (isButtonClicked(&statusNextPageButton, x, y) ||
                          isButtonClicked(&statusPreviousPageButton, x, y)) {
+                    playSound(pageSfx);
 
                     if (isButtonClicked(&statusNextPageButton, x, y)) {
                         g_display.status_page++;
@@ -821,6 +848,8 @@ void GamePlaying(AppContext* ctx) {
                 else if (showOptionButtons) {
                     for (int i = 0; i < g_display.option_size; i++) {
                         if (g_display.options_selectable[i] && isButtonClicked(&optionButtons[i], x, y)) {
+                            playSound(popSfx);
+
                             g_display.option_select = i + 1;
                             showOptionButtons = false;
                             update = true;

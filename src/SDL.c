@@ -480,7 +480,7 @@ bool isButtonClicked(Button* button, int x, int y) {
 }
 
 void initAudio() {
-    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+    if (Mix_OpenAudio(88200, MIX_DEFAULT_FORMAT, 2, 1024) < 0) {
         fprintf(stderr, "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
         exit(1);
     }
