@@ -28,13 +28,9 @@ void Settings(AppContext* ctx);
 void BackToPreviousMenu(AppContext* ctx);
 //Button組
 
-void onClickNewGame(AppContext* ctx) ;
 void onClickResume(AppContext* ctx);
 void onClickSave(AppContext* ctx) ;
 void onClickMainMenu(AppContext* ctx);
-void onClickLoad(AppContext* ctx);
-void onClickCredit(AppContext* ctx);
-void onClickExit(AppContext* ctx);
 void onClickSetting(AppContext* ctx);
 
 void initMenuButtons(AppContext* ctx, Button* buttons);

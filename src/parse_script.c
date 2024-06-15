@@ -1287,6 +1287,14 @@ void clearScript(Script *script) {
         return;
     }
 
+    script->dir[0] = '\0';
+
+    script->name[0] = '\0';
+    script->author[0] = '\0';
+
+    script->current_event_id[0] = '\0';
+    script->current_dialogue_id[0] = '\0';
+
     if (script->player) {
         free(script->player);
         script->player = NULL;

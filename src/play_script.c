@@ -31,6 +31,26 @@ int32_t initGame(Script *script, Display *display, char *dir) {
     return 0;
 }
 
+int32_t resetGame(Script *script, Display *display) {
+    if (script == NULL || display == NULL) {
+        return 1;
+    }
+
+    char dir[STR_SIZE] = {0};
+    strncpy(dir, script->dir, STR_SIZE);
+
+    clearScript(script);
+
+    script->current_event_id[0] = '\0';
+    script->current_dialogue_id[0] = '\0';
+
+    if (initGame(script, display, dir) != 0) {
+        return 1;
+    }
+
+    return 0;
+}
+
 int32_t initScript(Script *script, char *dir) {
     if (script == NULL || dir == NULL) {
         return 1;

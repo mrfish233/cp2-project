@@ -49,12 +49,6 @@ int startEngine(char *dir) {
     return 0;
 }
 
-void onClickNewGame(AppContext* ctx) {
-    printf("Button 'New Game' clicked\n");
-    newGameFlag = true;
-    GamePlayingFlag = true;
-}
-
 void onClickResume(AppContext* ctx) {
     printf("Button 'Resume' clicked\n");
     LoadFlag = false;  // 取消 Load 狀態
@@ -127,23 +121,12 @@ void onClickSetting(AppContext* ctx) {
     Settings(ctx); // 進入設定狀態
 }
 
-void onClickCredit(AppContext* ctx) {
-    printf("Button 'Credit' clicked\n");
-    CreditFlag = true;
-}
-
-void onClickExit(AppContext* ctx) {
-    printf("Button 'Exit' clicked\n");
-    EndFlag = true;
-}
-
 void initMenuButtons(AppContext* ctx, Button* buttons) {
     char buttonTexts[4][STR_SIZE] = {"New Game", "Load", "Credit", "Exit"};
-    void (*buttonCallbacks[4])(AppContext*) = {onClickNewGame, onClickLoad, onClickCredit, onClickExit};
 
     for (int i = 0; i < 4; i++) {
         buttons[i].rect    = (SDL_Rect) {ctx->window_width / 2 - 100, ctx->window_height / 2 - 100 + 75 * i, 200, 50};
-        buttons[i].onClick = buttonCallbacks[i];
+        buttons[i].onClick = NULL;
         strncpy(buttons[i].text, buttonTexts[i], STR_SIZE);
 
         createButton(ctx, &buttons[i]);
@@ -163,6 +146,13 @@ void MainMenu(AppContext* ctx) {
     Button buttons[4] = {0};
     initMenuButtons(ctx, buttons);
 
+    enum {
+        BUTTON_NEW_GAME = 0,
+        BUTTON_LOAD,
+        BUTTON_CREDIT,
+        BUTTON_EXIT
+    };
+
     bool quit = false;
     SDL_Event e;
 
@@ -177,12 +167,26 @@ void MainMenu(AppContext* ctx) {
             } else if (e.type == SDL_MOUSEBUTTONDOWN) {
                 int x = e.button.x;
                 int y = e.button.y;
-                for (int i = 0; i < 4; i++) {
-                    if (isButtonClicked(&buttons[i], x, y)) {
-                        buttons[i].onClick(ctx);
-                        quit = true;
+
+                if (isButtonClicked(&buttons[BUTTON_NEW_GAME], x, y)) {
+                    if (resetGame(&g_script, &g_display) != 0) {
+                        printf("Failed to reset game\n");
+                        EndFlag = true;
                         break;
                     }
+
+                    newGameFlag = true;
+                    GamePlayingFlag = true;
+                    quit = true;
+                } else if (isButtonClicked(&buttons[BUTTON_LOAD], x, y)) {
+                    LoadFlag = true;
+                    quit = true;
+                } else if (isButtonClicked(&buttons[BUTTON_CREDIT], x, y)) {
+                    CreditFlag = true;
+                    quit = true;
+                } else if (isButtonClicked(&buttons[BUTTON_EXIT], x, y)) {
+                    EndFlag = true;
+                    quit = true;
                 }
             }
         }
@@ -268,12 +272,6 @@ bool fromMainMenuFlag = false;
 bool fromSettingFlag  = false;
 
 Button settingButton = {0};
-
-void onClickLoad(AppContext* ctx) {
-    printf("Button 'Load' clicked\n");
-    LoadFlag = true;  // 設置 Load 狀態
-    fromMainMenuFlag = true; // 標記從主菜單進入 Load 界面
-}
 
 void onClickSave(AppContext* ctx) {
     printf("Button 'Save' clicked\n");
