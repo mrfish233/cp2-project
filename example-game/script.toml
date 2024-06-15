@@ -15,6 +15,18 @@ desc = "SAN 值"
 min = -50
 max = 50
 
+[status.harmony]
+name = "和諧"
+desc = "和諧值"
+min = 0
+max = 3
+
+[status.unharmony]
+name = "不諧"
+desc = "不諧值"
+min = 0
+max = 3
+
 [status.coin]
 name = "金幣"
 desc = "金幣數量"
@@ -47,52 +59,55 @@ start_event = "walking-on-street"
 
 [character.lulu]
 name = "露露"
-inventory = [
-    "baton",
-    "tone-of-harmony",
-    "whispers-of-unharmony"
-]
+inventory = []
 
 [character.lulu.tachie]
 default = "assets/character/lulu/tachie/default.png"
 happy = "assets/character/lulu/tachie/happy.png"
 sad = "assets/character/lulu/tachie/sad.png"
 angry = "assets/character/lulu/tachie/angry.png"
+yikes = "assets/character/lulu/tachie/yikes.png"
+firstlook = "assets/character/lulu/tachie/firstlook.png"
+normal = "assets/character/lulu/tachie/normal.png"
+nothing = "assets/character/lulu/tachie/nothing.png"
+smiling = "assets/character/lulu/tachie/smiling.png"
 
 [character.lulu.status]
 hp = 10
 san = 40
 coin = 50
+harmony = 0
+unharmony = 0
 humanity = 0
 death = 0
 
-# [character.belwett]
-# name = "貝爾維特"
-# inventory = []
+[character.belwett]
+name = "貝爾維特"
+inventory = []
 
-# [character.belwett.tachie]
-# default = "assets/character/lulu/tachie/default.png"
+[character.belwett.tachie]
+default = "assets/character/belwett/tachie/default.png"
 
-# [character.belwett.status]
-# hp = 10
-# san = 40
-# coin = 20
-# like = 50
-# humanity = 0
+[character.belwett.status]
+hp = 10
+san = 40
+coin = 20
+like = 50
+humanity = 0
 
-# [character.alfred]
-# name = "阿爾弗雷德"
-# inventory = []
+[character.alfred]
+name = "阿爾弗雷德"
+inventory = []
 
-# [character.alfred.tachie]
-# default = "assets/character/lulu/tachie/default.png"
+[character.alfred.tachie]
+default = "assets/character/alfred/tachie/default.png"
 
-# [character.alfred.status]
-# hp = 10
-# san = 40
-# coin = 20
-# like = 50
-# humanity = 0
+[character.alfred.status]
+hp = 10
+san = 40
+coin = 20
+like = 50
+humanity = 0
 
 [character.auntie]
 name = "阿姨"
@@ -119,17 +134,17 @@ desc = "指揮棒"
 # icon = "assets/items/old-ivory-baton.bmp"
 hidden = false
 
-[item.tone-of-harmony]
-name = "和諧之音"
-desc = "和諧之音"
-# icon = "assets/items/tone-of-harmony.bmp"
-hidden = false
+# [item.tone-of-harmony]
+# name = "和諧之音"
+# desc = "和諧之音"
+# # icon = "assets/items/tone-of-harmony.bmp"
+# hidden = false
 
-[item.whispers-of-unharmony]
-name = "不諧低語"
-desc = "不諧低語"
-# icon = "assets/items/whispers-of-unharmony.bmp"
-hidden = false
+# [item.whispers-of-unharmony]
+# name = "不諧低語"
+# desc = "不諧低語"
+# # icon = "assets/items/whispers-of-unharmony.bmp"
+# hidden = false
 
 [item.cabbage]
 name = "高麗菜"
@@ -164,10 +179,10 @@ background = "assets/background/street.png"
 
 # 條件式結局 trigger
 
-[trigger.kill-everyone]
+[trigger.madness]
 character = "lulu"
-status = "humanity"
-value = -50
+status = "san"
+value = 0
 logic = "LE"
 event = "everyone-dead"
 
@@ -199,7 +214,7 @@ text = "陽光普照。"
 next = "walking-on-street-2"
 
 [dialogue.walking-on-street-2]
-text = "偷懶的電源剛掃了一半的雪便開始抽起香菸，拿著菜籃子的老婦一邊盤算著價錢一邊計划著晚上的菜單，"
+text = "偷懶的店員剛掃了一半的雪便開始抽起香菸，拿著菜籃子的老婦一邊盤算著價錢一邊計劃著晚上的菜單，"
 next = "walking-on-street-3"
 
 [dialogue.walking-on-street-3]
@@ -218,158 +233,354 @@ next = "walking-on-street-6"
 
 [dialogue.walking-on-street-6]
 character = "auntie"
-text = "露露啊，這次一樣三斤高麗菜兩顆蘋果嗎？"
-[[dialogue.walking-on-street-6.option]]
-condition = "lulu-coin-ge-50"
-text = "「這次我想要一斤牛肉！」"
-next = "free-meat-1"
-hidden = true
-[[dialogue.walking-on-street-6.option]]
-condition = "lulu-coin-ge-20"
-text = "「沒錯！謝謝阿姨！」"
-next = "free-veggie-and-fruit-1"
-[[dialogue.walking-on-street-6.option]]
-text = "「這次沒帶錢···」"
-next = "free-veggie-1"
+text = "露露阿!又來賣菜嗎?"
+next = "walking-on-street-7"
 
-[condition.lulu-coin-ge-50]
+[dialogue.walking-on-street-7]
 character = "lulu"
-status = "coin"
-value = 50
-logic = "GE"
+tachie = "happy"
+text = "對阿,難得會放我來鎮上呢!五天後是一年一度的聖湖季阿嬤說要做大餐!"
+next = "walking-on-street-8"
 
-[condition.lulu-coin-ge-20]
-character = "lulu"
-status = "coin"
-value = 20
-logic = "GE"
-
-[dialogue.free-meat-1]
+[dialogue.walking-on-street-8]  
 character = "auntie"
-text = "哎呀！上次真是多謝你了，我們家老爺子的腰差點再也挺不起來了呢！"
-next = "free-meat-2"
-
-[dialogue.free-meat-2]
-character = "auntie"
-text = "這樣吧，這肉我就送你了！"
-event = "street-scream"
+text = "看在你這麼孝順的分上,這些東西都給你,不要跟阿嬤說喔"
 update = [
-    "lulu-item-add-meat"
-]
-
-[dialogue.free-veggie-and-fruit-1]
-character = "auntie"
-text = "哎呀！上次真是多謝你了，我們家老爺子的腰差點再也挺不起來了呢！！"
-next = "free-veggie-and-fruit-2"
-
-[dialogue.free-veggie-and-fruit-2]
-character = "auntie"
-text = "這樣吧，這菜和水果我就送你了！"
-event = "street-scream"
-update = [
+    "lulu-item-add-meat",
+    "lulu-coin-plus-50",
     "lulu-item-add-cabbage",
-    "lulu-item-add-apple"
 ]
-
-[dialogue.free-veggie-1]
-character = "auntie"
-text = "沒關係啦！上次真是多謝你了，我們家老爺子的腰差點再也挺不起來了呢！"
-next = "free-veggie-2"
-
-[dialogue.free-veggie-2]
-character = "auntie"
-text = "這樣吧，我就送你一些菜吧！"
-event = "street-scream"
-update = [
-    "lulu-item-add-cabbage"
-]
+next = "walking-on-street-9"
 
 [update.lulu-item-add-meat]
 character = "lulu"
 item = "meat"
 change = 1
 
+[update.lulu-coin-plus-50]
+character = "lulu"
+status = "coin"
+change = 50
+
 [update.lulu-item-add-cabbage]
 character = "lulu"
 item = "cabbage"
 change = 1
 
-[update.lulu-item-add-apple]
-character = "lulu"
-item = "apple"
-change = 1
+[dialogue.walking-on-street-9]
+character = "auntie"
+text = "把錢省下來去買點喜歡的東西,女孩子要好好打扮自己"
+next = "walking-on-street-10"
 
+[dialogue.walking-on-street-10]
+character = "lulu"
+tachie = "happy"
+text = "恩!而且明天是我的生日!!"
+next = "walking-on-street-11"
+
+[dialogue.walking-on-street-11]
+text = "這時,你注意到有個殘影,從兩棟緊挨著的房子間顯現,模糊的殘影揭示著那裡有一所並不存在的房子"
+event = "weird-glimpse"
 ## 事件：尖叫
 
-[event.street-scream]
+[event.weird-glimpse]
 scene = "street"
-dialogue = "street-scream-1"
+dialogue = "weird-glimpse-1"
 
-[dialogue.street-scream-1]
-text = "突然，一聲尖叫打破了街道的寧靜。"
-next = "street-scream-2"
+[dialogue.weird-glimpse-1]
+text = "你看著一個看不清臉的人被披風,包裹著,躡手躡腳的走了出來,裝作普通行人的樣子。"
 
-[dialogue.street-scream-2]
-text = "「救命啊！」"
-next = "street-scream-3"
-
-[dialogue.street-scream-3]
-text = "「有賊！快抓住它！」"
-[[dialogue.street-scream-3.option]]
+#option 視若無睹或追上去
+[[dialogue.weird-glimpse-1.option]]
 text = "視若無睹"
-next = "street-scream-ignore-1"
-[[dialogue.street-scream-3.option]]
+next = "weird-glimpse-ignore-1"
+[[dialogue.weird-glimpse-1.option]]
 text = "追上去"
-next = "street-scream-chase-1"
+next = "weird-glimpse-chase-1"
 
-[dialogue.street-scream-ignore-1]
-text = "你視若無睹。你視若無睹。"
-next = "street-scream-ignore-2"
-update = [
-    "lulu-humanity-sub-50"
-]
+[dialogue.weird-glimpse-ignore-1]
+text = "那個人注意到了你的視線,似乎感到驚愕,片刻後朝你走來"
+next = "weird-glimpse-2"
 
-[dialogue.street-scream-ignore-2]
-text = "你視若無睹。之後呢？"
-end = ""
+[dialogue.weird-glimpse-chase-1]
+text = "你撇下阿姨,在她看來,你氣勢洶洶的朝著空氣而去"
+next = "weird-glimpse-2"
 
-[dialogue.street-scream-chase-1]
-text = "你追上去。你追上去。"
-next = "street-scream-chase-2"
-update = [
-    "lulu-humanity-plus-50"
-]
+[dialogue.weird-glimpse-2]
+character = "lagoud"
+text = "美麗的小姐,你好,吾名拉古德"
+next = "weird-glimpse-3"
 
-[dialogue.street-scream-chase-2]
-text = "你追上去。之後呢？"
-end = ""
+[dialogue.weird-glimpse-3]
+text = "這時你可以看出,他面色蒼白,雙眼猩紅,是一名血族"
+next = "weird-glimpse-4"
 
-[update.lulu-humanity-sub-50]
+[dialogue.weird-glimpse-4]
+character = "lagoud"
+text = "莉莉斯在上,幾百年來我都安分的待在,這個小鎮,什麼風把魔女吹來了?"
+
+[[dialogue.weird-glimpse-4.option]]
+text = "魔女?"
+next = "weird-glimpse-5"
+[[dialogue.weird-glimpse-4.option]]
+text = "逃跑"
+next = "weird-glimpse-escape-1"
+
+[dialogue.weird-glimpse-escape-1]
+text = "你回想起阿嬤說過血族的外貌,以及,他們非常危險,你在看清楚披風下的面容後,轉身拔腿就跑"
+next = "weird-glimpse-escape-2"
+
+[dialogue.weird-glimpse-escape-2]
+text = "你跑的很快,但是,你感覺到他的氣息越來越近,你感覺自己的胸口正在向外噴灑著什麼,一隻巨爪穿過你的胸口"
+event = "end1"
+
+#死亡數加1
+[update.lulu-death-plus-1]
 character = "lulu"
-status = "humanity"
-change = -50
+status = "death"
+change = 1
 
-[update.lulu-humanity-plus-50]
+#結局1:死亡========================================================================================================
+[dialogue.weird-glimpse-5]
+chracter = "lulu"
+tachie = "angry"
+text = "什麼魔女?你在說什麼?"
+next = "weird-glimpse-6"
+
+[dialogue.weird-glimpse-6]
+character = "lagoud"
+text = "不對...這只不過是魔女與人類結合的產物,這些年來魔女也漸漸式微了呢"
+next = "weird-glimpse-7"
+
+[dialogue.weird-glimpse-7]
+text = "自稱拉古德的血族,上下掃視了你,並沒有理會你的話語,爾後顯得興味索然"
+next = "weird-glimpse-8"    
+
+[dialogue.weird-glimpse-8]
 character = "lulu"
-status = "humanity"
-change = 50
+tachie = "yikes"
+text = "為什麼你說我是魔女?那是什麼?你知道多少?"
+next = "weird-glimpse-9"
 
-## 事件：每個人都死了
+[dialogue.weird-glimpse-9]  
+character = "lagoud"
+text = "你希望有多少,就能有多少,白天我一直都在圖書館,那邊有很多知識..你該不會沒看過書吧哈哈哈"
+next = "weird-glimpse-10"
 
-[event.everyone-dead]
-scene = "street"
-dialogue = "everyone-dead-1"
+[dialogue.weird-glimpse-10]
+character = "lulu"
+tachie = "yikes"
+text = "我..要你管!"
+next = "weird-glimpse-11"
 
-[dialogue.everyone-dead-1]
-text = "你看著四周，每個人都死了。"
-end = ""
+[dialogue.weird-glimpse-11]
+character = "lagoud"
+text = "但我可不能不管你呀,現在這鎮上唯一能看到我的,只有你了,或許我該..."
 
-## 事件：成為天使
+[[dialogue.weird-glimpse-11.option]]
+text = "你是在威脅我嗎?"
+next = "weird-glimpse-12"
 
-[event.angel]
-scene = "street"
-dialogue = "angel-1"
+[[dialogue.weird-glimpse-11.option]]
+text = "我對你沒有敵意"
+next = "weird-glimpse-12"
 
-[dialogue.angel-1]
-text = "你變成了天使。"
-end = ""
+[dialogue.weird-glimpse-12]
+character = "lagoud"
+text = "放輕鬆~開個玩笑而已,那先醬子啦~記得來找我呀~我只是想要一個朋友,你看,我們有共同的話題,你是魔女的後代,我是血族,我們都是被排斥的存在"
+next = "weird-glimpse-13"
+
+[dialogue.weird-glimpse-13]
+text = "拉古德逐漸化作一道黑煙,消失在你的視線中,你感到一陣寒意,這個人 是誰?周圍的人們,為什麼都沒有發現他的存在?"
+next = "walking-on-street-14"
+
+[dialogue.walking-on-street-14]
+character = "auntie"
+text = "露露,你在跟誰說話呢?你剛才對著空氣說了好多話,阿姨都不敢問妳怎麼了"
+next = "walking-on-street-15"
+
+[dialogue.walking-on-street-15]
+character = "lulu"
+tachie = "normal"
+text = "沒事,阿姨,我只是在想事情而已,謝謝阿姨的禮物,我先回家啦!"
+event = "back-home"
+
+#第二章========================================================================================================
+
+
+
+
+# 旁白
+
+# 你一路狂奔,恐懼與不適令你迫切的想回到阿嬤的懷抱
+# 大約二十分鐘後
+# 一棟破舊但令你充滿安心的木屋映入眼簾
+# 露露  happy
+
+# 阿嬤!
+# 撲進了阿嬤的懷中
+# 阿嬤被你衝擊得踉蹌了一下
+# 阿嬤
+
+# 唉呀怎麼啦?
+# 好像看到鬼一樣
+# 露露  yikes
+
+# 我剛才碰到一個很奇怪的人
+# 他長得跟阿嬤說的血族一模一樣
+# 還說了好多奇怪的話
+# 阿嬤...我是魔女嗎?
+# 阿嬤
+
+# ...
+# 阿嬤
+
+# 太久...沒去小鎮了...
+# 竟然...出現了血族...
+# 露露阿....
+# 露露  sad
+
+# 我是...魔女嗎?
+# 阿嬤
+
+# 魔女...是無知的凡人
+# 對掌握非凡力量之人
+# 的稱謂
+# 露露 sad
+
+# ...我不想..
+# 阿嬤
+
+# 你明天就18歲...
+# 有些東西是時候跟你說了
+# 跟我來吧
+# 阿嬤帶著你來到那個她囑咐你絕對不准進去的地下室,你能聞到淡淡的霉味
+# 但卻沒有積灰
+# 有人定期在清理著這裡
+# 阿嬤
+
+# 我們...奈亞拉托提普之子
+# 都擁有不同的力量
+# 你的母親可以操縱熱的流動
+# 阿嬤拿起了一本書
+# 封面是
+# "給我親愛的小露露★媽媽的話+你最喜歡的旋律♫"
+# 阿嬤
+
+# (唉...這孩子)
+# 而你...你的力量
+# 是將魔法依附於聲音之中
+# 你接過了書
+# 裡面是一些文字以及幾首譜
+# 和上百頁的五線譜
+# 這一連串的遭遇令你啞然
+# 你仔細看了看前幾頁
+# 親愛的寶貝，
+# 嘿嘿！當你讀到這封信的時候，媽媽可能正在一個很酷的新地方找東西吃呢。別擔心，我一切都好！知道嗎？你是媽媽的小音樂奇才，有你的旋律力量，媽媽相信你一定可以保護自己和大家。
+# 你還記得我們一起唱的那首歌嗎？每當你感到害怕或孤單，請唱起來，讓旋律帶給你勇氣和希望。還有，記得用你的力量幫助那些需要幫助的人，因為我們的小小音符可以改變世界！
+# 你知道嗎，媽媽最近遇到了一隻超級可愛的魔法兔子，它會變出好多好吃的東西，真是個小吃貨！我覺得它一定會喜歡你，因為你也這麼愛吃。
+# 我現在在想像你那張笑得燦爛的小臉，還有你彈琴時專注的樣子。親愛的，你是媽媽的驕傲。儘管我們現在身處不同的地方，但媽媽的心永遠和你在一起。
+# 好啦，現在我得去找點新冒險了！記得每天開心笑哦，因為你的笑聲是世界上最美妙的音樂。
+# 愛你的媽媽
+# （P.S. 媽媽留了一些譜在後面幾頁，記得看看！）
+
+[event.back-home]
+scene = "lulu-room"
+dialogue = "back-home-1"
+
+[dialogue.back-home-1]
+text = "你一路狂奔,恐懼與不適令你迫切的想回到阿嬤的懷抱,大約二十分鐘後,一棟破舊但令你充滿安心的木屋映入眼簾"
+next = "back-home-2"
+
+[dialogue.back-home-2]
+character = "lulu"
+tachie = "happy"
+text = "阿嬤!"
+next = "back-home-3"
+
+[dialogue.back-home-3]
+text = "撲進了阿嬤的懷中,阿嬤被你衝擊得踉蹌了一下"
+next = "back-home-4"
+
+[dialogue.back-home-4]
+character = "grandma"
+text = "唉呀怎麼啦?好像看到鬼一樣"
+next = "back-home-5"
+
+[dialogue.back-home-5]
+character = "lulu"
+tachie = "yikes"
+text = "我剛才碰到一個很奇怪的人,他長得跟阿嬤說的血族一模一樣,還說了好多奇怪的話"
+next = "back-home-6"
+
+[dialogue.back-home-6]
+character = "lulu"
+tachie = "sad"
+text = "阿嬤...我是魔女嗎?"
+next = "back-home-7"
+
+[dialogue.back-home-7]
+character = "grandma"
+text = "..."
+next = "back-home-8"
+
+[dialogue.back-home-8]
+character = "grandma"
+text = "太久...沒去小鎮了...竟然...出現了血族...露露阿...."
+next = "back-home-9"
+
+[dialogue.back-home-9]
+character = "lulu"
+tachie = "sad"
+text = "我是...魔女嗎?"
+next = "back-home-10"
+
+[dialogue.back-home-10]
+character = "grandma"
+text = "魔女...是無知的凡人,對掌握非凡力量之人的稱謂"
+next = "back-home-11"
+
+[dialogue.back-home-11]
+character = "lulu"
+tachie = "sad"
+text = "...我不想.."
+next = "back-home-12"
+
+[dialogue.back-home-12]
+character = "grandma"
+text = "你明天就18歲...有些東西是時候跟你說了,跟我來吧"
+next = "back-home-13"
+
+[dialogue.back-home-13]
+text = "阿嬤帶著你來到那個她囑咐你絕對不准進去的地下室,你能聞到淡淡的霉味,但卻沒有積灰,有人定期在清理著這裡"
+next = "back-home-14"
+
+[dialogue.back-home-14]
+character = "grandma"
+text = "我們...奈亞拉托提普之子,都擁有不同的力量,你的母親可以操縱熱的流動"
+next = "back-home-15"
+
+[dialogue.back-home-15]
+text = "阿嬤拿起了一本書,封面是《給我親愛的小露露★媽媽的話+你最喜歡的旋律♫》"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
