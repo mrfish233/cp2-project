@@ -14,10 +14,11 @@ static Script  g_script  = {0};
 static Display g_display = {0};
 
 int startEngine(char *dir) {
-    AppContext ctx = { NULL, NULL, NULL, 1300, 700, NULL, 0, 0, 0 };
+    AppContext ctx = { NULL, NULL, NULL, 1600, 900, NULL, 0, 0, 0 };
+    // AppContext ctx = { NULL, NULL, NULL, 1024, 576, NULL, 0, 0, 0 };
     initSDL(&ctx);
 
-    if (initGame(&g_script, &g_display, dir)) {
+    if (initGame(&g_script, &g_display, dir) != 0) {
         cleanUp(&ctx);
         clearScript(&g_script);
         return 1;
@@ -454,19 +455,19 @@ bool showOptionButtons = false;
 
 // 各選項按鈕的回調函數
 void onClickOption1(AppContext* ctx) {
-    printf("Button '追擊' clicked\n");
+    printf("Button 'Option 1' clicked\n");
 }
 
 void onClickOption2(AppContext* ctx) {
-    printf("Button '防禦' clicked\n");
+    printf("Button 'Option 2' clicked\n");
 }
 
 void onClickOption3(AppContext* ctx) {
-    printf("Button '逃跑' clicked\n");
+    printf("Button 'Option 3' clicked\n");
 }
 
 void onClickOption4(AppContext* ctx) {
-    printf("Button '攻擊' clicked\n");
+    printf("Button 'Option 4' clicked\n");
 }
 
 void onClickOption5(AppContext* ctx) {
@@ -476,37 +477,20 @@ void onClickOption5(AppContext* ctx) {
 // 處理信號並顯示按鈕
 void handleSignal(AppContext* ctx, int numButtons, bool buttonStates[]) {
     for (int i = 0; i < numButtons; i++) {
-        const char* buttonText;
-        void (*onClick)(AppContext*) = NULL;
-        switch (i) {
-            case 0:
-                buttonText = "追擊";
-                onClick = onClickOption1;
-                break;
-            case 1:
-                buttonText = "防禦";
-                onClick = onClickOption2;
-                break;
-            case 2:
-                buttonText = "逃跑";
-                onClick = onClickOption3;
-                break;
-            case 3:
-                buttonText = "攻擊";
-                onClick = onClickOption4;
-                break;
-            case 4:
-                buttonText = "Option 5";
-                onClick = onClickOption5;
-                break;
-        }
+        // const char* buttonText = g_display.options[i];
+
+        void (*onClickCallback[5])(AppContext*) = {
+            onClickOption1, onClickOption2, onClickOption3, onClickOption4, onClickOption5
+        };
 
         optionButtons[i].selectable = buttonStates[i];
 
-        optionButtons[i].button.rect = (SDL_Rect) {ctx->window_width / 2 - 100, 100 + i * 60, 200, 50};
-        optionButtons[i].button.onClick = buttonStates[i] ? onClick : onClickDoNothing;
+        optionButtons[i].button.rect = (SDL_Rect) {
+            ctx->window_width / 4, ctx->window_height / 4 + i * 60, ctx->window_width / 2, 50
+        };
+        optionButtons[i].button.onClick = buttonStates[i] ? onClickCallback[i] : onClickDoNothing;
 
-        strncpy(optionButtons[i].button.text, buttonText, STR_SIZE);
+        strncpy(optionButtons[i].button.text, g_display.options[i], STR_SIZE);
 
         createButton(ctx, &optionButtons[i].button);
         // optionButtons[i].selectable = buttonStates[i];
@@ -553,12 +537,19 @@ void GamePlaying(AppContext* ctx) {
     createRenderArea(ctx, section_width * 0.8, 0, section_width * 0.2, section_height * 0.4); // 區域 4
     createRenderArea(ctx, section_width * 0.8, section_height * 0.4, section_width * 0.2, section_height * 0.2); // 區域 5
 
+    enum {
+        AREA_BACKGROUND = 0,
+        AREA_GAME_BG,
+        AREA_TACHIE,
+        AREA_TEXT,
+        AREA_ITEM,
+        AREA_STATUS
+    };
+
     // 設置背景
-    setRenderAreaContent(ctx, 0, "example-game/assets/background/start.png", NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
-    setRenderAreaContent(ctx, 1, "example-game/assets/background/beach.png", NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
-    setRenderAreaContent(ctx, 2, "example-game/assets/background/black.png", NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
-    setRenderAreaContent(ctx, 3, "example-game/assets/background/bedroom.png", NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
-    setRenderAreaContent(ctx, 4, "example-game/assets/background/church.png", NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
+    setRenderAreaContent(ctx, AREA_TEXT,   "resources/images/whiteline3.png", NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
+    setRenderAreaContent(ctx, AREA_ITEM,   "resources/images/black.png",      NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
+    setRenderAreaContent(ctx, AREA_STATUS, "resources/images/black.png",      NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
 
     // 區域1: 設置背景和按鈕
     settingButton.rect = (SDL_Rect) {10, 10, 100, 50};
@@ -573,10 +564,14 @@ void GamePlaying(AppContext* ctx) {
     setRenderAreaContent(ctx, 1, NULL, images, 1, NULL, NULL, NULL, 0, NULL, &imageRect);
 
     // 區域3: 設置文字框
-    SDL_Surface* textSurface = TTF_RenderUTF8_Blended(ctx->font, "text put here", g_white);
-    SDL_Texture* textTexture = SDL_CreateTextureFromSurface(ctx->renderer, textSurface);
-    SDL_Rect textRect = {section_width * 0.2 + 10, section_height * 0.8 + 10, textSurface->w, textSurface->h};
-    SDL_FreeSurface(textSurface);
+
+    SDL_Surface* textSurface = NULL;
+    SDL_Texture* textTexture = NULL;
+    SDL_Rect textRect = {0};
+
+    SDL_Surface* nameSurface = NULL;
+    SDL_Texture* nameTexture = NULL;
+    SDL_Rect nameRect = {0};
 
     // 區域4: 設置物品欄
     char* itemTexts[] = {"item1", "item2", "item3", "item4", "item5"};
@@ -640,11 +635,132 @@ void GamePlaying(AppContext* ctx) {
 
     loadTextures(ctx);
 
+    // Current event, used to check if the event has been changed
+    char currentEventID[STR_SIZE] = {0};
+
     // 渲染循環
-    bool quit = false;
+    bool quit   = false;
+    bool update = true;
     SDL_Event e;
     while (!quit) {
+        if (update) {
+            if (updateDialogue(&g_script, &g_display)) {
+                printf("Failed to update dialogue\n");
+                quit = true;
+                EndFlag = true;
+                break;
+            }
+
+            // Check if the event has been changed
+
+            if (strcmp(currentEventID, g_script.current_event_id) != 0) {
+                if (saveScript(&g_script, SAVE_SLOT_AUTO) != 0) {
+                    printf("Failed to save script\n");
+                    quit = true;
+                    EndFlag = true;
+                    break;
+                }
+            }
+
+            strncpy(currentEventID, g_script.current_event_id, STR_SIZE);
+
+            // Update display background and character
+
+            if (strlen(g_display.path_background) > 0) {
+                setRenderAreaContent(ctx, AREA_GAME_BG, g_display.path_background, NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
+            }
+            else {
+                setRenderAreaContent(ctx, AREA_GAME_BG, "resources/images/black.png", NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
+            }
+
+            if (strlen(g_display.path_tachie) > 0) {
+                char *images[1];
+                images[0] = (char*) malloc(STR_SIZE);
+                strncpy(images[0], g_display.path_tachie, STR_SIZE);
+
+                SDL_Rect imageRect = {0, section_height * 0.6 + 10, section_width * 0.2, section_height * 0.4};
+
+                setRenderAreaContent(ctx, AREA_GAME_BG, NULL, images, 1, NULL, NULL, NULL, 0, NULL, &imageRect);
+
+                free(images[0]);
+            }
+            else {
+                char *images[] = {"resources/images/black.png"};
+                setRenderAreaContent(ctx, AREA_GAME_BG, NULL, images, 1, NULL, NULL, NULL, 0, NULL, NULL);
+            }
+
+            // Name
+
+            if (strlen(g_display.character) > 0) {
+                nameSurface = TTF_RenderUTF8_Blended(ctx->font, g_display.character, g_white);
+                nameTexture = SDL_CreateTextureFromSurface(ctx->renderer, nameSurface);
+                nameRect = (SDL_Rect) {section_width * 0.2 + 10, section_height * 0.8 - 40, nameSurface->w, nameSurface->h};
+                SDL_FreeSurface(nameSurface);
+            }
+            else {
+                SDL_DestroyTexture(nameTexture);
+            }
+
+            // Dialogues
+
+            textSurface = TTF_RenderUTF8_Blended(ctx->font, g_display.dialogue, g_white);
+            textTexture = SDL_CreateTextureFromSurface(ctx->renderer, textSurface);
+            textRect = (SDL_Rect) {section_width * 0.2 + 10, section_height * 0.8 + 10, textSurface->w, textSurface->h};
+            SDL_FreeSurface(textSurface);
+
+            update = false;
+        }
+
+        SDL_SetRenderDrawColor(ctx->renderer, 0, 0, 0, 255);
+        SDL_RenderClear(ctx->renderer);
+
+        // 渲染各個區域，確保背景在最下面
+        for (int32_t i = 1; i <= 5; i++) {
+            renderBackground(ctx, &ctx->render_areas[i]);
+        }
+
+        renderImage(ctx, &ctx->render_areas[1]); // 區域2的圖片
+        renderButton(ctx, &itemNextPageButton); // 區域4的按鈕
+        renderButton(ctx, &itemPreviousPageButton);
+        renderButton(ctx, &statusNextPageButton); // 區域5的按鈕
+        renderButton(ctx, &statusPreviousPageButton);
+        renderButton(ctx, &settingButton); // 區域1的按鈕
+
+        // renderText(ctx, &textRect); // 渲染區域3的文字
+
+        SDL_RenderCopy(ctx->renderer, textTexture, NULL, &textRect); // 渲染區域3的文字
+        SDL_RenderCopy(ctx->renderer, nameTexture, NULL, &nameRect); // 渲染區域3的名字
+
+        for (int i = 0; i < 5; i++) {
+            SDL_RenderCopy(ctx->renderer, itemTextures[i], NULL, &itemRects[i]); // 渲染區域4的文字
+            SDL_RenderCopy(ctx->renderer, statusTextures[i], NULL, &statusRects[i]); // 渲染區域5的文字
+        }
+
+        // 如果顯示選項按鈕
+        if (showOptionButtons) {
+            for (int i = 0; i < g_display.option_size; i++) {
+                if (optionButtons[i].selectable == false) {
+                    optionButtons[i].button.textColor = g_grey;
+                    optionButtons[i].button.onClick   = onClickDoNothing;
+                }
+
+                renderButton(ctx, &optionButtons[i].button);
+            }
+        }
+
+        // 如果顯示消息
+        if (showMessageFlag) {
+            if (SDL_GetTicks() - messageStartTime < messageDuration) {
+                renderMessages(ctx, messages, messageCount);
+            } else {
+                showMessageFlag = false; // 超過顯示時長後隱藏消息
+            }
+        }
+
+        SDL_RenderPresent(ctx->renderer);
+
         while (SDL_PollEvent(&e) != 0) {
+            // printf("in while loop\n");
             if (e.type == SDL_QUIT) {
                 quit = true;
                 EndFlag = true;
@@ -668,69 +784,32 @@ void GamePlaying(AppContext* ctx) {
                             optionButtons[i].button.onClick(ctx);
                         }
                     }
+                } else {
+                    // Continue dialogue
+                    update = true;
                 }
-            } else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_RETURN) {
-                bool buttonStates[4] = {true, true, false, true}; // 設定按鈕狀態
-                handleSignal(ctx, 4, buttonStates); // 顯示4個按鈕
+            // } else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_RETURN) {
+            } else if (g_display.option_flag) {
+                showOptionButtons = true;
+
+                bool buttonStates[5] = {0};
+                for (int i = 0; i < 5; i++) {
+                    buttonStates[i] = g_display.options_selectable[i];
+                }
+
+                handleSignal(ctx, g_display.option_size, buttonStates); // 顯示4個按鈕
             } else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_LSHIFT) {
                 showMessageFlag = true;
                 messageStartTime = SDL_GetTicks(); // 記錄消息顯示的開始時間
                 messageCount = 5; // 顯示5個消息
             }
         }
-
-        SDL_SetRenderDrawColor(ctx->renderer, 0, 0, 0, 255);
-        SDL_RenderClear(ctx->renderer);
-
-        // 渲染各個區域，確保背景在最下面
-        renderBackground(ctx, &ctx->render_areas[0]);
-        renderBackground(ctx, &ctx->render_areas[1]);
-        renderBackground(ctx, &ctx->render_areas[2]);
-        renderBackground(ctx, &ctx->render_areas[3]);
-        renderBackground(ctx, &ctx->render_areas[4]);
-
-        renderImage(ctx, &ctx->render_areas[1]); // 區域2的圖片
-        renderButton(ctx, &itemNextPageButton); // 區域4的按鈕
-        renderButton(ctx, &itemPreviousPageButton);
-        renderButton(ctx, &statusNextPageButton); // 區域5的按鈕
-        renderButton(ctx, &statusPreviousPageButton);
-        renderButton(ctx, &settingButton); // 區域1的按鈕
-        SDL_RenderCopy(ctx->renderer, textTexture, NULL, &textRect); // 渲染區域3的文字
-        for (int i = 0; i < 5; i++) {
-            SDL_RenderCopy(ctx->renderer, itemTextures[i], NULL, &itemRects[i]); // 渲染區域4的文字
-            SDL_RenderCopy(ctx->renderer, statusTextures[i], NULL, &statusRects[i]); // 渲染區域5的文字
-        }
-
-        // 如果顯示選項按鈕
-        if (showOptionButtons) {
-            for (int i = 0; i < 4; i++) {
-                if (optionButtons[i].selectable) {
-                    renderButton(ctx, &optionButtons[i].button);
-                } else {
-                    // 不可選按鈕，文字顯示為灰色
-                    SDL_Surface* buttonSurface = TTF_RenderUTF8_Blended(ctx->font, optionButtons[i].button.text, (SDL_Color){128, 128, 128, 255});
-                    SDL_Texture* buttonTexture = SDL_CreateTextureFromSurface(ctx->renderer, buttonSurface);
-                    SDL_RenderCopy(ctx->renderer, buttonTexture, NULL, &optionButtons[i].button.rect);
-                    SDL_FreeSurface(buttonSurface);
-                    SDL_DestroyTexture(buttonTexture);
-                }
-            }
-        }
-
-        // 如果顯示消息
-        if (showMessageFlag) {
-            if (SDL_GetTicks() - messageStartTime < messageDuration) {
-                renderMessages(ctx, messages, messageCount);
-            } else {
-                showMessageFlag = false; // 超過顯示時長後隱藏消息
-            }
-        }
-
-        SDL_RenderPresent(ctx->renderer);
     }
 
     // 釋放資源
     SDL_DestroyTexture(textTexture);
+    SDL_DestroyTexture(nameTexture);
+
     for (int i = 0; i < 5; i++) {
         SDL_DestroyTexture(itemTextures[i]);
         SDL_DestroyTexture(statusTextures[i]);
