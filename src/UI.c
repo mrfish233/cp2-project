@@ -202,26 +202,6 @@ void MainMenu(AppContext* ctx) {
     }
 }
 
-void onClickItemNextPage(AppContext* ctx) {
-    printf("Button 'Item Next Page' clicked\n");
-    // Implement item next page logic
-}
-
-void onClickItemPreviousPage(AppContext* ctx) {
-    printf("Button 'Item Previous Page' clicked\n");
-    // Implement item previous page logic
-}
-
-void onClickStatusNextPage(AppContext* ctx) {
-    printf("Button 'Status Next Page' clicked\n");
-    // Implement status next page logic
-}
-
-void onClickStatusPreviousPage(AppContext* ctx) {
-    printf("Button 'Status Previous Page' clicked\n");
-    // Implement status previous page logic
-}
-
 void BackToMainMenu(AppContext* ctx) {
     printf("Button 'Back' clicked\n");
     LoadFlag = false;  // 返回主菜單，將LoadFlag設置為false
@@ -531,29 +511,23 @@ void GamePlaying(AppContext* ctx) {
     SDL_Texture* nameTexture = NULL;
     SDL_Rect nameRect = {0};
 
+    // 區域3：設置選項按鈕
     Button optionButtons[5] = {0};
 
     bool showOptionButtons = false;
 
     // 區域4: 設置物品欄
-    char* itemTexts[] = {"item1", "item2", "item3", "item4", "item5"};
-    SDL_Texture* itemTextures[5];
-    SDL_Rect itemRects[5];
-    for (int i = 0; i < 5; i++) {
-        SDL_Surface* itemSurface = TTF_RenderUTF8_Blended(ctx->font, itemTexts[i], g_white);
-        itemTextures[i] = SDL_CreateTextureFromSurface(ctx->renderer, itemSurface);
-        itemRects[i] = (SDL_Rect){section_width * 0.8 + 10, 30 * i, itemSurface->w, itemSurface->h};
-        SDL_FreeSurface(itemSurface);
-    }
+    SDL_Texture* itemTextures[5] = {0};
+    SDL_Rect itemRects[5] = {0};
 
     // 區域4: 設置按鈕
     Button itemNextPageButton     = {
-        .rect    = {section_width * 0.8 + 70, section_height * 0.4 - 60, 50, 50},
-        .onClick = onClickItemNextPage
+        .rect    = {section_width * 0.8 + 90, section_height * 0.4 - 60, 40, 40},
+        .onClick = NULL
     };
     Button itemPreviousPageButton = {
-        .rect    = {section_width * 0.8 + 10, section_height * 0.4 - 60, 50, 50},
-        .onClick = onClickItemPreviousPage
+        .rect    = {section_width * 0.8 + 10, section_height * 0.4 - 60, 40, 40},
+        .onClick = NULL
     };
 
     strncpy(itemNextPageButton.text, ">", STR_SIZE);
@@ -563,23 +537,16 @@ void GamePlaying(AppContext* ctx) {
     createButton(ctx, &itemNextPageButton);
 
     // 區域5: 設置狀態欄
-    char* statusTexts[] = {"status1", "status2", "status3", "status4", "status5"};
-    SDL_Texture* statusTextures[5];
-    SDL_Rect statusRects[5];
-    for (int i = 0; i < 5; i++) {
-        SDL_Surface* statusSurface = TTF_RenderUTF8_Blended(ctx->font, statusTexts[i], g_white);
-        statusTextures[i] = SDL_CreateTextureFromSurface(ctx->renderer, statusSurface);
-        statusRects[i] = (SDL_Rect){section_width * 0.8 + 10, section_height * 0.4 + 30 * i, statusSurface->w, statusSurface->h};
-        SDL_FreeSurface(statusSurface);
-    }
+    SDL_Texture* statusTextures[5] = {0};
+    SDL_Rect statusRects[5] = {0};
 
     Button statusNextPageButton = {
-        .rect    = {section_width * 0.8 + 70, section_height * 0.8 - 60, 50, 50},
-        .onClick = onClickStatusNextPage
+        .rect    = {section_width * 0.8 + 90, section_height * 0.8 - 60, 40, 40},
+        .onClick = NULL
     };
     Button statusPreviousPageButton = {
-        .rect    = {section_width * 0.8 + 10, section_height * 0.8 - 60, 50, 50},
-        .onClick = onClickStatusPreviousPage
+        .rect    = {section_width * 0.8 + 10, section_height * 0.8 - 60, 40, 40},
+        .onClick = NULL
     };
 
     strncpy(statusNextPageButton.text, ">", STR_SIZE);
@@ -589,11 +556,9 @@ void GamePlaying(AppContext* ctx) {
     createButton(ctx, &statusNextPageButton);
 
     // 新增變數
-    bool showMessageFlag = false;
+    bool showMessageFlag    = false;
     Uint32 messageStartTime = 0;
-    Uint32 messageDuration = 2000; // 2秒
-    // char* messages[5] = {"獲得 橘子", "獲得 蘋果", "獲得 草莓", "獲得 檸檬", "獲得 西瓜"};
-    // int messageCount = 0;
+    Uint32 messageDuration  = 2000;
 
     loadTextures(ctx);
 
@@ -607,7 +572,7 @@ void GamePlaying(AppContext* ctx) {
 
     while (!quit) {
         if (update) {
-            if (updateDialogue(&g_script, &g_display)) {
+            if (updateScriptData(&g_script, &g_display)) {
                 printf("Failed to update dialogue\n");
                 quit = true;
                 EndFlag = true;
@@ -684,6 +649,40 @@ void GamePlaying(AppContext* ctx) {
                 messageStartTime = SDL_GetTicks();
             }
 
+            // Items
+
+            for (int i = 0; i < 5; i++) {
+                if (i < g_display.inventory_size) {
+                    SDL_Surface* itemSurface = TTF_RenderUTF8_Blended(ctx->font, g_display.inventory[i], g_white);
+                    itemTextures[i] = SDL_CreateTextureFromSurface(ctx->renderer, itemSurface);
+                    itemRects[i]    = (SDL_Rect) {
+                        section_width * 0.8 + 10, 30 * i, itemSurface->w, itemSurface->h
+                    };
+
+                    SDL_FreeSurface(itemSurface);
+                }
+                else {
+                    SDL_DestroyTexture(itemTextures[i]);
+                }
+            }
+
+            // Status
+
+            for (int i = 0; i < 5; i++) {
+                char status_text[1024] = {0};
+
+                if (i < g_display.status_size) {
+                    snprintf(status_text, 1024, "%s: %d", g_display.status[i].status_name, g_display.status[i].value);
+                    SDL_Surface* statusSurface = TTF_RenderUTF8_Blended(ctx->font, status_text, g_white);
+                    statusTextures[i] = SDL_CreateTextureFromSurface(ctx->renderer, statusSurface);
+                    statusRects[i] = (SDL_Rect) {
+                        section_width * 0.8 + 10, section_height * 0.4 + 30 * i, statusSurface->w, statusSurface->h
+                    };
+
+                    SDL_FreeSurface(statusSurface);
+                }
+            }
+
             update = false;
         }
 
@@ -696,8 +695,10 @@ void GamePlaying(AppContext* ctx) {
         }
 
         renderImage(ctx, &ctx->render_areas[1]); // 區域2的圖片
+
         renderButton(ctx, &itemNextPageButton); // 區域4的按鈕
         renderButton(ctx, &itemPreviousPageButton);
+
         renderButton(ctx, &statusNextPageButton); // 區域5的按鈕
         renderButton(ctx, &statusPreviousPageButton);
         renderButton(ctx, &settingButton); // 區域1的按鈕
@@ -768,17 +769,54 @@ void GamePlaying(AppContext* ctx) {
                     settingButton.onClick(ctx);
                     quit = true;
                 }
-                else if (isButtonClicked(&itemNextPageButton, x, y)) {
-                    itemNextPageButton.onClick(ctx);
+                else if (isButtonClicked(&itemNextPageButton, x, y) ||
+                         isButtonClicked(&itemPreviousPageButton, x, y)) {
+
+                    if (isButtonClicked(&itemNextPageButton, x, y)) {
+                        g_display.inventory_page++;
+                    } else {
+                        g_display.inventory_page--;
+                    }
+
+                    updateInventoryPage(&g_script, &g_display);
+
+                    for (int i = 0; i < 5; i++) {
+                        if (i < g_display.inventory_size) {
+                            SDL_Surface* itemSurface = TTF_RenderUTF8_Blended(ctx->font, g_display.inventory[i], g_white);
+                            itemTextures[i] = SDL_CreateTextureFromSurface(ctx->renderer, itemSurface);
+                            itemRects[i]    = (SDL_Rect){section_width * 0.8 + 10, 30 * i, itemSurface->w, itemSurface->h};
+                            SDL_FreeSurface(itemSurface);
+                        }
+                        else {
+                            SDL_DestroyTexture(itemTextures[i]);
+                        }
+                    }
                 }
-                else if (isButtonClicked(&itemPreviousPageButton, x, y)) {
-                    itemPreviousPageButton.onClick(ctx);
-                }
-                else if (isButtonClicked(&statusNextPageButton, x, y)) {
-                    statusNextPageButton.onClick(ctx);
-                }
-                else if (isButtonClicked(&statusPreviousPageButton, x, y)) {
-                    statusPreviousPageButton.onClick(ctx);
+                else if (isButtonClicked(&statusNextPageButton, x, y) ||
+                         isButtonClicked(&statusPreviousPageButton, x, y)) {
+
+                    if (isButtonClicked(&statusNextPageButton, x, y)) {
+                        g_display.status_page++;
+                    } else {
+                        g_display.status_page--;
+                    }
+
+                    updateStatusPage(&g_script, &g_display);
+
+                    for (int i = 0; i < 5; i++) {
+                        char status_text[1024] = {0};
+
+                        if (i < g_display.status_size) {
+                            snprintf(status_text, 1024, "%s: %d", g_display.status[i].status_name, g_display.status[i].value);
+                            SDL_Surface* statusSurface = TTF_RenderUTF8_Blended(ctx->font, status_text, g_white);
+                            statusTextures[i] = SDL_CreateTextureFromSurface(ctx->renderer, statusSurface);
+                            statusRects[i] = (SDL_Rect) {
+                                section_width * 0.8 + 10, section_height * 0.4 + 30 * i, statusSurface->w, statusSurface->h
+                            };
+
+                            SDL_FreeSurface(statusSurface);
+                        }
+                    }
                 }
                 else if (showOptionButtons) {
                     for (int i = 0; i < g_display.option_size; i++) {
