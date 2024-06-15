@@ -185,6 +185,7 @@ void MainMenu(AppContext* ctx) {
                     quit = true;
                 } else if (isButtonClicked(&buttons[BUTTON_LOAD], x, y)) {
                     LoadFlag = true;
+                    fromMainMenuFlag = true;
                     quit = true;
                 } else if (isButtonClicked(&buttons[BUTTON_CREDIT], x, y)) {
                     CreditFlag = true;
