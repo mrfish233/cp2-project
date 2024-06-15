@@ -444,26 +444,50 @@ void Load(AppContext* ctx) {
 }
 
 void renderMessages(AppContext* ctx, char** messages, int messageCount) {
-    SDL_Color white = {255, 255, 255, 255};
-    int textHeight = 0;
+    if (messageCount == 0) {
+        return;
+    }
+
+    int32_t maxHeight = 0;
+    int32_t maxWidth  = 0;
+
+    SDL_Surface *messageSurface = NULL;
+    SDL_Texture *messageTextures[5] = {0};
+
+    SDL_Rect messageRects[5] = {0};
 
     for (int i = 0; i < messageCount; i++) {
-        SDL_Surface* messageSurface = TTF_RenderUTF8_Blended(ctx->font, messages[i], white);
-        SDL_Texture* messageTexture = SDL_CreateTextureFromSurface(ctx->renderer, messageSurface);
+        messageSurface = TTF_RenderUTF8_Blended(ctx->font, messages[i], g_white);
+        messageTextures[i] = SDL_CreateTextureFromSurface(ctx->renderer, messageSurface);
 
-        int textWidth = messageSurface->w;
-        textHeight = messageSurface->h;
+        int32_t textWidth  = messageSurface->w;
+        int32_t textHeight = messageSurface->h;
         SDL_FreeSurface(messageSurface);
 
-        SDL_Rect messageRect = {
-            (ctx->window_width - textWidth) / 5*2,
-            (ctx->window_height - textHeight) / 5 + (i * (textHeight + 10)),
+        messageRects[i] = (SDL_Rect) {
+            (ctx->window_width - textWidth) / 2,
+            (ctx->window_height - textHeight) / 4 + (i * (textHeight + 10)),
             textWidth,
             textHeight
         };
 
-        SDL_RenderCopy(ctx->renderer, messageTexture, NULL, &messageRect);
-        SDL_DestroyTexture(messageTexture);
+        maxWidth  = textWidth  > maxWidth  ? textWidth : maxWidth;
+        maxHeight = textHeight > maxHeight ? textHeight : maxHeight;
+    }
+
+    SDL_Rect messageBgRect = {
+        (ctx->window_width  - maxWidth) / 2 - 10,
+        (ctx->window_height - maxHeight) / 4 - 10,
+        maxWidth + 20,
+        (maxHeight + 5) * messageCount + 20
+    };
+
+    SDL_SetRenderDrawColor(ctx->renderer, 0, 0, 0, 120);
+    SDL_RenderFillRect(ctx->renderer, &messageBgRect);
+
+    for (int32_t i = 0; i < messageCount; i++) {
+        SDL_RenderCopy(ctx->renderer, messageTextures[i], NULL, &messageRects[i]);
+        SDL_DestroyTexture(messageTextures[i]);
     }
 }
 
@@ -479,15 +503,6 @@ void GamePlaying(AppContext* ctx) {
     createRenderArea(ctx, section_width * 0.2, section_height * 0.8, section_width * 0.8, section_height * 0.2); // 區域 3
     createRenderArea(ctx, section_width * 0.8, 0, section_width * 0.2, section_height * 0.4); // 區域 4
     createRenderArea(ctx, section_width * 0.8, section_height * 0.4, section_width * 0.2, section_height * 0.2); // 區域 5
-
-    enum {
-        AREA_BACKGROUND = 0,
-        AREA_GAME_BG,
-        AREA_TACHIE,
-        AREA_TEXT,
-        AREA_ITEM,
-        AREA_STATUS
-    };
 
     // 設置背景
     setRenderAreaContent(ctx, AREA_TEXT,   "resources/images/whiteline3.png", NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
@@ -577,8 +592,8 @@ void GamePlaying(AppContext* ctx) {
     bool showMessageFlag = false;
     Uint32 messageStartTime = 0;
     Uint32 messageDuration = 2000; // 2秒
-    char* messages[5] = {"獲得 橘子", "獲得 蘋果", "獲得 草莓", "獲得 檸檬", "獲得 西瓜"};
-    int messageCount = 0;
+    // char* messages[5] = {"獲得 橘子", "獲得 蘋果", "獲得 草莓", "獲得 檸檬", "獲得 西瓜"};
+    // int messageCount = 0;
 
     loadTextures(ctx);
 
@@ -589,6 +604,7 @@ void GamePlaying(AppContext* ctx) {
     bool quit   = false;
     bool update = true;
     SDL_Event e;
+
     while (!quit) {
         if (update) {
             if (updateDialogue(&g_script, &g_display)) {
@@ -598,7 +614,7 @@ void GamePlaying(AppContext* ctx) {
                 break;
             }
 
-            // Check if the event has been changed
+            // Check if the event has been changed, if so, save the script
 
             if (strcmp(currentEventID, g_script.current_event_id) != 0) {
                 if (saveScript(&g_script, SAVE_SLOT_AUTO) != 0) {
@@ -661,6 +677,13 @@ void GamePlaying(AppContext* ctx) {
                 showOptionButtons = true;
             }
 
+            // Updates
+
+            if (g_display.update_flag) {
+                showMessageFlag = true;
+                messageStartTime = SDL_GetTicks();
+            }
+
             update = false;
         }
 
@@ -712,7 +735,20 @@ void GamePlaying(AppContext* ctx) {
         // 如果顯示消息
         if (showMessageFlag) {
             if (SDL_GetTicks() - messageStartTime < messageDuration) {
-                renderMessages(ctx, messages, messageCount);
+                char **messages = (char**) malloc(sizeof(char*) * g_display.update_size);
+
+                for (int i = 0; i < g_display.update_size; i++) {
+                    messages[i] = (char*) malloc(STR_SIZE);
+                    strncpy(messages[i], g_display.updates[i], STR_SIZE);
+                }
+
+                renderMessages(ctx, messages, g_display.update_size);
+
+                for (int i = 0; i < g_display.update_size; i++) {
+                    free(messages[i]);
+                }
+
+                free(messages);
             } else {
                 showMessageFlag = false; // 超過顯示時長後隱藏消息
             }
@@ -759,17 +795,10 @@ void GamePlaying(AppContext* ctx) {
                     update = true;
                 }
             }
-            else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_LSHIFT) {
-                showMessageFlag = true;
-                messageStartTime = SDL_GetTicks(); // 記錄消息顯示的開始時間
-                messageCount = 5; // 顯示5個消息
-            }
         }
     }
 
     // 釋放資源
-    SDL_DestroyTexture(textTexture);
-    SDL_DestroyTexture(nameTexture);
 
     for (int i = 0; i < 5; i++) {
         SDL_DestroyTexture(itemTextures[i]);

@@ -6,6 +6,15 @@
 #include "play_script.h"
 #include "save_and_load.h"
 
+typedef enum _GamePlayArea {
+    AREA_BACKGROUND = 0,
+    AREA_GAME_BG,
+    AREA_TACHIE,
+    AREA_TEXT,
+    AREA_ITEM,
+    AREA_STATUS
+} GamePlayArea;
+
 int startEngine(char *dir);
 
 // 介面組
