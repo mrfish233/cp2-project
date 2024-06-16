@@ -122,6 +122,7 @@ void createRenderArea(AppContext* ctx, int x, int y, int w, int h);
  * @param video_path 影片路徑
  */
 void setRenderAreaContent(AppContext* ctx, int areaIndex, const char* background, char** images, int image_count, char** texts, SDL_Color* textColors, SDL_Rect* textRects, int text_count, const char* video_path, SDL_Rect* videoRect);
+
 /**
  * 渲染所有區域
  * @param ctx 應用程式上下文
@@ -148,6 +149,12 @@ void renderImage(AppContext* ctx, RenderArea* area);
  * @param area 渲染區域
  */
 void renderText(AppContext* ctx, RenderArea* area);
+
+/**
+ * 清除所有渲染區域
+ * @param ctx 應用程式上下文
+ */
+void clearAllRenderAreas(AppContext* ctx);
 
 /**
  * 清理資源

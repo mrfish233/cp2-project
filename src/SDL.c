@@ -290,7 +290,7 @@ void renderText(AppContext* ctx, RenderArea* area) {
     }
 }
 
-void cleanUp(AppContext* ctx) {
+void clearAllRenderAreas(AppContext* ctx) {
     for (int i = 0; i < ctx->num_render_areas; i++) {
         for (int j = 0; j < ctx->render_areas[i].image_count; j++) {
             if (ctx->render_areas[i].images[j]) {
@@ -321,15 +321,25 @@ void cleanUp(AppContext* ctx) {
             SDL_DestroyTexture(ctx->render_areas[i].background);
         }
     }
+
+    ctx->num_render_areas = 0;
+
+    if (ctx->render_areas) {
+        free(ctx->render_areas);
+        ctx->render_areas = NULL;
+    }
+}
+
+void cleanUp(AppContext* ctx) {
+    clearAllRenderAreas(ctx);
+
     TTF_CloseFont(ctx->font);
     SDL_DestroyRenderer(ctx->renderer);
     SDL_DestroyWindow(ctx->window);
+
     TTF_Quit();
     IMG_Quit();
     SDL_Quit();
-    if (ctx->render_areas) {
-        free(ctx->render_areas);
-    }
 }
 
 void playVideoFrame(AppContext* ctx, RenderArea* area, const char* videoPath) {

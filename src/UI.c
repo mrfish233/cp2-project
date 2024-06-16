@@ -497,7 +497,10 @@ void GamePlaying(AppContext* ctx) {
     int section_width = ctx->window_width;
     int section_height = ctx->window_height;
 
+    clearAllRenderAreas(ctx);
+
     // 區域佈局
+    createRenderArea(ctx, 0, 0, section_width, section_height); // 遊戲背景
     createRenderArea(ctx, 0, 0, section_width * 0.8, section_height * 0.8); // 區域 1
     createRenderArea(ctx, 0, section_height * 0.8, section_width * 0.2, section_height * 0.2); // 區域 2
     createRenderArea(ctx, section_width * 0.2, section_height * 0.8, section_width * 0.8, section_height * 0.2); // 區域 3
@@ -515,11 +518,6 @@ void GamePlaying(AppContext* ctx) {
     strncpy(settingButton.text, "Setting", STR_SIZE);
 
     createButton(ctx, &settingButton);
-
-    // 區域2: 設置圖片
-    char* images[] = {"example-game/assets/character/lulu/tachie/angry.png"};
-    SDL_Rect imageRect = {0, section_height * 0.6 + 10, section_width * 0.2, section_height * 0.4}; // 調整到左下區
-    setRenderAreaContent(ctx, 1, NULL, images, 1, NULL, NULL, NULL, 0, NULL, &imageRect);
 
     // 區域3: 設置文字框
 
