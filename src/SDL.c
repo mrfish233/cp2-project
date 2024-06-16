@@ -201,7 +201,7 @@ int loadVideo(const char* filename, AVFormatContext** pFormatContext, AVCodecCon
 
     // 找到影片流
     *videoStreamIndex = -1;
-    for (int i = 0; i < (*pFormatContext)->nb_streams; i++) {
+    for (uint32_t i = 0; i < (*pFormatContext)->nb_streams; i++) {
         if ((*pFormatContext)->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
             *videoStreamIndex = i;
             break;
@@ -361,7 +361,7 @@ void playVideoFrame(AppContext* ctx, RenderArea* area, const char* videoPath) {
     }
 
     int videoStream = -1;
-    for (int i = 0; i < pFormatCtx->nb_streams; i++) {
+    for (uint32_t i = 0; i < pFormatCtx->nb_streams; i++) {
         if (pFormatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
             videoStream = i;
             break;
@@ -514,7 +514,9 @@ void audioCallback(void* userdata, Uint8* stream, int len) {
         return;
     }
 
-    len = (len > audio->length ? audio->length : len);
+    int audio_len = (int) audio->length;
+
+    len = (len > audio_len ? audio_len : len);
     SDL_memcpy(stream, audio->pos, len);
     audio->pos += len;
     audio->length -= len;
@@ -606,7 +608,7 @@ void playVideoWithAudio(AppContext* ctx, const char* videoPath, RenderArea* area
 
     int videoStream = -1;
     int audioStream = -1;
-    for (int i = 0; i < pFormatCtx->nb_streams; i++) {
+    for (uint32_t i = 0; i < pFormatCtx->nb_streams; i++) {
         if (pFormatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO && videoStream == -1) {
             videoStream = i;
         } else if (pFormatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO && audioStream == -1) {
