@@ -66,6 +66,7 @@ typedef struct _Tachie {
  * Character struct, contains information about a character
  * @param id: display name of the character
  * @param name: name of the character
+ * @param voice: path to the voice of the character
  * @param tachies: array of Tachie
  * @param tachie_size: size of tachies
  * @param status: array of Status
@@ -76,6 +77,7 @@ typedef struct _Tachie {
 typedef struct _Character {
     char id[STR_SIZE];
     char name[STR_SIZE];
+    char voice[STR_SIZE];
 
     Tachie *tachies;
     int32_t tachie_size;
@@ -86,7 +88,7 @@ typedef struct _Character {
     char **inventory;
     int32_t inventory_size;
 } Character;
- 
+
 /**
  * Player struct, contains information about the player
  * @param character: name of the character

@@ -29,6 +29,17 @@ int32_t isValidScript(Script *script) {
     for (int32_t i = 0; i < script->character_size; i++) {
         Character *chr = &(script->characters[i]);
 
+        if (strlen(chr->voice) > 0) {
+            char path[STR_SIZE] = {0};
+
+            snprintf(path, STR_SIZE * 2, "%s/%s", script->dir, chr->voice);
+
+            if (access(path, F_OK) != 0) {
+                printf("Character '%s' voice not found: %s\n", chr->id, chr->voice);
+                valid = 0;
+            }
+        }
+
         if (chr->tachie_size > 0) {
             for (int32_t j = 0; j < chr->tachie_size; j++) {
                 Tachie *tachie = &(chr->tachies[j]);

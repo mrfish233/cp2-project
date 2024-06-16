@@ -515,6 +515,9 @@ int32_t addDataToScript(Script *script, Table *table) {
                 else if (strcmp(table->field, "name") == 0) {
                     strncpy(character->name, table->value, STR_SIZE);
                 }
+                else if (strcmp(table->field, "voice") == 0) {
+                    strncpy(character->voice, table->value, STR_SIZE);
+                }
             }
 
             break;
@@ -1065,7 +1068,7 @@ void printScript(Script *script) {
     for (int32_t i = 0; i < script->character_size; i++) {
         printf("id             | %s\n", script->characters[i].id);
         printf("name           | %s\n", script->characters[i].name);
-        // printf("tachie         | %s\n", script->characters[i].tachie);
+        printf("voice          | %s\n", script->characters[i].voice);
 
         for (int32_t j = 0; j < script->characters[i].tachie_size; j++) {
             if (j == 0) {

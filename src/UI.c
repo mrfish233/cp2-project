@@ -611,6 +611,14 @@ void GamePlaying(AppContext* ctx) {
                 break;
             }
 
+            // Play voice
+
+            if (strlen(g_display.path_voice) > 0) {
+                Mix_Chunk *voice_sfx = NULL;
+                loadSound(g_display.path_voice, &voice_sfx);
+                playSound(voice_sfx);
+            }
+
             // Check if the event has been changed, if so, save the script
 
             if (strcmp(currentEventID, g_script.current_event_id) != 0) {

@@ -79,6 +79,7 @@ int32_t initDisplay(Display *display) {
 
     display->path_bgm[0] = '\0';
     display->path_sfx[0] = '\0';
+    display->path_voice[0] = '\0';
 
     display->character[0] = '\0';
     display->dialogue[0]  = '\0';
@@ -336,7 +337,7 @@ int32_t updateDialogue(Script *script, Display *display) {
         return updateDialogue(script, display);
     }
     else if ((dialogue->next_type == DIALOGUE_OPTION && display->option_select == 0) ||
-                (dialogue->next_type == DIALOGUE_NORMAL)) {
+             (dialogue->next_type == DIALOGUE_NORMAL)) {
         Dialogue *next = getDialogue(script, dialogue->next);
 
         if (next == NULL) {
@@ -408,6 +409,15 @@ int32_t updateDialogue(Script *script, Display *display) {
             return 1;
         }
 
+        strncpy(display->character, character->name, STR_SIZE);
+
+        if (strlen(character->voice) > 0) {
+            snprintf(display->path_voice, STR_SIZE * 2, "%s/%s", script->dir, character->voice);
+        }
+        else {
+            display->path_voice[0] = '\0';
+        }
+
         Tachie *tachie = NULL;
 
         if (strlen(dialogue->tachie) == 0) {
@@ -423,11 +433,14 @@ int32_t updateDialogue(Script *script, Display *display) {
         }
 
         snprintf(display->path_tachie, STR_SIZE * 2, "%s/%s", script->dir, tachie->path);
-        strncpy(display->character, character->name, STR_SIZE);
     }
     else {
-        display->path_tachie[0] = '\0';
-        display->character[0]   = '\0';
+        // display->path_tachie[0] = '\0';
+        // display->path_voice[0]  = '\0';
+        // display->character[0]   = '\0';
+        memset(display->path_tachie, 0, STR_SIZE);
+        memset(display->path_voice,  0, STR_SIZE);
+        memset(display->character,   0, STR_SIZE);
     }
 
     // Find options if any

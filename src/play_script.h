@@ -16,6 +16,7 @@ typedef struct Display {
 
     char path_bgm[STR_SIZE];
     char path_sfx[STR_SIZE];
+    char path_voice[STR_SIZE];
 
     char character[STR_SIZE];
     char dialogue[STR_SIZE];
