@@ -64,6 +64,11 @@ void onClickResume(AppContext* ctx) {
     LoadFlag = false;  // 取消 Load 狀態
     GamePlayingFlag = true; // 設置 GamePlaying 狀態
 
+    if (initDisplay(&g_display) != 0) {
+        printf("Failed to reset display\n");
+        EndFlag = true;
+    }
+
     g_display.continue_flag = 1;
 }
 
@@ -417,8 +422,8 @@ void Load(AppContext* ctx) {
 
                             playSound(popSfx);
 
-                            if (loadScript(&g_script, i) != 0) {
-                                printf("Failed to load script\n");
+                            if (loadScript(&g_script, i) != 0 || initDisplay(&g_display)  != 0) {
+                                printf("Failed to load script or reset display\n");
                                 quit = true;
                                 EndFlag = true;
                                 break;
