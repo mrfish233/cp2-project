@@ -1,0 +1,132 @@
+{
+	"datetime":	"2024-06-16 17:01:45",
+	"event":	"chapter3",
+	"dialogue":	"chapter3-14",
+	"characters":	[{
+			"id":	"lulu",
+			"status":	[{
+					"status_name":	"hp",
+					"value":	5
+				}, {
+					"status_name":	"san",
+					"value":	40
+				}, {
+					"status_name":	"coin",
+					"value":	100
+				}, {
+					"status_name":	"harmony",
+					"value":	1
+				}, {
+					"status_name":	"unharmony",
+					"value":	1
+				}, {
+					"status_name":	"humanity",
+					"value":	0
+				}, {
+					"status_name":	"death",
+					"value":	0
+				}, {
+					"status_name":	"count1",
+					"value":	2
+				}, {
+					"status_name":	"count2",
+					"value":	0
+				}],
+			"inventory":	["meat", "cabbage", "baton", "purple-flower"]
+		}, {
+			"id":	"belwett",
+			"status":	[{
+					"status_name":	"hp",
+					"value":	10
+				}, {
+					"status_name":	"san",
+					"value":	40
+				}, {
+					"status_name":	"coin",
+					"value":	20
+				}, {
+					"status_name":	"like",
+					"value":	50
+				}, {
+					"status_name":	"humanity",
+					"value":	0
+				}],
+			"inventory":	[]
+		}, {
+			"id":	"alfred",
+			"status":	[{
+					"status_name":	"hp",
+					"value":	10
+				}, {
+					"status_name":	"san",
+					"value":	40
+				}, {
+					"status_name":	"coin",
+					"value":	20
+				}, {
+					"status_name":	"like",
+					"value":	50
+				}, {
+					"status_name":	"humanity",
+					"value":	0
+				}],
+			"inventory":	[]
+		}, {
+			"id":	"auntie",
+			"status":	[{
+					"status_name":	"hp",
+					"value":	10
+				}, {
+					"status_name":	"san",
+					"value":	40
+				}, {
+					"status_name":	"coin",
+					"value":	20
+				}, {
+					"status_name":	"like",
+					"value":	50
+				}, {
+					"status_name":	"humanity",
+					"value":	0
+				}],
+			"inventory":	["cabbage", "apple"]
+		}, {
+			"id":	"lagoud",
+			"status":	[{
+					"status_name":	"hp",
+					"value":	10
+				}, {
+					"status_name":	"san",
+					"value":	40
+				}, {
+					"status_name":	"coin",
+					"value":	20
+				}, {
+					"status_name":	"like",
+					"value":	50
+				}, {
+					"status_name":	"humanity",
+					"value":	0
+				}],
+			"inventory":	[]
+		}, {
+			"id":	"grandma",
+			"status":	[{
+					"status_name":	"hp",
+					"value":	10
+				}, {
+					"status_name":	"san",
+					"value":	40
+				}, {
+					"status_name":	"coin",
+					"value":	20
+				}, {
+					"status_name":	"like",
+					"value":	50
+				}, {
+					"status_name":	"humanity",
+					"value":	0
+				}],
+			"inventory":	[]
+		}]
+}

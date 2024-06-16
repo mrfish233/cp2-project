@@ -82,7 +82,7 @@ yikes = "assets/character/lulu/tachie/yikes.png"
 firstlook = "assets/character/lulu/tachie/firstlook.png"
 nothing = "assets/character/lulu/tachie/nothing.png"
 smiling = "assets/character/lulu/tachie/smiling.png"
-
+normal = "assets/character/lulu/tachie/normal.png"
 [character.lulu.status]
 hp = 10
 san = 40
@@ -169,7 +169,11 @@ humanity = 0
 
 
 # 物品 item
-
+[item.secret-knowledge]
+name = "秘密知識"
+desc = "秘密知識"
+# icon = "assets/items/secret-knowlege.bmp"
+hidden = true
 [item.baton]
 name = "指揮棒"
 desc = "指揮棒"
@@ -219,7 +223,7 @@ background = "assets/background/library.png"
 name = "森林"
 background = "assets/background/forest.png"
 
-[scene.party]
+[scene.celebrate]
 name = "宴會"
 background = "assets/background/celebrate.png"
 
@@ -1164,7 +1168,7 @@ text = "喔吼吼別那麼急躁,沒辦法,對我這樣壽命沒有極限的高�
 
 [[dialogue.meet-lagoud-11.option]]
 text = "演奏"
-next = "meet-lagoud-12"
+next = "meet-lagoud-92"
 
 
 [[dialogue.meet-lagoud-11.option]]
@@ -1179,48 +1183,53 @@ next = "ask"
 text = "離開"
 next = "meet-lagoud-13"
 
-[dialogue.meet-lagoud-12]
-text = "那你要演奏什麼樣的曲子呢?"
+[dialogue.meet-lagoud-92]
+text = "那麼!"
+next = "meet-lagoud-12"
 
+[dialogue.meet-lagoud-12]
+text = "你要演奏什麼樣的曲子呢?"
 
 [[dialogue.meet-lagoud-12.option]]
 text = "和諧之聲"
 condition = "lulu-status-harmony-1"
 next = "harmony"
+hidden = true
 [[dialogue.meet-lagoud-12.option]]
 text = "不諧之音"
 condition = "lulu-status-unharmony-1"
 next = "unharmony"
+hidden = true
 [[dialogue.meet-lagoud-12.option]]
 text = "撫慰之韻"
 condition = "lulu-status-harmony-2"
 next = "harmony"
-
+hidden = true
 [[dialogue.meet-lagoud-12.option]]
 text = "靈魂之歌"
 condition = "lulu-status-harmony-3"
 next = "harmony"
-
+hidden = true
 [[dialogue.meet-lagoud-12.option]]
 text = "生命禮讚"
 condition = "lulu-status-harmony-4"
 next = "harmony"
-
+hidden = true
 [[dialogue.meet-lagoud-12.option]]
 text = "暗黑節奏"
 condition = "lulu-status-unharmony-2"
 next = "unharmony"
-
+hidden = true
 [[dialogue.meet-lagoud-12.option]]
 text = "終焉序曲"
 condition = "lulu-status-unharmony-3"
 next = "unharmony"
-
+hidden = true
 [[dialogue.meet-lagoud-12.option]]
 text = "滅世樂章"
 condition = "lulu-status-unharmony-4"
 next = "unharmony"
-
+hidden = true
 [condition.lulu-status-harmony-1]
 character = "lulu"
 status = "harmony"
@@ -1631,7 +1640,7 @@ next = "ignore-him"
 
 [[dialogue.chapter3-9.option]]
 text = "演奏"
-next = "power"
+next = "power-91"
 
 [dialogue.stop-him]
 character = "lulu"
@@ -1657,6 +1666,10 @@ next = "ignore-him-3"
 text = "貝爾維特啞然,不是魔女也看得出他在想什麼,這傢伙TM有病吧"
 next = "chapter3-10"
 
+[dialogue.power-91]
+text = "那麼"
+next = "power"
+
 [dialogue.power]
 text = "那你要演奏什麼呢?"
 
@@ -1664,42 +1677,42 @@ text = "那你要演奏什麼呢?"
 text = "和諧之聲"
 condition = "lulu-status-harmony-1"
 next = "harmony3"
-
+hidden = true
 [[dialogue.power.option]]
 text = "不諧之音"
 condition = "lulu-status-unharmony-1"
 next = "unharmony3"
-
+hidden = true
 [[dialogue.power.option]]
 text = "撫慰之韻"
 condition = "lulu-status-harmony-2"
 next = "harmony3"
-
+hidden = true
 [[dialogue.power.option]]
 text = "靈魂之歌"
 condition = "lulu-status-harmony-3"
 next = "harmony3"
-
+hidden = true
 [[dialogue.power.option]]
 text = "生命禮讚"
 condition = "lulu-status-harmony-4"
 next = "harmony3"
-
+hidden = true
 [[dialogue.power.option]]
 text = "暗黑節奏"
 condition = "lulu-status-unharmony-2"
 next = "unharmony3"
-
+hidden = true
 [[dialogue.power.option]]
 text = "終焉序曲"
 condition = "lulu-status-unharmony-3"
 next = "unharmony3"
-
+hidden = true
 [[dialogue.power.option]]
 text = "滅世樂章"
 condition = "lulu-status-unharmony-4"
 next = "unharmony3"
-
+hidden = true
 [dialogue.harmony3]
 text = "你的音樂使大家都冷靜了下來"
 next = "power-1"
@@ -1740,19 +1753,511 @@ next = "chapter3-15"
 
 [dialogue.chapter3-15]
 text = "互相交換情報後"
+next = "chapter3-16"
+
+[dialogue.chapter3-16]
+character = "belwett"
+text = "...流浪漢,聖靈祭,大湖之主,魔女....一下子問題也太多了吧喂!這裡是圖書館,應該會有一些資料吧?來找找吧!"
+event = "search"
+
+[event.search]
+scene = "lagoud-house"
+dialogue = "search-1"
+
+[dialogue.search-1]
+text = "你被他拉著出去了,要往哪個方向去找呢?"
+
+[[dialogue.search-1.option]]
+text = "歷史"
+next = "history"
+
+[[dialogue.search-1.option]]
+text = "神秘知識"
+next = "mystery"
+
+[[dialogue.search-1.option]]
+text = "音樂"
+next = "music"
+
+[dialogue.history]
+text = "你在歷史區仔細翻看,久遠一點的大致跟拉古德所說一致,近代祭典轉變後,你發現書中提到"
+next = "history-1"
+
+[dialogue.history-1]
+text = "在聖靈祭開始前夕,總會有人身上出現病徵,並且會有很多無家之人消失"
+next = "search-2"
+
+[dialogue.mystery]
+text = "你翻看了很多關於神秘儀式,各個奇異種族的資料,其中有一個記載抓住了你的注意"
+next = "mystery-1"
+
+[dialogue.mystery-1]
+text = "莎布·尼古拉絲藉由儀式降臨,儀式內容是每晚殺一人。"
+next = "mystery-2"
+
+[dialogue.mystery-2]
+text = "在額頭劃上符文後燒掉作為祭品獻給她,持續三個晚上,他便會降臨於世"
+next = "mystery-3"
+update = [
+    "lulu-san-minus-5",
+    "lulu-item-secret-knowledge"
+]
+
+[update.lulu-item-secret-knowledge]
+character = "lulu"
+item = "secret-knowledge"
+change = 1
+
+[dialogue.mystery-3]
+text = "直面這些不可名狀的知識令你感到神智紊亂"
+next = "search-2"
+
+[dialogue.music]
+text = "你在曲譜集中肆意暢遊,充滿了靈感,你很快就寫了一首新曲子,你感到自己的魔法也隨之提升"
+next = "search-2"
+update = [
+    "lulu-harmony-plus-1",
+]
+
+[dialogue.search-2]
+text = "你看書到一半時,貝爾維特來找你"
+next = "search-3"
+
+[dialogue.search-3]
+character = "belwett"
+text = "時候不早了,快走吧"
+
+[[dialogue.search-3.option]]
+text = "你為什麼而來"
+next = "why"
+
+[[dialogue.search-3.option]]
+text = "謝謝你"
+next = "thanks"
+
+[[dialogue.search-3.option]]
+text = "走吧"
+next = "leave"
+
+[dialogue.why]
+character = "lulu"
+tachie = "smiling"
+text = "我知道你沒有說實話,你到底是為何而來?"
+next = "why-1"
+
+[dialogue.why-1]
+text = "貝爾維特苦笑了一下"
+next = "why-2"
+
+[dialogue.why-2]
+character = "belwett"
+text = "傳說魔女都能看透人心,原來是真的呀,    我是為了尋找一個東西而四處漂泊。"
+next = "why-3"
+
+[dialogue.why-3]
+character = "belwett"
+text = "現在....不如說是出不去吧!"
+next = "why-4"
+
+[dialogue.why-4]
+text = "你盯著他,示意他繼續"
+next = "why-5"
+
+[dialogue.why-5]
+character = "belwett"
+text = "剩下就是祕密啦w,不告訴你~好啦快走"
+next = "search-4"
+
+[dialogue.thanks]
+character = "lulu"
+tachie = "smiling"
+text = "謝謝你...救了我的阿嬤"
+next = "thanks-1"
+
+[dialogue.thanks-1]
+text = "貝爾維特直愣愣的看著你,又臉紅了"
+next = "thanks-2"
+
+[dialogue.thanks-2]
+character = "belwett"
+text = "阿...阿巴阿巴?"
+next = "thanks-3"
+
+[dialogue.thanks-3]
+character = "lulu"
+tachie = "happy"
+text = "蛤?"
+next = "thanks-4"
+
+[dialogue.thanks-4]
+character = "belwett"
+text = "咳咳,快走"
+next = "search-4"
+
+[dialogue.leave]
+text = "你無言的起身正要走出圖書館"
+next = "search-4"
+
+[dialogue.search-4]
+character = "lagoud"
+text = "結合目前發生的種種情況,你們這樣出去太危險啦~~"
+next = "search-5"
+
+[dialogue.search-5]
+character = "lagoud"
+text = "這個給你們,穿上他,任何人看都無法辨認你們的五官,還會降低存在感,簡直是社恐福音呢!"
+next = "search-6"
+
+[dialogue.search-6]
+text = "他丟下兩件連帽外套就消失了"
+next = "search-7"
+
+[dialogue.search-7]
+character = "lulu"
+tachie = "yikes"
+text = "好噁心..."
+next = "search-8"
+
+[dialogue.search-8]
+character = "belwett"
+text = "雖然很感謝但真的好噁心"
+next = "search-9"
+
+[dialogue.search-9]
+character = "lagoud"
+text = "(遠方)我聽得到~"
+event = "celebrate"
+
+[event.celebrate]
+scene = "celebrate"
+dialogue = "celebrate-1"
+
+[dialogue.celebrate-1]
+text = "你們來到了祭典,所有人都在大吃大喝,絲毫沒有停下的跡象"
+next = "celebrate-2"
+
+[dialogue.celebrate-2]
+text = "貝爾維特上前去跟一個人搭話"
+next = "celebrate-3"
+
+[dialogue.celebrate-3]
+character = "belwett"
+text = "嘿,你好,我是第一次來的這個鎮子,要不要帶我在這裡逛逛?"
+next = "celebrate-4"
+
+[dialogue.celebrate-4]
+text = "那個人依舊在大吃大喝,絲毫沒有理會貝爾維特"
+next = "celebrate-5"
+
+[dialogue.celebrate-5]
+character = "belwett"
+text = "喂!沒聽到在跟你說話嗎?"
+next = "celebrate-6"
+
+[dialogue.celebrate-6]
+character = "lulu"
+tachie = "nothing"
+text = "等下...事情不太對勁"
+next = "celebrate-7"
+
+[dialogue.celebrate-7]
+text = "你發現這裡充斥著魔力,這種魔力來自於慶典中的每個人,他們瘋狂的舉動都在產生魔力"
+next = "celebrate-8"
+
+[dialogue.celebrate-8]
+text = "魔力彙集到了一處,全都流向了廚房"
+
+[[dialogue.celebrate-8.option]]
+text = "繼續在慶典探查"
+next = "deep-search" 
+
+[[dialogue.celebrate-8.option]]
+text = "前往魔力彙集處"
+next = "kitchen"
+
+[dialogue.deep-search]
+text = "你走到人群中,聽到少數幾個沒在大吃大喝的居民談話。"
+next = "deep-search-1"
+
+[dialogue.deep-search-1]
+text = "「聽說之前森林又出一個魔女,那種垃圾怎麼不早點死光呢?」"
+next = "deep-search-2"
+
+[dialogue.deep-search-2]
+text = "「就是說呀,他們存在的一天我覺都睡不安穩」"
+next = "deep-search-3"
+
+[dialogue.deep-search-3]
+text = "「之前那個大爆炸,你有感覺到嗎?十公里外都能聽見聲響,據說就是那個魔女被教會炸成碎片呢」"
+next = "deep-search-4"
+
+[dialogue.deep-search-4]
+text = "「炸掉好呀炸掉好呀,變成煙火就是他們唯一能做的好事了吧」"
+next = "deep-search-5"
+
+[dialogue.deep-search-5]
+character = "lulu"
+tachie = "sad"
+text = "阿嗎明明平常都會幫你們治病,幫你們修理東西,為什麼..."
+next = "deep-search-6"
+
+[dialogue.deep-search-6]
+text = "你雙拳緊握.咬緊牙關,但眼淚還是不住的打轉。"
+next = "deep-search-7"
+update = [
+    "lulu-unharmony-plus-1",
+]
+[dialogue.deep-search-7]
+text = "你感覺到右拳覆上了溫暖,粗糙,厚實,令人安心。"
+next = "deep-search-8"
+
+[dialogue.deep-search-8]
+character = "belwett"
+text = "別在意,總會有人被誤解,總會有人被討厭,你只是不巧站在那邊而已,這並不是你的錯。"
+next = "deep-search-9"
+update = [
+    "lulu-san-plus-10",
+]
+
+[update.lulu-san-plus-10]
+character = "lulu"
+status = "san"
+change = 10
+
+[dialogue.deep-search-9]
+character = "lulu"
+tachie = "smiling"
+text = "謝謝...我看到魔力從這些人身體抽出,彙集到了那裡,我們過去吧!"
+next = "kitchen-3"
+
+[dialogue.kitchen]
+character =  "lulu"
+tachie = "normal"
+text = "我看到魔力彙集在遠方,走吧!"
+next = "kitchen-1"
+
+[dialogue.kitchen-1]
+character = "belwett"
+text = "..."
+next = "kitchen-2"
+
+[dialogue.kitchen-2]
+text = "貝爾維特似乎聽到了什麼,感到很憤怒,但當你問起,他卻說沒事,走吧!"
+next = "kitchen-3"
+
+[dialogue.kitchen-3]
+text = "你們來到了後廚,這裡熱火朝天一堆廚師忙裡忙外。"
+next = "kitchen-4"
+
+[dialogue.kitchen-4]
+text = "你一眼就看出來這些肉,不是任何家畜的肉,一股寒意自後背爬上脖頸,貝爾維特也察覺到了"
+next = "kitchen-5"
+
+[dialogue.kitchen-5]
+character = "belwett"
+text = "你待在原地...我去後廚看看"
+
+[[dialogue.kitchen-5.option]]
+text = "待在原地"
+next = "stay"
+
+[[dialogue.kitchen-5.option]]
+text = "但我拒絕"
+next = "refuse"
+
+[dialogue.stay]
+text = "片刻後,貝爾維特臉色鐵青的回來,手中拎著被打昏的大廚"
+next = "stay-1"
+
+[dialogue.stay-1]
+character = "lulu"
+tachie = "sad"
+text = "是...那樣嗎?"
+next = "stay-2"
+
+[dialogue.stay-2]
+character = "belwett"
+text = "沒錯,那些消失的流浪漢....都被做成...."
+next = "stay-3"
+
+[dialogue.stay-3]
+text = "他乾嘔了起來"
+next = "celebrate-9"
+
+[dialogue.refuse]
+character = "lulu"
+tachie = "smiling"
+text = "但我拒絕!"
+next = "refuse-1"
+
+[dialogue.refuse-1]
+character = "belwett"
+text = "?"
+next = "refuse-2"
+
+[dialogue.refuse-2]
+character = "lulu"
+tachie = "smiling"
+text = "我露露最喜歡做的事之一,就是對..."
+next = "refuse-3"
+
+[dialogue.refuse-3]
+character = "belwett"
+text = "好行行行您別唸了,來就來吧"
+next = "refuse-4"
+
+[dialogue.refuse-4]
+text = "你們跑進後廚冰櫃,不出所料,這裡堆著許多,不,應該說是大量的流浪漢屍體。"
+next = "refuse-5"
+
+[dialogue.refuse-5]
+text = "他們的共同點就是身上都有發黑的潰爛。"
+next = "refuse-6"
+
+
+[dialogue.refuse-6]
+text = "你們兩個不住的乾嘔,這恐怖的場景令你們心神不寧"
+next = "celebrate-9"
+update = [
+    "lulu-san-minus-5",
+]
+
+[dialogue.celebrate-9]
+text = "你們抓了大廚到一個隱密的角落正準備開始審問"
+next = "celebrate-10"
+
+[dialogue.celebrate-10]
+text = "他一醒來就哭喊著'不...不是我。都是鎮長,是鎮長...'"
+next = "celebrate-11"
+
+[dialogue.celebrate-11]
+text = "貝爾維特踢了他一腳"
+next = "celebrate-12"
+
+[dialogue.celebrate-12]
+character = "belwett"
+text = "我問,你答,別給我雞雞歪歪的"
+next = "celebrate-13"
+
+[dialogue.celebrate-13]
+character = "lulu"
+tachie = "yikes"
+text = "..."
+
+[[dialogue.celebrate-13.option]]
+text = "演奏"
+next = "play-2"
+
+[[dialogue.celebrate-13.option]]
+text = "也踢他一腳"
+next = "kick"
+
+[dialogue.play-2]
+text = "那麼"
+next = "play"
+
+[dialogue.play]
+text = "你要演奏什麼呢?"
+
+[[dialogue.play.option]]
+text = "和諧之聲"
+condition = "lulu-status-harmony-1"
+next = "harmony4"
+hidden = true
+[[dialogue.play.option]]
+text = "不諧之音"
+condition = "lulu-status-unharmony-1"
+next = "unharmony4"
+hidden = true
+[[dialogue.play.option]]
+text = "撫慰之韻"
+condition = "lulu-status-harmony-2"
+next = "harmony4"
+hidden = true
+[[dialogue.play.option]]
+text = "靈魂之歌"
+condition = "lulu-status-harmony-3"
+next = "harmony4"
+hidden = true
+[[dialogue.play.option]]
+text = "生命禮讚"
+condition = "lulu-status-harmony-4"
+next = "harmony4"
+hidden = true
+[[dialogue.play.option]]
+text = "暗黑節奏"
+condition = "lulu-status-unharmony-2"
+next = "unharmony4"
+hidden = true
+[[dialogue.play.option]]
+text = "終焉序曲"
+condition = "lulu-status-unharmony-3"
+next = "unharmony4"
+hidden = true
+[[dialogue.play.option]]
+text = "滅世樂章"
+condition = "lulu-status-unharmony-4"
+next = "unharmony4"
+hidden = true
+[dialogue.harmony4]
+text = "指揮棒畫出的光軌帶著整個空間一同舞動,大廚與貝爾維特都被你安撫了"
+next = "harmony4-1"
+update = [
+    "lulu-san-plus-5",
+]
+[dialogue.harmony4-1]
+text = "我...我什麼都說,我也是被逼的....  大廚似乎並沒有反抗意志,倒不如說他似乎想告訴你們什麼"
+next = "celebrate-14"
+
+[dialogue.unharmony4]
+text = "雙手舞動,你的力量刺穿了大廚的精神,他現在知無不言"
+next = "celebrate-14"
+
+[dialogue.kick]
+text = "你也踢了他一腳,他被兩個人暴力對待後,連怎麼哭都忘記了"
+next = "celebrate-14"
+
+
+# "這都要從50年前說起,我...我們對那時的記憶都很模糊,歷史上說那時是世界大戰,但我們全鎮的人對那時的記憶都..."廚師說道
+# "只有鎮長好像什麼都知道一樣,他擅自更改了傳下來的祭典,要我把那些...人做成料理"
+# "我也沒辦法阿,我全家老小都在他手裡...."接下來都是一些求情的話,似乎問不出更多東西了
+# 在他人喋喋不休時,貝爾維特看向你,用眼神詢問你下一步該怎麼作
+[dialogue.celebrate-14]
+text = "這都要從50年前說起,我...我們對那時的記憶都很模糊。"
+next = "celebrate-15"
+
+[dialogue.celebrate-15]
+text = "歷史上說那時是世界大戰,但我們全鎮的人對那時的記憶都..."
+next = "celebrate-16"
+
+[dialogue.celebrate-16]
+text = "只有鎮長好像什麼都知道一樣,他擅自更改了傳下來的祭典,要我把那些...人做成料理"
+next = "celebrate-17"
+
+[dialogue.celebrate-17]
+text = "我也沒辦法阿,我全家老小都在他手裡...."
+next = "celebrate-18"
+
+[dialogue.celebrate-18]
+text = "在他仍喋喋不休時,貝爾維特看向你,用眼神詢問你下一步該怎麼作"
 end = ""
 
-# [dialogue.chapter3-16]
-# character = "belwett"
-# text = "...流浪漢,聖靈祭,大湖之主,魔女....一下子問題也太多了吧喂!這裡是圖書館,應該會有一些資料吧?來找找吧!"
-# event = "search"
+#event = "decision2"
 
-# [event.search]
-# scene = "lagoud-house"
-# dialogue = "search-1"
 
-# [dialogue.search-1]
-# text = "你被他拉著出去了"
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
