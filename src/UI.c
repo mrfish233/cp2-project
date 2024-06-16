@@ -148,12 +148,21 @@ void initMenuButtons(AppContext* ctx, Button* buttons) {
 }
 
 void renderTitle(AppContext* ctx) {
-    SDL_Surface* surface = TTF_RenderUTF8_Blended(ctx->font, "失落的旋律", g_white);
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(ctx->renderer, surface);
-    SDL_Rect dstrect = {ctx->window_width / 2 - surface->w / 2, 50, surface->w, surface->h};
-    SDL_RenderCopy(ctx->renderer, texture, NULL, &dstrect);
-    SDL_FreeSurface(surface);
-    SDL_DestroyTexture(texture);
+    TTF_Font *title_font = TTF_OpenFont("resources/font/Noto_Sans_TC/static/NotoSansTC-Black.ttf", 96);
+
+    SDL_Surface* title_surface = TTF_RenderUTF8_Blended(title_font, g_script.name, g_white);
+    SDL_Texture* title_texture = SDL_CreateTextureFromSurface(ctx->renderer, title_surface);
+    SDL_Rect title_rect = {ctx->window_width / 2 - title_surface->w / 2, 100, title_surface->w, title_surface->h};
+    SDL_Rect title_bg_rect = {ctx->window_width / 2 - title_surface->w / 2 - 10, 100, title_surface->w + 20, title_surface->h + 10};
+
+    SDL_SetRenderDrawColor(ctx->renderer, 0, 0, 0, 120);
+    SDL_RenderFillRect(ctx->renderer, &title_bg_rect);
+
+    SDL_RenderCopy(ctx->renderer, title_texture, NULL, &title_rect);
+    SDL_FreeSurface(title_surface);
+    SDL_DestroyTexture(title_texture);
+
+    TTF_CloseFont(title_font);
 }
 
 void MainMenu(AppContext* ctx) {
