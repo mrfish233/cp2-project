@@ -594,6 +594,14 @@ int32_t updateCharacterData(Script *script, char *update_id) {
         for (int32_t i = 0; i < character->status_size; i++) {
             if (strcmp(character->status[i].status_name, update->condition) == 0) {
                 character->status[i].value += update->change;
+
+                if (character->status[i].value < status_info->min) {
+                    character->status[i].value = status_info->min;
+                }
+                else if (character->status[i].value > status_info->max) {
+                    character->status[i].value = status_info->max;
+                }
+
                 return 0;
             }
         }
