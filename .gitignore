@@ -20,4 +20,3 @@
 
 # Ignore markdownlint
 .markdownlint.json
-*.json
