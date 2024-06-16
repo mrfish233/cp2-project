@@ -1131,16 +1131,16 @@ text = "喔吼吼別那麼急躁,沒辦法,對我這樣壽命沒有極限的高�
 
 [[dialogue.meet-lagoud-11.option]]
 text = "演奏"
-next = "meet-lagoud-"
+next = "meet-lagoud-12"
 
 
 [[dialogue.meet-lagoud-11.option]]
 text = "詢問魔女"
-next = "meet-lagoud-"
+next = "ask"
 
 [[dialogue.meet-lagoud-11.option]]
 text = "詢問要幫忙的事"
-next = "meet-lagoud-"
+next = "ask"
 
 [[dialogue.meet-lagoud-11.option]]
 text = "離開"
@@ -1276,6 +1276,16 @@ next = "unharmony-2"
 [dialogue.unharmony-2]
 character = "lagoud"
 text = "真是太美妙了,第一天就能有如此進步,或許我該將你引薦給族長!不過你確實提醒了我,讓我們進入正題"
+next = "meet-lagoud-17"
+
+[dialogue.ask]
+text = "你強忍著不滿,問他到底想說什麼"
+next = "ask-1"
+
+[dialogue.ask-1]
+character = "lagoud"
+tachie = "nothing"
+text = "您是要我幫忙甚麼?"
 next = "meet-lagoud-17"
 
 [dialogue.meet-lagoud-13]
@@ -1592,6 +1602,7 @@ next = "chapter3-4"
 character = "lulu"
 tachie = "normal"
 text = "..."
+next = "chapter3-5"
 
 [dialogue.chapter3-5]
 text = "你還是開不了口,劇烈的耳鳴與噁心感不斷衝擊著你的感官"
@@ -1665,45 +1676,45 @@ next = "chapter3-10"
 [dialogue.power]
 text = "那你要演奏什麼呢?"
 
-[[power.option]]
+[[dialogue.power.option]]
 text = "和諧之聲"
 condition = "lulu-status-harmony-1"
-next = "dialogue.harmony3"
+next = "harmony3"
 
-[[power.option]]
+[[dialogue.power.option]]
 text = "不諧之音"
 condition = "lulu-status-unharmony-1"
-next = "dialogue.unharmony3"
+next = "unharmony3"
 
-[[power.option]]
+[[dialogue.power.option]]
 text = "撫慰之韻"
 condition = "lulu-status-harmony-2"
-next = "dialogue.harmony3"
+next = "harmony3"
 
-[[power.option]]
+[[dialogue.power.option]]
 text = "靈魂之歌"
 condition = "lulu-status-harmony-3"
-next = "dialogue.harmony3"
+next = "harmony3"
 
-[[power.option]]
+[[dialogue.power.option]]
 text = "生命禮讚"
 condition = "lulu-status-harmony-4"
-next = "dialogue.harmony3"
+next = "harmony3"
 
-[[power.option]]
+[[dialogue.power.option]]
 text = "暗黑節奏"
 condition = "lulu-status-unharmony-2"
-next = "dialogue.unharmony3"
+next = "unharmony3"
 
-[[power.option]]
+[[dialogue.power.option]]
 text = "終焉序曲"
 condition = "lulu-status-unharmony-3"
-next = "dialogue.unharmony3"
+next = "unharmony3"
 
-[[power.option]]
+[[dialogue.power.option]]
 text = "滅世樂章"
 condition = "lulu-status-unharmony-4"
-next = "dialogue.unharmony3"
+next = "unharmony3"
 
 [dialogue.harmony3]
 text = "你的音樂使大家都冷靜了下來"
