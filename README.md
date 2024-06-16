@@ -422,3 +422,17 @@ The field `character`, `status`, `logic` and `value` are same as the status cond
 The only extra field is `event`:
 
 - event: STRING, the **ID** of the event, indicate which event will be processed if the trigger is true
+
+## Third-party
+
+- [SDL](https://www.libsdl.org/license.php)
+- [ffmpeg](https://www.ffmpeg.org/legal.html)
+
+## Example Game Material Source
+
+- [Stability AI](https://stability.ai/use-policy) (for generating example game's images)
+- [chinaz.com](https://sc.chinaz.com/tag_yinxiao/anniu.html) (for sound effects)
+
+## License
+
+This project is licensed under the [WTFPL License](LICENSE.txt).
