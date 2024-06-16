@@ -80,6 +80,7 @@ sad = "assets/character/lulu/tachie/sad.png"
 angry = "assets/character/lulu/tachie/angry.png"
 yikes = "assets/character/lulu/tachie/yikes.png"
 firstlook = "assets/character/lulu/tachie/firstlook.png"
+normal = "assets/character/lulu/tachie/normal.png"
 nothing = "assets/character/lulu/tachie/nothing.png"
 smiling = "assets/character/lulu/tachie/smiling.png"
 
@@ -487,6 +488,7 @@ next = "walking-on-street-15"
 
 [dialogue.walking-on-street-15]
 character = "lulu"
+tachie = "normal"
 text = "沒事,阿姨,我只是在想事情而已,謝謝阿姨的禮物,我先回家啦!"
 next = "walking-on-street-16"
 
@@ -538,7 +540,7 @@ next = "back-home-8"
 
 [dialogue.back-home-8]
 character = "grandma"
-text = "太久沒去小鎮了...竟然出現了血族...要不適教會一直阻撓"
+text = "太久...沒去小鎮了...竟然...出現了血族...露露阿...."
 next = "back-home-9"
 
 [dialogue.back-home-9]
@@ -699,19 +701,19 @@ event = "search-basement"
 
 [condition.lulu-status-count1-2]
 character = "lulu"
-status = "count1"
+status = "count2"
 value = 2
 logic = "EQ"
 
 [condition.lulu-item-purple-flower]
 character = "lulu"
 item = "purple-flower"
-logic = "NE"
+logic = "EQ"
 
 [condition.lulu-item-baton]
 character = "lulu"
 item = "baton"
-logic = "NE"
+logic = "EQ"
 
 #去森林========================================================================================================
 [event.go-to-forest]
@@ -844,6 +846,9 @@ next = "go-to-forest-5"
 character = "lulu"
 tachie = "yikes"
 text = "你好像弄錯了什麼,這是通知,不是商量"
+update = [
+    "lulu-unharmony-plus-1",
+]
 next = "go-to-forest-23"
 
 
@@ -888,6 +893,7 @@ change = 1
 
 [dialogue.go-to-forest-28]
 character = "lulu"
+tachie = "normal"
 text = "恩?"
 next = "go-to-forest-29"
 
@@ -969,6 +975,7 @@ next = "go-to-forest-43"
 
 [dialogue.go-to-forest-41]
 character = "lulu"
+tachie = "normal"
 text = "那是哪個國家的?"
 next = "go-to-forest-42"
 
@@ -1125,650 +1132,138 @@ tachie = "angry"
 text = "你是真的不打算說一句人話是嗎?"
 next = "meet-lagoud-11"
 
+# 拉古德
+
+# 喔吼吼,別那麼急躁,沒辦法,對我這樣壽命沒有極限的高貴種族來說,時間是浪費不完的
+# 離開
+# 演奏
+# 詢問魔女
+# 詢問要幫忙的事
+# 那你要演奏什麼樣的曲子呢?
+# 不諧
+
+# 和諧
+# 露露  angry
+
+# 我受夠了
+# 你起身想要離開,但一股無形的力量伴隨著淡淡的鐵鏽味將你壓回了天鵝絨沙發,即使沙發這樣的軟,突如其來的重壓依舊令你受了一點傷
+# 生命-5
+# 你強忍著不滿,開口詢問
+# 露露  nothing
+
+# 您是要我幫忙什麼?
+# 你揮舞雙手,混亂的音符與凌亂的節奏如同銀針一般朝周圍散去
+# 第一次目睹超凡的力量讓你神智渙散,懷疑著這是否是現實,一切是不是一場夢?
+# san-5
+# 拉古德
+
+# 別亂動~瞧瞧你害我做了什麼?不逗你了,進入正題吧
+# 指揮棒在空中起舞,尖端勾勒著純白的線條,空氣都隨之舞動
+# san-5
+# san+5
+# 拉古德面露不悅,但還是讓你演奏完
+# 拉古德不受影響,甚至開心的拍起手來
+# 拉古德
+
+# 真是太美妙了,第一天就能有如此進步,或許我該將你引薦給族長!不過你確實提醒了我,讓我們進入正題吧
+# 拉古德
+
+# 小姑娘,我很討厭那種噁心巴啦的調調,別再讓我聽到那鬼東西,好吧,讓我們進入正題
+# 拉古德
+
+# 700年來我一直都待在這個鎮上,這裡,一直是被旁邊那塊湖
+# 露露  nothing
+
+# 你說聖恩湖?
+# 拉古德
+
+# 阿對對對，反正他名字一直變，湖中的大湖之主，掌控著這片地域，但３００年前有一顆隕石墜落到湖中
+# 拉古德
+
+# 自從那顆隕石落下後，我便感覺大湖之主的力量漸弱，而50年前,世界大戰爆發...
+# 露露  nothing
+
+# 還要多久...
+# 拉古德
+
+# ...這裡的居民遭到生化實驗的波及,我躲在我的房子中直到戰爭結束,而也是從那時開始,一切都不對勁了
+# 露露  smiling
+
+# 偉大的拉古德大人都解決不了的事我又能做什麼呢?
+# 拉古德沒有在意你的不耐煩
+# 拉古德
+
+# 從那之後,這裡的主人就好像換了一樣,力量的氣息很不一樣,以往每次聖靈祭都是載歌載舞,但自那之後...該怎麼說,最簡單直接的就是"瘋狂"吧
+# 你就沒想著去看看嗎?
+
+# 你到底想說什麼?
+# 拉古德
+
+# 總之,幫我去聖靈祭看發生了什麼事
+# 拉古德
+
+# 多危險阿!活了七百年什麼事能做什麼事不能做也是知道的
+# 露露 angry
+
+# 你為什麼不自己去?
+# 露露
+
+# 那魔女的事呢?
+# 拉古德啞然
+# 拉古德
+
+# 妳自己不就是嗎?你還想知道什麼?
+# 流浪漢
+# 魔女的力量
+# 媽媽在哪裡
+# 露露  nothing
+
+# 你有看到街上的流浪漢嗎?之前還看到很多位,但剛剛全部消失了
+# 拉古德
+
+# 誰知道,這是應該問宅宅的問題嗎?可能只是警察比較給力吧?
+# 拉古德很敷衍
+# 露露  sad
+
+# 為什麼要叫我們魔女?這股力量是怎麼回事?
+# 拉古德
+
+# 有一說一,魔女大部分都是好人啦,但就是有些極端個例,像34年前的"血月"。那位只因為失戀就把整個城屠了,而且每個魔女都有這樣的潛力,你說誰不怕?
+# 露露  normal
+
+# 潛力?
+# 拉古德
+
+# 唉,你們只要感情到了某個境地就可以增幅魔法的威力到一個莫名其妙的地步,該怎麼說?女人加魔法真的是先不要
+# 你很想揍面前的混蛋一拳,但你現在打不過他,可以晚點再試
+# 拉古德
+
+# 總之大家都因為這樣把你們當成不定時炸彈,所以羅~~
+# 露露  sad
+
+# 你知道我的媽媽在哪裡嗎?
+# 拉古德
+
+# 我能通過感受魔力的方式找到一個人的血親
+# 拉古德閉上眼似乎很用力在思考的樣子
+# 拉古德
+
+# 有兩條線連著你,一條是城東的森林中,另一條很微弱在很遠很遠的地方,亨母....極座標....應該在大裂谷,躲避通緝的人會去的地方
+# 你暗自鬆了一口氣,看來你媽媽還活著
+# 轟!!!!!
+# 你聽到了一聲巨響,不是物理上藉由空氣傳遞的能量,而是魔法的爆震,你剛覺醒的魔法感官令你無法支撐這種程度的衝擊
+# 拉古德
+
+# 亨母...外面出事了呢,你等等,我出去瞄一眼
+# 你一句話都說不出來,視野模糊,腦中似有一根5cm的鋼針粗暴的攪動
+# Hp-5
+# San-5
+# 過了一會兒,拉古德回來了,他身後跟著衣衫襤褸的貝爾維特以及一個被血霧依託著的軀體
+# 阿嬤
 [dialogue.meet-lagoud-11]
 character = "lagoud"
 text = "喔吼吼別那麼急躁,沒辦法,對我這樣壽命沒有極限的高貴種族來說,時間是浪費不完的"
-
-[[dialogue.meet-lagoud-11.option]]
-text = "演奏"
-next = "meet-lagoud-"
-
-
-[[dialogue.meet-lagoud-11.option]]
-text = "詢問魔女"
-next = "meet-lagoud-"
-
-[[dialogue.meet-lagoud-11.option]]
-text = "詢問要幫忙的事"
-next = "meet-lagoud-"
-
-[[dialogue.meet-lagoud-11.option]]
-text = "離開"
-next = "meet-lagoud-13"
-
-[dialogue.meet-lagoud-12]
-text = "那你要演奏什麼樣的曲子呢?"
-
-
-[[dialogue.meet-lagoud-12.option]]
-text = "和諧之聲"
-condition = "lulu-status-harmony-1"
-next = "harmony"
-[[dialogue.meet-lagoud-12.option]]
-text = "不諧之音"
-condition = "lulu-status-unharmony-1"
-next = "unharmony"
-[[dialogue.meet-lagoud-12.option]]
-text = "撫慰之韻"
-condition = "lulu-status-harmony-2"
-next = "harmony"
-
-[[dialogue.meet-lagoud-12.option]]
-text = "靈魂之歌"
-condition = "lulu-status-harmony-3"
-next = "harmony"
-
-[[dialogue.meet-lagoud-12.option]]
-text = "生命禮讚"
-condition = "lulu-status-harmony-4"
-next = "harmony"
-
-[[dialogue.meet-lagoud-12.option]]
-text = "暗黑節奏"
-condition = "lulu-status-unharmony-2"
-next = "unharmony"
-
-[[dialogue.meet-lagoud-12.option]]
-text = "終焉序曲"
-condition = "lulu-status-unharmony-3"
-next = "unharmony"
-
-[[dialogue.meet-lagoud-12.option]]
-text = "滅世樂章"
-condition = "lulu-status-unharmony-4"
-next = "unharmony"
-
-[condition.lulu-status-harmony-1]
-character = "lulu"
-status = "harmony"
-logic = "EQ"
-value = 1
-
-[condition.lulu-status-unharmony-1]
-character = "lulu"
-status = "unharmony"
-logic = "EQ"
-value = 1
-
-[condition.lulu-status-harmony-2]
-character = "lulu"
-status = "harmony"
-logic = "EQ"
-value = 2
-
-[condition.lulu-status-harmony-3]
-character = "lulu"
-status = "harmony"
-logic = "EQ"
-value = 3
-
-[condition.lulu-status-harmony-4]
-character = "lulu"
-status = "harmony"
-logic = "EQ"
-value = 4
-
-[condition.lulu-status-unharmony-2]
-character = "lulu"
-status = "unharmony"
-logic = "EQ"
-value = 2
-
-[condition.lulu-status-unharmony-3]
-character = "lulu"
-status = "unharmony"
-logic = "EQ"
-value = 3
-
-[condition.lulu-status-unharmony-4]
-character = "lulu"
-status = "unharmony"
-logic = "EQ"
-value = 4
-
-[dialogue.harmony]
-text = "指揮棒在空中起舞,尖端勾勒著純白的線條,空氣都隨之舞動"
-update = [
-    "lulu-san-plus-5",
-]
-next = "harmony-1"
-
-[update.lulu-san-plus-5]
-character = "lulu"
-status = "san"
-change = 5
-
-[dialogue.harmony-1]
-text = "拉古德面露不悅,但還是讓你演奏完"
-next = "harmony-2"
-
-[dialogue.harmony-2]
-character = "lagoud"
-text = "小姑娘,我很討厭那種噁心巴啦的調調,別再讓我聽到那鬼東西,好吧,讓我們進入正題"
-next = "meet-lagoud-17"
-
-[dialogue.unharmony]
-text = "你揮舞雙手,混亂的音符與凌亂的節奏如同銀針一般朝周圍散去"
-update = [
-    "lulu-san-minus-5",
-]
-next = "unharmony-1"
-
-[update.lulu-san-minus-5]
-character = "lulu"
-status = "san"
-change = -5
-
-[dialogue.unharmony-1]
-text = "拉古德不受影響,甚至開心的拍起手來"
-next = "unharmony-2"
-
-[dialogue.unharmony-2]
-character = "lagoud"
-text = "真是太美妙了,第一天就能有如此進步,或許我該將你引薦給族長!不過你確實提醒了我,讓我們進入正題"
-next = "meet-lagoud-17"
-
-[dialogue.meet-lagoud-13]
-character = "lulu"
-tachie = "angry"
-text = "我受夠了"
-next = "meet-lagoud-14"
-
-[dialogue.meet-lagoud-14]
-text = "你起身想要離開,但一股無形的力量伴隨著淡淡的鐵鏽味將你壓回了天鵝絨沙發,即使沙發這樣的軟,突如其來的重壓依舊令你受了一點傷"
-update = [
-    "lulu-hp-minus-5",
-]
-next = "meet-lagoud-15"
-
-[update.lulu-hp-minus-5]
-character = "lulu"
-status = "hp"
-change = -5
-
-[dialogue.meet-lagoud-15]
-text = "第一次目睹超凡的力量讓你神智渙散,懷疑著這是否是現實,一切是不是一場夢?"
-update = [
-    "lulu-san-minus-5",
-]
-next = "meet-lagoud-16"
-
-[dialogue.meet-lagoud-16]
-character = "lagoud"
-text = "別亂動~瞧瞧你害我做了什麼?不逗你了,進入正題吧"
-next = "meet-lagoud-17"
-
-[dialogue.meet-lagoud-17]
-character = "lagoud"
-text = "700年來我一直都待在這個鎮上,這裡,一直是被旁邊那塊湖"
-next = "meet-lagoud-18"
-
-[dialogue.meet-lagoud-18]
-character = "lulu"
-tachie = "nothing"
-text = "你說聖恩湖?"
-next = "meet-lagoud-19"
-
-[dialogue.meet-lagoud-19]
-character = "lagoud"
-text = "阿對對對，反正他名字一直變，湖中的大湖之主，掌控著這片地域，但３００年前有一顆隕石墜落到湖中"
-next = "meet-lagoud-20"
-
-[dialogue.meet-lagoud-20]
-character = "lagoud"
-text = "自從那顆隕石落下後，我便感覺大湖之主的力量漸弱，而50年前,世界大戰爆發..."
-next = "meet-lagoud-21"
-
-[dialogue.meet-lagoud-21]
-character = "lulu"
-tachie = "nothing"
-text = "長話短說"
-next = "meet-lagoud-22"
-
-[dialogue.meet-lagoud-22]
-character = "lagoud"
-text = "...這裡的居民遭到生化實驗的波及,我躲在我的房子中直到戰爭結束,而也是從那時開始,一切都不對勁了"
-next = "meet-lagoud-23"
-
-[dialogue.meet-lagoud-23]
-character = "lulu"
-tachie = "smiling"
-text = "偉大的拉古德大人都解決不了的事我又能做什麼呢?"
-next = "meet-lagoud-24"
-
-[dialogue.meet-lagoud-24]
-text = "拉古德沒有在意你的不耐煩"
-next = "meet-lagoud-25"
-
-[dialogue.meet-lagoud-25]
-character = "lagoud"
-text = "從那之後,這裡的主人就好像換了一樣,力量的氣息很不一樣,以往每次聖靈祭都是載歌載舞,但自那之後...該怎麼說,最簡單直接的就是'瘋狂'吧"
-
-[[dialogue.meet-lagoud-25.option]]
-text = "你就沒想著去看看嗎?"
-next = "meet-lagoud-26"
-
-[[dialogue.meet-lagoud-25.option]]
-text = "你到底想說什麼?"
-next = "what-to-say"
-
-[dialogue.what-to-say]
-character = "lagoud"
-text = "總之,幫我去聖靈祭看發生了什麼事"
-next = "what-to-say-1"
-
-[dialogue.what-to-say-1]
-character = "lulu"
-tachie = "angry"
-text = "你為什麼不自己去?"
-next = "meet-lagoud-26"
-
-[dialogue.meet-lagoud-26]
-character = "lagoud"
-text = "多危險啊!活了七百年什麼事能做什麼事不能做也是知道的"
-next = "meet-lagoud-27"
-
-[dialogue.meet-lagoud-27]
-character = "lulu"
-tachie = "angry"
-text = "那魔女的事呢?"
-next = "meet-lagoud-28"
-
-[dialogue.meet-lagoud-28]
-text = "拉古德啞然"
-next = "meet-lagoud-29"
-
-[dialogue.meet-lagoud-29]
-character = "lagoud"
-text = "妳自己不就是嗎?你還想知道什麼?"
-
-[[dialogue.meet-lagoud-29.option]]
-text = "流浪漢"
-next = "stray"
-
-[[dialogue.meet-lagoud-29.option]]
-text = "魔女的力量"
-next = "witch-power"
-
-[[dialogue.meet-lagoud-29.option]]
-text = "媽媽在哪裡"
-next = "mom"
-
-[dialogue.stray]
-character = "lulu"
-tachie = "nothing"
-text = "你有看到街上的流浪漢嗎?之前還看到很多位,但剛剛全部消失了"
-next = "stray-1"
-
-[dialogue.stray-1]
-character = "lagoud"
-text = "誰知道,這是應該問宅宅的問題嗎?可能只是警察比較給力吧?"
-next = "stray-2"
-
-[dialogue.stray-2]
-text = "拉古德很敷衍"
-next = "meet-lagoud-30"
-
-[dialogue.witch-power]
-character = "lulu"
-tachie = "sad"
-text = "為什麼要叫我們魔女?這股力量是怎麼回事?"
-next = "witch-power-1"
-
-[dialogue.witch-power-1]
-character = "lagoud"
-text = "有一說一,魔女大部分都是好人啦,但就是有些極端個例,像34年前的'血月'。那位只因為失戀就把整個城屠了,而且每個魔女都有這樣的潛力,你說誰不怕?"
-next = "witch-power-2"
-
-[dialogue.witch-power-2]
-character = "lulu"
-tachie = "normal"
-text = "潛力?"
-next = "witch-power-3"
-
-[dialogue.witch-power-3]
-character = "lagoud"
-text = "唉,你們只要感情到了某個境地就可以增幅魔法的威力到一個莫名其妙的地步,該怎麼說?女人加魔法真的是先不要"
-next = "witch-power-4"
-
-[dialogue.witch-power-4]
-text = "你很想揍面前的混蛋一拳,但你現在打不過他,可以晚點再試"
-next = "witch-power-5"
-
-[dialogue.witch-power-5]
-character = "lagoud"
-text = "總之大家都因為這樣把你們當成不定時炸彈,所以羅~~"
-next = "meet-lagoud-30"
-
-[dialogue.mom]
-character = "lulu"
-tachie = "sad"
-text = "你知道我的媽媽在哪裡嗎?"
-next = "mom-1"
-
-[dialogue.mom-1]
-character = "lagoud"
-text = "我能通過感受魔力的方式找到一個人的血親"
-next = "mom-2"
-
-[dialogue.mom-2]
-text = "拉古德閉上眼似乎很用力在思考的樣子"
-next = "mom-3"
-
-[dialogue.mom-3]
-character = "lagoud"
-text = "有兩條線連著你,一條是城東的森林中,另一條很微弱在很遠很遠的地方,亨母....極座標....應該在大裂谷,躲避通緝的人會去的地方"
-next = "mom-4"
-
-[dialogue.mom-4]
-text = "你暗自鬆了一口氣,看來你媽媽還活著"
-next = "meet-lagoud-30"
-
-[dialogue.meet-lagoud-30]
-text = "轟!!!!!"
-next = "meet-lagoud-31"
-
-[dialogue.meet-lagoud-31]
-text = "你聽到了一聲巨響,不是物理上藉由空氣傳遞的能量,而是魔法的爆震,你剛覺醒的魔法感官令你無法支撐這種程度的衝擊"
-update = [
-    "lulu-san-minus-5",
-    "lulu-hp-minus-5",
-]
-next = "meet-lagoud-32"
-
-[dialogue.meet-lagoud-32]
-character = "lagoud"
-text = "亨母...外面出事了呢,你等等,我出去瞄一眼"
-next = "meet-lagoud-33"
-
-[dialogue.meet-lagoud-33]
-text = "你一句話都說不出來,視野模糊,腦中似有一根5cm的鋼針粗暴的攪動"
-next = "meet-lagoud-34"
-
-[dialogue.meet-lagoud-34]
-text = "過了一會兒,拉古德回來了,他身後跟著衣衫襤褸的貝爾維特以及一個被血霧依託著的軀體"
-next = "meet-lagoud-35"
-
-[dialogue.meet-lagoud-35]
-character = "lulu"
-tachie = "nothing"
-text = "阿嬤!!!!!"
-event = "chapter3"
-
-[event.chapter3]
-scene = "lagoud-house"
-dialogue = "chapter3-1"
-
-# 貝爾維特
-
-# 剛才教會的人來了,他們不由分說就拿一堆法術亂丟,還有騎士想直接進屋
-# 貝爾維特
-
-# 婆婆要我撐十秒,我死命抵擋著不讓他們進來,接下來眼前一白,那些入侵者直接被轟飛了,我身上會這樣主要是那個衝擊的餘波
-# 拉古德
-
-# 這...看來你們是回不去那邊了
-# 露露  normal
-
-# ...
-# 你還是開不了口,劇烈的耳鳴與噁心感不斷衝擊著你的感官
-# 拉古德
-
-# 行吧,我家很大,你們就住下吧!那麼離所當然的,你們要為我探聽我想知道的,沒錯吧?
-# 點頭
-# 點頭
-# 點頭
-# 拉古德的雙眼泛紅,你感到頭顱被上下搖動,當然,非自願的
-# 拉古德
-
-# 太好了(鼓掌鼓掌)
-# 貝爾維特
-
-# 你對露露做了什麼!!(拔劍)
-# 制止他
-# 不管他
-# 演奏
-# 那你要演奏什麼呢?
-# San-5
-# 和諧
-# 不諧
-# 你的音樂使大家都冷靜了下來
-# 刺耳的聲音使所有人看向你
-# 露露  angry
-
-# 夠了!  夠了....讓阿嬤休息
-# 拉古德
-
-# 喔吼吼,放下你的小玩具
-# 拉古德雙眼再次泛紅,血腥味極劇加重,但貝爾維特絲毫不受影響
-# 露露  angry
-
-# (抓住貝爾維特)
-# 拉古德
-
-# 嘿,我剛剛才把你救到安全的地方耶,冷靜點麻~
-# 貝爾維特啞然,不用讀心術也看得出他在想什麼,"這家夥TM有病吧?"
-# 拉古德
-
-# 好~吧,雖然有些意料外的變故,但我的要求你們還是要做到的,不然我就把你們踢出去喔~?
-# 聖靈夜就是今晚,大家好好休息喔~別讓我失望☺
-# 說完他便化作黑霧消失了
-# 貝爾維特
-
-# 露露你還好嗎?那個神經病是誰?有傷害你嗎?
-# 拉古德
-
-# (遠方)我聽得到~~
-# 交代一堆事情後
-# 貝爾維特
-
-# ...流浪漢,聖靈祭,大湖之主,魔女....一下子問題也太多了吧喂!這裡是圖書館,應該會有一些資料吧?來找找吧!
-[dialogue.chapter3-1]
-character = "belwett"
-text = "剛才教會的人來了,他們不由分說就拿一堆法術亂丟,還有騎士想直接進屋"
-next = "chapter3-2"
-
-[dialogue.chapter3-2]
-character = "belwett"
-text = "婆婆要我撐十秒,我死命抵擋著不讓他們進來,接下來眼前一白,那些入侵者直接被轟飛了,我身上的傷主要是那個衝擊的餘波"
-next = "chapter3-3"
-
-[dialogue.chapter3-3]
-character = "lagoud"
-text = "這...看來你們是回不去那邊了"
-next = "chapter3-4"
-
-[dialogue.chapter3-4]
-character = "lulu"
-tachie = "normal"
-text = "..."
-
-[dialogue.chapter3-5]
-text = "你還是開不了口,劇烈的耳鳴與噁心感不斷衝擊著你的感官"
-next = "chapter3-6"
-
-[dialogue.chapter3-6]
-character = "lagoud"
-text = "雖然但是~我家很大~你們就住下吧!那麼離所當然的,你們要為我探聽我想知道的,沒錯吧?"
-
-[[dialogue.chapter3-6.option]]
-text = "點頭"
-next = "chapter3-7"
-
-[[dialogue.chapter3-6.option]]
-text = "點頭"
-next = "chapter3-7"
-
-[[dialogue.chapter3-6.option]]
-text = "點頭"
-next = "chapter3-7"
-
-[dialogue.chapter3-7]
-text = "拉古德的雙眼泛紅,你感到頭顱上下搖動,非自願的"
-next = "chapter3-8"
-
-[dialogue.chapter3-8]
-character = "lagoud"
-text = "太好了(鼓掌鼓掌)"
-next = "chapter3-9"
-
-[dialogue.chapter3-9]
-character = "belwett"
-text = "你對露露做了什麼!!(拔劍)"
-
-[[dialogue.chapter3-9.option]]
-text = "制止他"
-next = "stop-him"
-
-[[dialogue.chapter3-9.option]]
-text = "不管他"
-next = "ignore-him"
-
-[[dialogue.chapter3-9.option]]
-text = "演奏"
-next = "power"
-
-[dialogue.stop-him]
-character = "lulu"
-tachie = "angry"
-text = "抓住貝爾維特"
-next = "chapter3-10"
-
-[dialogue.ignore-him]
-character = "lagoud"
-text = "喔吼吼,放下你的小玩具"
-next = "ignore-him-1"
-
-[dialogue.ignore-him-1]
-text = "拉古德雙眼再次泛紅,血腥味極劇加重,但貝爾維特絲毫不受影響"
-next = "ignore-him-2"
-
-[dialogue.ignore-him-2]
-character = "lagoud"
-text = "嘿,我剛剛才把你救到安全的地方耶,冷靜點麻~"
-next = "ignore-him-3"
-
-[dialogue.ignore-him-3]
-text = "貝爾維特啞然,不是魔女也看得出他在想什麼,這傢伙TM有病吧"
-next = "chapter3-10"
-
-[dialogue.power]
-text = "那你要演奏什麼呢?"
-
-[[power.option]]
-text = "和諧之聲"
-condition = "lulu-status-harmony-1"
-next = "dialogue.harmony3"
-
-[[power.option]]
-text = "不諧之音"
-condition = "lulu-status-unharmony-1"
-next = "dialogue.unharmony3"
-
-[[power.option]]
-text = "撫慰之韻"
-condition = "lulu-status-harmony-2"
-next = "dialogue.harmony3"
-
-[[power.option]]
-text = "靈魂之歌"
-condition = "lulu-status-harmony-3"
-next = "dialogue.harmony3"
-
-[[power.option]]
-text = "生命禮讚"
-condition = "lulu-status-harmony-4"
-next = "dialogue.harmony3"
-
-[[power.option]]
-text = "暗黑節奏"
-condition = "lulu-status-unharmony-2"
-next = "dialogue.unharmony3"
-
-[[power.option]]
-text = "終焉序曲"
-condition = "lulu-status-unharmony-3"
-next = "dialogue.unharmony3"
-
-[[power.option]]
-text = "滅世樂章"
-condition = "lulu-status-unharmony-4"
-next = "dialogue.unharmony3"
-
-[dialogue.harmony3]
-text = "你的音樂使大家都冷靜了下來"
-next = "power-1"
-
-[dialogue.unharmony3]
-text = "刺耳的聲音使所有人看向你"
-next = "power-1"
-
-[dialogue.power-1]
-character = "lulu"
-tachie = "angry"
-text = "夠了!  夠了...."
-next = "chapter3-10"
-
-[dialogue.chapter3-10]
-character = "lagoud"
-text = "好...吧,雖然有些意料外的變故,但我的要求你們還是要做到的,不然我就把你們踢出去喔~?"
-next = "chapter3-11"
-
-[dialogue.chapter3-11]
-character = "lagoud"
-text = "聖靈夜就是今晚,大家好好休息喔~別讓我失望☺"
-next = "chapter3-12"
-
-[dialogue.chapter3-12]
-text = "說完他便化作黑霧消失了"
-next = "chapter3-13"
-
-[dialogue.chapter3-13]
-character = "belwett"
-text = "露露你還好嗎?那個神經病是誰?有傷害你嗎?"
-next = "chapter3-14"
-
-[dialogue.chapter3-14]
-character = "lagoud"
-text = "(遠方)我聽得到~~"
-next = "chapter3-15"
-
-[dialogue.chapter3-15]
-text = "互相交換情報後"
 end = ""
-
-# [dialogue.chapter3-16]
-# character = "belwett"
-# text = "...流浪漢,聖靈祭,大湖之主,魔女....一下子問題也太多了吧喂!這裡是圖書館,應該會有一些資料吧?來找找吧!"
-# event = "search"
-
-# [event.search]
-# scene = "lagoud-house"
-# dialogue = "search-1"
-
-# [dialogue.search-1]
-# text = "你被他拉著出去了"
-
-
-
-
-
-
-
-
-
-
-
 
 
 
