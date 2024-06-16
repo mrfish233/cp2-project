@@ -2,7 +2,7 @@
 
 The final project for the course Computer Programming II in NTNU. The project is Interactive Fiction Engine (IFE) and the rules about this project can be seen [here](https://hackmd.io/@cp2023/final-project-spec).
 
-Team:
+Contributors:
 
 - 41247039S 韓欣劭
 - 41247050S 郝東彥
@@ -44,6 +44,14 @@ About engines:
 - A total of 3 manual save slots and 1 auto save slot are available
 - The save files are human-kind `json` files
 - Script checking system for ensuring the script is correct
+- The game will display all the items and status of the player-controlled character
+- The items and status will show at most 5 at a page, and there are buttons to control pages
+- The game is allowed to load or save the script data during the whole gameplay
+
+About example game:
+
+- A whole story that includes multiple endings
+- Some cool voices on each character
 
 ## How to Use
 
@@ -60,6 +68,24 @@ About engines:
 
 2. The script is written in [toml](https://toml.io/en/v1.0.0#table).
 3. All the assets are recommended to be placed in a single folder (for example, `assets`).
+4. Install the required packages:
+
+    - libsdl2-dev
+    - libsdl2-iamge-dev
+    - libsdl2-ttf-dev
+    - libsdl2-mixer-dev
+    - libavcodev-dev
+    - libavformat-dev
+    - libavutil-dev
+    - libswscale-dev
+    - libswresample-dev
+    - libcjson-dev
+
+    Or just execute the following command and everything will be installed:
+
+    ```console
+    sudo apt-get update && sudo apt-get install -y libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-mixer-dev libavcodec-dev libavformat-dev libavutil-dev libswscale-dev libswresample-dev libcjson-dev build-essential
+    ```
 
 This folder is recommended to be placed inside the project, with the following structure (assume `example-game` is your script):
 
