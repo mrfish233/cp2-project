@@ -548,8 +548,6 @@ void GamePlaying(AppContext* ctx) {
     // 區域3：設置選項按鈕
     Button optionButtons[5] = {0};
 
-    bool showOptionButtons = false;
-
     // 區域4: 設置物品欄
     SDL_Texture* itemTextures[5] = {0};
     SDL_Rect itemRects[5] = {0};
@@ -673,7 +671,22 @@ void GamePlaying(AppContext* ctx) {
             // Options
 
             if (g_display.option_flag) {
-                showOptionButtons = true;
+                for (int i = 0; i < g_display.option_size; i++) {
+                    optionButtons[i].rect.x = ctx->window_width  / 4;
+                    optionButtons[i].rect.y = ctx->window_height / 4 + i * 60;
+                    optionButtons[i].rect.w = ctx->window_width  / 2;
+                    optionButtons[i].rect.h = 50;
+
+                    strncpy(optionButtons[i].text, g_display.options[i], STR_SIZE);
+
+                    if (g_display.options_selectable[i]) {
+                        optionButtons[i].textColor = g_black;
+                    } else {
+                        optionButtons[i].textColor = g_grey;
+                    }
+
+                    optionButtons[i].onClick = NULL;
+                }
             }
 
             // Updates
@@ -749,23 +762,8 @@ void GamePlaying(AppContext* ctx) {
         }
 
         // 如果顯示選項按鈕
-        if (showOptionButtons) {
+        if (g_display.option_flag) {
             for (int i = 0; i < g_display.option_size; i++) {
-                optionButtons[i].rect.x = ctx->window_width  / 4;
-                optionButtons[i].rect.y = ctx->window_height / 4 + i * 60;
-                optionButtons[i].rect.w = ctx->window_width  / 2;
-                optionButtons[i].rect.h = 50;
-
-                strncpy(optionButtons[i].text, g_display.options[i], STR_SIZE);
-
-                if (g_display.options_selectable[i]) {
-                    optionButtons[i].textColor = g_black;
-                } else {
-                    optionButtons[i].textColor = g_grey;
-                }
-
-                optionButtons[i].onClick = NULL;
-
                 renderButton(ctx, &optionButtons[i]);
             }
         }
@@ -862,13 +860,12 @@ void GamePlaying(AppContext* ctx) {
                         }
                     }
                 }
-                else if (showOptionButtons) {
+                else if (g_display.option_flag) {
                     for (int i = 0; i < g_display.option_size; i++) {
                         if (g_display.options_selectable[i] && isButtonClicked(&optionButtons[i], x, y)) {
                             playSound(popSfx);
 
                             g_display.option_select = i + 1;
-                            showOptionButtons = false;
                             update = true;
                             break;
                         }
