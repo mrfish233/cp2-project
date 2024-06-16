@@ -806,12 +806,6 @@ logic = "NE"
 scene = "forest"
 dialogue = "go-to-forest-1"
 
-
-# 喔哈哈,我是從...很遠很遠的地方來的
-# 指示器+1
-# 森林睡覺  bedroom
-# 你睡了一個好覺,貝爾維特睡在屋外的狗屋中
-
 [dialogue.go-to-forest-1]
 text = "你聽著阿嬤的話去森林採集藥草,那是個稀有的藥草,不知道能不能順利找到"
 next = "go-to-forest-2"
@@ -933,6 +927,9 @@ character = "lulu"
 tachie = "yikes"
 text = "你好像弄錯了什麼,這是通知,不是商量"
 next = "go-to-forest-23"
+update = [
+    "lulu-unharmony-plus-1",
+]
 
 
 [dialogue.go-to-forest-23]
@@ -1320,7 +1317,7 @@ value = 3
 [condition.lulu-status-harmony-4]
 character = "lulu"
 status = "harmony"
-logic = "EQ"
+logic = "GE"
 value = 4
 
 [condition.lulu-status-unharmony-2]
@@ -1338,7 +1335,7 @@ value = 3
 [condition.lulu-status-unharmony-4]
 character = "lulu"
 status = "unharmony"
-logic = "EQ"
+logic = "GE"
 value = 4
 
 [dialogue.harmony]
@@ -2278,7 +2275,9 @@ next = "celebrate-14"
 [dialogue.kick]
 text = "你也踢了他一腳,他被兩個人暴力對待後,連怎麼哭都忘記了"
 next = "celebrate-14"
-
+update = [
+    "lulu-unharmony-plus-1",    
+    ]
 [dialogue.celebrate-14]
 text = "這都要從50年前說起,我...我們對那時的記憶都很模糊。"
 next = "celebrate-15"
@@ -2418,6 +2417,9 @@ dialogue = "lake-1"
 [dialogue.lake-1]
 text = "你們到了湖邊,烏雲密佈,四周如詩如畫,你們找了塊高處坐了下來,俯瞰整個聖恩湖"
 next = "lake-2"
+update = [
+    "lulu-harmony-plus-1",
+]
 
 [dialogue.lake-2]
 text = "你們坐了一段時間,氣氛一度有點尷尬,貝爾維特率先打破了沉默"
@@ -2648,12 +2650,7 @@ condition = "lulu-status-unharmony-4"
 hidden = true
 next = "unharmony10"
 
-# 聖潔的能量一波波湧出,如今你的力量成長的異常迅速,純白能量影響範圍內,鎮民的皮膚潰爛,桃樂絲理你們非常非常近
-# 你的力量將虛假的表象依掃而過,留下的只有冰冷的現實,桃樂絲開始嘔吐,她吐出了一些綠色黏液,身體腫脹,扭曲,變成了一頭怪物
-# San-5
-# 雖然鎮長嚇得不輕,但桃樂絲依舊以怪物的身形擺出人類的姿態,當鎮長躲避她的觸碰,她還不解的發出一些有規律但無法理解的咕嚕聲
-# 就好像她以為自己是人一樣
-# 獲得 怪物桃樂絲
+
 [dialogue.harmony10]
 text = "聖潔的能量一波波湧出,如今你的力量成長的異常迅速,純白能量影響範圍內"
 next = "harmony10-1"
@@ -2700,7 +2697,6 @@ next = "unharmony10-3"
 [dialogue.unharmony10-3]
 text = "但你的法術先她一步將她壓倒在地"
 next = "convince-2"
-
 
 
 [dialogue.convince-2]
@@ -2771,44 +2767,7 @@ event = "bloody-night"
 [event.bloody-night]
 scene = "street"
 dialogue = "bloody-night-1"
-# 你們回到拉古德的密室睡下來,但半夜,你聽到了響動
-# 起身查看
-# 繼續睡
-# 隔天早上,一陣轟鳴聲響起,巨大的肉塊憑空出現,正在吞噬整個城市,你完全感覺不到大湖之主的氣息,從肉塊的表徵,你看出那是
-# 莎布·尼古拉絲
-# End
-# 你起身發現拉古德敲咪咪的出了門,你跟了上去
-# 跟蹤到一半,你發現貝爾維特跟著你出來了,他用眼神詢問你怎麼了,你沒有理他
-# 在往前,你發現拉古德在殺人,然後在屍體的額頭畫了一個符文
-# 你在做什麼?
-# if密儀知識  你的主人不是莉莉絲嗎?
-# 貝爾維特衝向前去,在血族沒有反應過來之時此穿了他的胸膛
-# 貝爾維特
 
-# 我看他不爽很久了,回去吧,別浪費寶貴的休息時間
-# 拉古德
-
-# 這是自然,我就是在進行吾主莉莉斯的降臨儀式!你膽敢阻撓我?
-# 你一字不差的背誦出召喚莎布·尼古拉絲儀式的細節,跟他現在的所作所為一模一樣
-# 拉古德
-
-# 不可能,這是吾主託夢告訴我的,我感受到了上位的威壓,不會有錯!
-# 露露  smilng
-
-# 唉呀呀活了700年的大血族竟然不知道要查證嗎?這樣很容易被騙喔?
-# 拉古德語塞,結結巴巴地說
-# 拉古德
-
-# 那...ㄜ...多謝...如果讓...如果經我的手讓這種...邪神降臨....我死一萬次都對不起吾主
-# 貝爾維特
-
-# 就這樣放過他?
-# 露露
-
-# 別浪費時間了,況且,我們還需要他
-# 你們回去睡覺了
-# san+5
-# 獲得  血族的同行
 [dialogue.bloody-night-1]
 text = "你們回到拉古德的密室睡下來,但半夜,你聽到了響動"
 
@@ -2848,6 +2807,11 @@ text = "你的主人不是莉莉絲嗎?"
 next = "lilith"
 condition = "lulu-item-secret-knowledge"
 
+[condition.lulu-item-secret-knowledge]
+character = "lulu"
+item = "secret-knowledge"
+logic = "EQ"
+
 [dialogue.what]
 character = "lulu"
 text = "你在做什麼?"
@@ -2884,6 +2848,9 @@ next = "lilith-2"
 [dialogue.lilith-2]
 text = "你一字不差的背誦出召喚莎布·尼古拉絲儀式的細節,跟他現在的所作所為一模一樣"
 next = "lilith-3"
+update = [
+    "lulu-unharmony-plus-1",
+]
 
 [dialogue.lilith-3]
 character = "lagoud"
@@ -2896,6 +2863,7 @@ tachie = "smiling"
 text = "唉呀呀活了700年的大血族竟然不知道要查證嗎?這樣很容易被騙喔?"
 next = "lilith-5"
 update = [
+    "lulu-unharmony-plus-1",
     "lulu-san-plus-5",
 ]
 
@@ -3223,20 +3191,7 @@ text = "你將他推進了門,裂縫在他一進去的瞬間直接關上,他似�
 end = ""
 
 
-# 露露
 
-# 不能留下來嗎?
-# 貝爾維特
-
-# 之前邪神的力量隔絕了這片區域
-# 但現在隔絕解除了
-# 我的存在是不被允許的
-# 繼續呆著會招來"獵犬"的
-# 露露  sad
-
-# 誰準你擅自闖進我的世界
-# 現在又擅自...
-# 你轉頭就走,他似乎試圖挽留你,但你並不想聽
 [dialogue.dont_go]
 character = "lulu"
 tachie = "sad"
