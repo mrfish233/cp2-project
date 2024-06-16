@@ -417,9 +417,12 @@ text = "你回想起阿嬤說過血族的外貌,以及,他們非常危險,你在
 next = "weird-glimpse-escape-2"
 
 [dialogue.weird-glimpse-escape-2]
-text = "你跑的很快,但是,你感覺到他的氣息越來越近,你感覺自己的胸口正在向外噴灑著什麼,一隻巨爪穿過你的胸口"
-end = ""
+text = "你跑的很快,但是,你感覺到他的氣息越來越近。"
+next = "weird-glimpse-escape-3"
 
+[dialogue.weird-glimpse-escape-3]
+text = "你感覺自己的胸口正在向外噴灑著什麼,一隻巨爪穿過你的胸口。"
+end = ""
 #死亡數加1
 [update.lulu-death-plus-1]
 character = "lulu"
@@ -473,7 +476,12 @@ next = "weird-glimpse-12"
 
 [dialogue.weird-glimpse-12]
 character = "lagoud"
-text = "放輕鬆~開個玩笑而已,那先醬子啦~記得來找我呀~我只是想要一個朋友,你看,我們有共同的話題,你是魔女的後代,我是血族,我們都是被排斥的存在"
+text = "放輕鬆~開個玩笑而已,那先醬子啦~記得來找我呀~我只是想要一個朋友。"
+next = "weird-glimpse-93"
+
+[dialogue.weird-glimpse-93]
+character = "lagoud"
+text = "你看,我們有共同的話題,你是魔女的後代,我是血族,我們都是被排斥的存在。"
 next = "weird-glimpse-13"
 
 [dialogue.weird-glimpse-13]
@@ -603,11 +611,19 @@ next = "back-home-20"
 
 
 [dialogue.back-home-20]
-text = "你知道嗎，媽媽最近遇到了一隻超級可愛的魔法兔子，它會變出好多好吃的東西，真是個小吃貨！我覺得它一定會喜歡你，因為你也這麼愛吃。"
+text = "你知道嗎，媽媽最近遇到了一隻超級可愛的魔法兔子，它會變出好多好吃的東西，真是個小吃貨！"
+next = "back-home-101"
+
+[dialogue.back-home-101]
+text = "我覺得它一定會喜歡你，因為你也這麼愛吃。"
 next = "back-home-21"
 
 [dialogue.back-home-21]
-text = "我現在在想像你那張笑得燦爛的小臉，還有你彈琴時專注的樣子。親愛的，你是媽媽的驕傲。儘管我們現在身處不同的地方，但媽媽的心永遠和你在一起。"
+text = "我現在在想像你那張笑得燦爛的小臉，還有你彈琴時專注的樣子。"
+next = "back-home-92"
+
+[dialogue.back-home-92]
+text = "親愛的，你是媽媽的驕傲。儘管我們現在身處不同的地方，但媽媽的心永遠和你在一起。"
 next = "back-home-22"
 
 [dialogue.back-home-22]
@@ -657,7 +673,12 @@ next = "back-home-27"
 
 [dialogue.back-home-27]
 character = "grandma"
-text = "阿嬤比較不會掩飾,你媽媽她...正在逃亡,18年前,她與人類相愛,生下了你,但被教會發現她的身份,逃到了這裡將你託付於我"
+text = "阿嬤比較不會掩飾,你媽媽她...正在逃亡,18年前,她與人類相愛,生下了你。"
+next = "back-home-98"
+
+[dialogue.back-home-98]
+character = "grandma"
+text = "但被教會發現她的身份,逃到了這裡將你託付於我。"
 next = "back-home-28"
 
 [dialogue.back-home-28]
@@ -1013,15 +1034,27 @@ text = "你仔細的搜查著這個離你最近卻最陌生的空間"
 next = "search-basement-2"
 
 [dialogue.search-basement-2]
-text = "你找到了一根精緻的象牙指揮棒，長約23公分，通體潔白，表面光滑如絲，帶有自然的光澤。指揮棒的中央部分由純金精心鑲嵌，金色的紋路在白色的象牙上形成鮮明的對比，顯得格外奪目。"
+text = "你找到了一根精緻的象牙指揮棒，長約23公分，通體潔白，表面光滑如絲，帶有自然的光澤。"
+next = "search-basement-93"
+
+[dialogue.search-basement-93]
+text = "指揮棒的中央部分由純金精心鑲嵌，金色的紋路在白色的象牙上形成鮮明的對比，顯得格外奪目。"
 next = "search-basement-3"
 
 [dialogue.search-basement-3]
-text = "這些金色的紋路構成了優雅的花卉圖案，每一朵花都栩栩如生，彷彿在象牙的表面綻放。花朵的細節雕刻極為精細，花瓣的紋理清晰可見，彷彿能感受到每一片花瓣的柔軟與細膩。"
+text = "這些金色的紋路構成了優雅的花卉圖案，每一朵花都栩栩如生，彷彿在象牙的表面綻放。"
+next = "search-basement-94"
+
+[dialogue.search-basement-94]
+text = "花朵的細節雕刻極為精細，花瓣的紋理清晰可見，彷彿能感受到每一片花瓣的柔軟與細膩。"
 next = "search-basement-4"
 
 [dialogue.search-basement-4]
-text = "指揮棒的握柄部分稍微加粗，讓使用者握持更為舒適。握柄處同樣雕刻著金色的花紋，與中央的花卉圖案相呼應，整體設計和諧統一。指揮棒的末端微微收尖，形成一個完美的錐形，增加了指揮動作的靈活性和精確性。"
+text = "指揮棒的握柄部分稍微加粗，讓使用者握持更為舒適。握柄處同樣雕刻著金色的花紋，與中央的花卉圖案相呼應，整體設計和諧統一。"
+next = "search-basement-95"
+
+[dialogue.search-basement-95]
+text = "指揮棒的末端微微收尖，形成一個完美的錐形，增加了指揮動作的靈活性和精確性。"
 next = "search-basement-5"
 
 [dialogue.search-basement-5]
@@ -1295,16 +1328,20 @@ text = "我受夠了"
 next = "meet-lagoud-14"
 
 [dialogue.meet-lagoud-14]
-text = "你起身想要離開,但一股無形的力量伴隨著淡淡的鐵鏽味將你壓回了天鵝絨沙發,即使沙發這樣的軟,突如其來的重壓依舊令你受了一點傷"
+text = "你起身想要離開,但一股無形的力量伴隨著淡淡的鐵鏽味將你壓回了天鵝絨沙發。"
 update = [
     "lulu-hp-minus-5",
 ]
-next = "meet-lagoud-15"
+next = "meet-lagoud-95"
 
 [update.lulu-hp-minus-5]
 character = "lulu"
 status = "hp"
 change = -5
+
+[dialogue.meet-lagoud-95]
+text = "即使沙發這樣的軟,突如其來的重壓依舊令你受了一點傷"
+next = "meet-lagoud-15"
 
 [dialogue.meet-lagoud-15]
 text = "第一次目睹超凡的力量讓你神智渙散,懷疑著這是否是現實,一切是不是一場夢?"
@@ -1362,13 +1399,19 @@ next = "meet-lagoud-25"
 
 [dialogue.meet-lagoud-25]
 character = "lagoud"
-text = "從那之後,這裡的主人就好像換了一樣,力量的氣息很不一樣,以往每次聖靈祭都是載歌載舞,但自那之後...該怎麼說,最簡單直接的就是'瘋狂'吧"
+text = "從那之後,這裡的主人就好像換了一樣,力量的氣息很不一樣。"
+next = "meet-lagoud-96"
 
-[[dialogue.meet-lagoud-25.option]]
+[dialogue.meet-lagoud-96]
+character = "lagoud"
+text = "以往每次聖靈祭都是載歌載舞,但自那之後...該怎麼說,最簡單直接的就是'瘋狂'吧!"
+
+
+[[dialogue.meet-lagoud-96.option]]
 text = "你就沒想著去看看嗎?"
 next = "meet-lagoud-26"
 
-[[dialogue.meet-lagoud-25.option]]
+[[dialogue.meet-lagoud-96.option]]
 text = "你到底想說什麼?"
 next = "what-to-say"
 
@@ -1437,7 +1480,12 @@ next = "witch-power-1"
 
 [dialogue.witch-power-1]
 character = "lagoud"
-text = "有一說一,魔女大部分都是好人啦,但就是有些極端個例,像34年前的'血月'。那位只因為失戀就把整個城屠了,而且每個魔女都有這樣的潛力,你說誰不怕?"
+text = "有一說一,魔女大部分都是好人啦,但就是有些極端個例,像34年前的'血月'。"
+next = "witch-power-92"
+
+[dialogue.witch-power-92]
+character = "lagoud"
+text = "那位只因為失戀就把整個城屠了,而且每個魔女都有這樣的潛力,你說誰不怕?"
 next = "witch-power-2"
 
 [dialogue.witch-power-2]
@@ -1519,70 +1567,6 @@ event = "chapter3"
 scene = "lagoud-house"
 dialogue = "chapter3-1"
 
-# 貝爾維特
-
-# 剛才教會的人來了,他們不由分說就拿一堆法術亂丟,還有騎士想直接進屋
-# 貝爾維特
-
-# 婆婆要我撐十秒,我死命抵擋著不讓他們進來,接下來眼前一白,那些入侵者直接被轟飛了,我身上會這樣主要是那個衝擊的餘波
-# 拉古德
-
-# 這...看來你們是回不去那邊了
-# 露露  normal
-
-# ...
-# 你還是開不了口,劇烈的耳鳴與噁心感不斷衝擊著你的感官
-# 拉古德
-
-# 行吧,我家很大,你們就住下吧!那麼離所當然的,你們要為我探聽我想知道的,沒錯吧?
-# 點頭
-# 點頭
-# 點頭
-# 拉古德的雙眼泛紅,你感到頭顱被上下搖動,當然,非自願的
-# 拉古德
-
-# 太好了(鼓掌鼓掌)
-# 貝爾維特
-
-# 你對露露做了什麼!!(拔劍)
-# 制止他
-# 不管他
-# 演奏
-# 那你要演奏什麼呢?
-# San-5
-# 和諧
-# 不諧
-# 你的音樂使大家都冷靜了下來
-# 刺耳的聲音使所有人看向你
-# 露露  angry
-
-# 夠了!  夠了....讓阿嬤休息
-# 拉古德
-
-# 喔吼吼,放下你的小玩具
-# 拉古德雙眼再次泛紅,血腥味極劇加重,但貝爾維特絲毫不受影響
-# 露露  angry
-
-# (抓住貝爾維特)
-# 拉古德
-
-# 嘿,我剛剛才把你救到安全的地方耶,冷靜點麻~
-# 貝爾維特啞然,不用讀心術也看得出他在想什麼,"這家夥TM有病吧?"
-# 拉古德
-
-# 好~吧,雖然有些意料外的變故,但我的要求你們還是要做到的,不然我就把你們踢出去喔~?
-# 聖靈夜就是今晚,大家好好休息喔~別讓我失望☺
-# 說完他便化作黑霧消失了
-# 貝爾維特
-
-# 露露你還好嗎?那個神經病是誰?有傷害你嗎?
-# 拉古德
-
-# (遠方)我聽得到~~
-# 交代一堆事情後
-# 貝爾維特
-
-# ...流浪漢,聖靈祭,大湖之主,魔女....一下子問題也太多了吧喂!這裡是圖書館,應該會有一些資料吧?來找找吧!
 [dialogue.chapter3-1]
 character = "belwett"
 text = "剛才教會的人來了,他們不由分說就拿一堆法術亂丟,還有騎士想直接進屋"

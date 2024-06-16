@@ -20,3 +20,4 @@
 
 # Ignore markdownlint
 .markdownlint.json
+cp2-project/example-game/save3.json
