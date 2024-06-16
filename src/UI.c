@@ -860,8 +860,15 @@ void GamePlaying(AppContext* ctx) {
                     }
                 }
                 else {
-                    // Continue dialogue
-                    update = true;
+                    // Continue dialogue if not end
+                    if (g_display.end_flag) {
+                        quit = true;
+                        GamePlayingFlag = false;
+                        break;
+                    }
+                    else {
+                        update = true;
+                    }
                 }
             }
         }
