@@ -80,7 +80,6 @@ sad = "assets/character/lulu/tachie/sad.png"
 angry = "assets/character/lulu/tachie/angry.png"
 yikes = "assets/character/lulu/tachie/yikes.png"
 firstlook = "assets/character/lulu/tachie/firstlook.png"
-normal = "assets/character/lulu/tachie/normal.png"
 nothing = "assets/character/lulu/tachie/nothing.png"
 smiling = "assets/character/lulu/tachie/smiling.png"
 
@@ -92,6 +91,8 @@ harmony = 0
 unharmony = 0
 humanity = 0
 death = 0
+count1 = 0
+count2 = 0
 
 [character.belwett]
 name = "貝爾維特"
@@ -486,7 +487,6 @@ next = "walking-on-street-15"
 
 [dialogue.walking-on-street-15]
 character = "lulu"
-tachie = "normal"
 text = "沒事,阿姨,我只是在想事情而已,謝謝阿姨的禮物,我先回家啦!"
 next = "walking-on-street-16"
 
@@ -699,19 +699,19 @@ event = "search-basement"
 
 [condition.lulu-status-count1-2]
 character = "lulu"
-status = "count2"
+status = "count1"
 value = 2
 logic = "EQ"
 
 [condition.lulu-item-purple-flower]
 character = "lulu"
 item = "purple-flower"
-logic = "EQ"
+logic = "NE"
 
 [condition.lulu-item-baton]
 character = "lulu"
 item = "baton"
-logic = "EQ"
+logic = "NE"
 
 #去森林========================================================================================================
 [event.go-to-forest]
@@ -891,7 +891,6 @@ change = 1
 
 [dialogue.go-to-forest-28]
 character = "lulu"
-tachie = "normal"
 text = "恩?"
 next = "go-to-forest-29"
 
@@ -973,7 +972,6 @@ next = "go-to-forest-43"
 
 [dialogue.go-to-forest-41]
 character = "lulu"
-tachie = "normal"
 text = "那是哪個國家的?"
 next = "go-to-forest-42"
 
