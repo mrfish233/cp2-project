@@ -361,6 +361,27 @@ int32_t isValidScript(Script *script) {
                         valid = 0;
                     }
 
+                    int32_t flag = 0;
+
+                    Character *chr = getCharacter(script, condition->character);
+
+                    if (chr == NULL) {
+                        printf("Dialogue '%s' option '%s' condition character '%s' not found\n", dialogue->id, option->text, condition->character);
+                        valid = 0;
+                    }
+
+                    for (int32_t k = 0; k < chr->status_size; k++) {
+                        if (strcmp(chr->status[k].status_name, condition->condition) == 0) {
+                            flag = 1;
+                            break;
+                        }
+                    }
+
+                    if (flag == 0) {
+                        printf("Dialogue '%s' option '%s' condition status '%s' not found in character '%s'\n", dialogue->id, option->text, condition->condition, condition->character);
+                        valid = 0;
+                    }
+
                     if (condition->logic == LOGIC_NONE) {
                         printf("Dialogue '%s' option '%s' condition status logic must exist\n", dialogue->id, option->text);
                         valid = 0;
