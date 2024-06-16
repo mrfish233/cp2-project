@@ -77,7 +77,7 @@ void onClickMainMenu(AppContext* ctx) {
 void Settings(AppContext* ctx) {
     Button buttons[3] = {0};
 
-    char buttonTexts[3][STR_SIZE] = {"Resume", "Save", "Main Menu"};
+    char buttonTexts[3][STR_SIZE] = {"Resume", "Save / Load", "Main Menu"};
     void (*buttonCallbacks[3])(AppContext*) = {onClickResume, onClickSave, onClickMainMenu};
 
     for (int i = 0; i < 3; i++) {
@@ -245,8 +245,6 @@ void Credit() {
     printf("Displaying credits...\n");
     CreditFlag = false; // 退出製作群狀態
 }
-
-Button settingButton = {0};
 
 void onClickSave(AppContext* ctx) {
     printf("Button 'Save' clicked\n");
@@ -513,9 +511,12 @@ void GamePlaying(AppContext* ctx) {
     setRenderAreaContent(ctx, AREA_STATUS, "resources/images/black.png",      NULL, 0, NULL, NULL, NULL, 0, NULL, NULL);
 
     // 區域1: 設置背景和按鈕
-    settingButton.rect = (SDL_Rect) {10, 10, 100, 50};
-    settingButton.onClick = onClickSetting;
-    strncpy(settingButton.text, "Setting", STR_SIZE);
+    Button settingButton = {
+        .rect    = {10, 10, 120, 50},
+        .onClick = onClickSetting
+    };
+
+    strncpy(settingButton.text, "Settings", STR_SIZE);
 
     createButton(ctx, &settingButton);
 
