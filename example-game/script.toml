@@ -71,6 +71,7 @@ start_event = "walking-on-street"
 
 [character.lulu]
 name = "露露"
+voice = "assets/character/lulu/voice.mp3"
 inventory = []
 
 [character.lulu.tachie]
@@ -96,6 +97,7 @@ count2 = 0
 
 [character.belwett]
 name = "貝爾維特"
+voice = "assets/character/belwett/voice.mp3"
 inventory = []
 
 [character.belwett.tachie]
@@ -110,6 +112,7 @@ humanity = 0
 
 [character.alfred]
 name = "阿爾弗雷德"
+voice = "assets/character/alfred/voice.mp3"
 inventory = []
 
 [character.alfred.tachie]
@@ -124,6 +127,7 @@ humanity = 0
 
 [character.auntie]
 name = "阿姨"
+voice = "assets/character/auntie/voice.mp3"
 inventory = [
     "cabbage",
     "apple"
@@ -141,6 +145,7 @@ humanity = 0
 
 [character.lagoud]
 name = "拉古德"
+voice = "assets/character/lagoud/voice.mp3"
 inventory = []
 
 [character.lagoud.tachie]
@@ -155,6 +160,7 @@ humanity = 0
 
 [character.grandma]
 name = "阿嬤"
+voice = "assets/character/grandma/voice.mp3"
 inventory = []
 
 [character.grandma.tachie]
