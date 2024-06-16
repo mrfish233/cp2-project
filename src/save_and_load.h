@@ -62,6 +62,7 @@ int32_t loadJSONData(cJSON **root, char *dir, SaveSlot slot);
  * Add the script data to a JSON object.
  * @param root: the JSON object
  * @param script: the script
+ * @param slot: the save slot
  * @return 0 if success, 1 otherwise
  */
-int32_t addDataToJSON(cJSON **root, Script *script);
+int32_t addDataToJSON(cJSON **root, Script *script, SaveSlot slot);

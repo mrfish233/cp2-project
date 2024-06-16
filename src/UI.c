@@ -8,7 +8,6 @@ static bool CreditFlag      = false;
 
 static bool fromMainMenuFlag = false;
 static bool fromSettingFlag  = false;
-static bool continueFlag     = false;
 
 static const SDL_Color g_white = {255, 255, 255, 255};
 static const SDL_Color g_black = {0, 0, 0, 255};
@@ -64,7 +63,8 @@ void onClickResume(AppContext* ctx) {
     printf("Button 'Resume' clicked\n");
     LoadFlag = false;  // 取消 Load 狀態
     GamePlayingFlag = true; // 設置 GamePlaying 狀態
-    continueFlag = true; // 標記從 Load 界面進入 GamePlaying 狀態
+
+    g_display.continue_flag = 1;
 }
 
 void onClickMainMenu(AppContext* ctx) {
@@ -417,6 +417,8 @@ void Load(AppContext* ctx) {
                                 break;
                             }
 
+                            g_display.continue_flag = 1;
+
                             LoadFlag = false;
                             GamePlayingFlag = true;
                             quit = true;
@@ -590,17 +592,12 @@ void GamePlaying(AppContext* ctx) {
 
     while (!quit) {
         if (update) {
-            // Do not update the dialogue if continueFlag is true
-            if (!continueFlag) {
-                if (updateScriptData(&g_script, &g_display)) {
-                    printf("Failed to update dialogue\n");
-                    quit = true;
-                    EndFlag = true;
-                    break;
-                }
+            if (updateScriptData(&g_script, &g_display)) {
+                printf("Failed to update dialogue\n");
+                quit = true;
+                EndFlag = true;
+                break;
             }
-
-            continueFlag = false;
 
             // Check if the event has been changed, if so, save the script
 

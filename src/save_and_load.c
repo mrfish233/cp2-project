@@ -75,7 +75,7 @@ int32_t saveScript(Script *script, SaveSlot slot) {
         return 1;
     }
 
-    if (addDataToJSON(&root, script) != 0) {
+    if (addDataToJSON(&root, script, slot) != 0) {
         cJSON_Delete(root);
         return 1;
     }
@@ -130,7 +130,15 @@ int32_t loadScript(Script *script, SaveSlot slot) {
     }
 
     strncpy(script->current_event_id, event->valuestring, STR_SIZE);
-    memset(script->current_dialogue_id, 0, STR_SIZE);
+
+    cJSON *dialogue = cJSON_GetObjectItem(root, "dialogue");
+
+    if (dialogue == NULL) {
+        memset(script->current_dialogue_id, 0, STR_SIZE);
+    }
+    else {
+        strncpy(script->current_dialogue_id, dialogue->valuestring, STR_SIZE);
+    }
 
     cJSON *characters = cJSON_GetObjectItem(root, "characters");
 
@@ -297,7 +305,7 @@ int32_t loadJSONData(cJSON **root, char *dir, SaveSlot slot) {
     return 0;
 }
 
-int32_t addDataToJSON(cJSON **root, Script *script) {
+int32_t addDataToJSON(cJSON **root, Script *script, SaveSlot slot) {
     if (script == NULL || *root == NULL) {
         return 1;
     }
@@ -322,6 +330,14 @@ int32_t addDataToJSON(cJSON **root, Script *script) {
 
     if (cJSON_AddStringToObject(*root, "event", script->current_event_id) == NULL) {
         return 1;
+    }
+
+    // Dialogue
+
+    if (slot != SAVE_SLOT_AUTO) {
+        if (cJSON_AddStringToObject(*root, "dialogue", script->current_dialogue_id) == NULL) {
+            return 1;
+        }
     }
 
     // Characters

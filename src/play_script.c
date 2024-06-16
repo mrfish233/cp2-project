@@ -83,6 +83,8 @@ int32_t initDisplay(Display *display) {
     display->character[0] = '\0';
     display->dialogue[0]  = '\0';
 
+    display->continue_flag = 0;
+
     display->inventory_size = 0;
     display->inventory_page = 1;
 
@@ -269,59 +271,103 @@ int32_t updateDialogue(Script *script, Display *display) {
         return 1;
     }
 
-    // If the dialogue is empty, get from the event
-    // Else, check the next dialogue
+    event = getEvent(script, script->current_event_id);
 
-    if (strlen(script->current_dialogue_id) == 0) {
-        event = getEvent(script, script->current_event_id);
+    if (event == NULL) {
+        printf("error: event '%s' not found\n", script->current_event_id);
+        return 1;
+    }
 
-        if (event == NULL) {
-            printf("error: event '%s' not found\n", script->current_event_id);
-            return 1;
-        }
+    snprintf(display->path_bgm, STR_SIZE * 2, "%s/%s", script->dir, event->bgm);
 
-        snprintf(display->path_bgm, STR_SIZE * 2, "%s/%s", script->dir, event->bgm);
+    // Get the background
 
-        // Get the scene and background
+    scene = getScene(script, event->scene);
 
-        scene = getScene(script, event->scene);
+    if (scene == NULL) {
+        printf("error: scene '%s' not found\n", event->scene);
+        return 1;
+    }
 
-        if (scene == NULL) {
-            printf("error: scene '%s' not found\n", event->scene);
-            return 1;
-        }
+    snprintf(display->path_background, STR_SIZE * 2, "%s/%s", script->dir, scene->background);
 
-        snprintf(display->path_background, STR_SIZE * 2, "%s/%s", script->dir, scene->background);
+    // Get the dialogue
 
-        // Get the dialogue
+    size_t len = strlen(script->current_dialogue_id);
 
-        dialogue = getDialogue(script, event->dialogue);
-
-        if (dialogue == NULL) {
-            printf("error: dialogue '%s' not found\n", event->dialogue);
-            return 1;
-        }
-
-        if (dialogue->next_type == DIALOGUE_END) {
-            strncpy(display->end_path, dialogue->next, STR_SIZE);
-            display->end_flag = 1;
-        }
+    if (len) {
+        dialogue = getDialogue(script, script->current_dialogue_id);
     }
     else {
-        dialogue = getDialogue(script, script->current_dialogue_id);
+        dialogue = getDialogue(script, event->dialogue);
+        display->continue_flag = 1;
+    }
 
-        if (dialogue == NULL) {
-            printf("error: dialogue '%s' not found\n", script->current_dialogue_id);
+    if (dialogue == NULL) {
+        printf("error: dialogue '%s' not found\n", (len) ? script->current_dialogue_id : event->dialogue);
+        return 1;
+    }
+
+    if (strlen(dialogue->sfx) > 0) {
+        snprintf(display->path_sfx, STR_SIZE * 2, "%s/%s", script->dir, dialogue->sfx);
+    }
+    else {
+        display->path_sfx[0] = '\0';
+    }
+
+    if (dialogue->next_type == DIALOGUE_END) {
+        strncpy(display->end_path, dialogue->next, STR_SIZE);
+        display->end_flag = 1;
+    }
+
+    if (display->continue_flag) {
+        display->continue_flag = 0;
+    }
+    else if (dialogue->next_type == DIALOGUE_EVENT) {
+        event = getEvent(script, dialogue->next);
+
+        if (event == NULL) {
+            printf("error: event '%s' not found\n", dialogue->next);
             return 1;
         }
 
-        snprintf(display->path_sfx, STR_SIZE * 2, "%s/%s", script->dir, dialogue->sfx);
+        strncpy(script->current_event_id, event->id, STR_SIZE);
+        script->current_dialogue_id[0] = '\0';
 
-        if (dialogue->next_type == DIALOGUE_EVENT) {
-            event = getEvent(script, dialogue->next);
+        return updateDialogue(script, display);
+    }
+    else if ((dialogue->next_type == DIALOGUE_OPTION && display->option_select == 0) ||
+                (dialogue->next_type == DIALOGUE_NORMAL)) {
+        Dialogue *next = getDialogue(script, dialogue->next);
+
+        if (next == NULL) {
+            printf("error: dialogue '%s' not found\n", dialogue->next);
+            return 1;
+        }
+
+        dialogue = next;
+    }
+    else if (dialogue->next_type == DIALOGUE_OPTION) {
+        if (display->option_select <= 0 || display->option_select > display->option_size) {
+            printf("error: invalid option\n");
+            return 1;
+        }
+
+        int32_t opt = display->option_select - 1;
+        display->option_select = 0;
+
+        Option *option = getDialogueOption(script, dialogue, display->options[opt]);
+
+        if (option == NULL) {
+            printf("error: option '%s' not found\n", display->options[opt]);
+            return 1;
+        }
+
+        if (option->next_type == DIALOGUE_EVENT) {
+            event = getEvent(script, option->next);
 
             if (event == NULL) {
-                printf("error: event '%s' not found\n", dialogue->next);
+                printf("error: event '%s' not found\n", option->next);
                 return 1;
             }
 
@@ -330,69 +376,24 @@ int32_t updateDialogue(Script *script, Display *display) {
 
             return updateDialogue(script, display);
         }
-        else if (dialogue->next_type == DIALOGUE_END) {
-            strncpy(display->end_path, dialogue->next, STR_SIZE);
-            display->end_flag = 1;
-        }
-        else if ((dialogue->next_type == DIALOGUE_OPTION && display->option_select == 0) ||
-                 (dialogue->next_type == DIALOGUE_NORMAL)) {
-            Dialogue *next = getDialogue(script, dialogue->next);
+        else if (option->next_type == DIALOGUE_NORMAL) {
+            Dialogue *next = getDialogue(script, option->next);
 
             if (next == NULL) {
-                printf("error: dialogue '%s' not found\n", dialogue->next);
+                printf("error: dialogue '%s' not found\n", option->next);
                 return 1;
             }
 
             dialogue = next;
         }
-        else if (dialogue->next_type == DIALOGUE_OPTION) {
-            if (display->option_select <= 0 || display->option_select > display->option_size) {
-                printf("error: invalid option\n");
-                return 1;
-            }
-
-            int32_t opt = display->option_select - 1;
-            display->option_select = 0;
-
-            Option *option = getDialogueOption(script, dialogue, display->options[opt]);
-
-            if (option == NULL) {
-                printf("error: option '%s' not found\n", display->options[opt]);
-                return 1;
-            }
-
-            if (option->next_type == DIALOGUE_EVENT) {
-                event = getEvent(script, option->next);
-
-                if (event == NULL) {
-                    printf("error: event '%s' not found\n", option->next);
-                    return 1;
-                }
-
-                strncpy(script->current_event_id, event->id, STR_SIZE);
-                script->current_dialogue_id[0] = '\0';
-
-                return updateDialogue(script, display);
-            }
-            else if (option->next_type == DIALOGUE_NORMAL) {
-                Dialogue *next = getDialogue(script, option->next);
-
-                if (next == NULL) {
-                    printf("error: dialogue '%s' not found\n", option->next);
-                    return 1;
-                }
-
-                dialogue = next;
-            }
-            else {
-                printf("error: invalid dialogue '%s'\n", option->next);
-                return 1;
-            }
-        }
         else {
-            printf("error: invalid dialogue '%s'\n", dialogue->text);
+            printf("error: invalid dialogue '%s'\n", option->next);
             return 1;
         }
+    }
+    else {
+        printf("error: invalid dialogue '%s'\n", dialogue->text);
+        return 1;
     }
 
     strncpy(script->current_dialogue_id, dialogue->id, STR_SIZE);

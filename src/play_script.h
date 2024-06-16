@@ -20,6 +20,8 @@ typedef struct Display {
     char character[STR_SIZE];
     char dialogue[STR_SIZE];
 
+    int32_t continue_flag;
+
     char    inventory[5][STR_SIZE];
     int32_t inventory_size;
     int32_t inventory_page;
