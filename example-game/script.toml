@@ -109,6 +109,20 @@ coin = 20
 like = 50
 humanity = 0
 
+[character.lagoud]
+name = "拉古德"
+inventory = []
+
+[character.lagoud.tachie]
+default = "assets/character/lagoud/tachie/default.png"
+
+[character.lagoud.status]
+hp = 10
+san = 40
+coin = 20
+like = 50
+humanity = 0
+
 [character.auntie]
 name = "阿姨"
 inventory = [
@@ -125,6 +139,20 @@ san = 40
 coin = 20
 like = 50
 humanity = 0
+
+[character.grandma]
+name = "阿嬤"
+inventory = []
+
+[character.grandma.tachie]
+default = "assets/character/grandma/tachie/default.png"
+
+[character.grandma.status]
+hp = 10
+san = 40
+coin = 20
+like = 50
+humanity = -50
 
 # 物品 item
 
@@ -177,6 +205,10 @@ name = "街道"
 # background = "asset/scene/street.bmp"
 background = "assets/background/street.png"
 
+[scene.lulu-house]
+name = "露露家"
+background = "assets/background/lulu-house.png"
+
 # 條件式結局 trigger
 
 [trigger.madness]
@@ -184,20 +216,20 @@ character = "lulu"
 status = "san"
 value = 0
 logic = "LE"
-event = "everyone-dead"
+event = "madness"
 
-[trigger.become-angel]
-character = "lulu"
-status = "humanity"
-value = 50
-logic = "GE"
-event = "angel"
+# [trigger.become-angel]
+# character = "lulu"
+# status = "humanity"
+# value = 50
+# logic = "GE"
+# event = "angel"
 
-[trigger.have-blood]
-character = "lulu"
-item = "blood"
-logic = "EQ"
-event = "everyone-dead"
+# [trigger.have-blood]
+# character = "lulu"
+# item = "blood"
+# logic = "EQ"
+# event = "everyone-dead"
 
 # 事件 ending
 
@@ -206,11 +238,16 @@ scene = "street"
 dialogue = "madness-1"
 
 [dialogue.madness-1]
+text = "所有人都死了，你的心靈崩潰了，你的精神崩潰了，你的靈魂崩潰了，你的身體崩潰了，你的一切都崩潰了。"
+next = "madness-2"
 
+[dialogue.madness-2]
+text = "你的眼前只剩下黑暗，你的耳邊只剩下嘶嘶的聲音，你的心裡只剩下恐懼。"
+next = "madness-3"
 
-
-
-
+[dialogue.madness-3]
+text = "你的靈魂被黑暗吞噬，你的身體被黑暗吞噬，你的一切都被黑暗吞噬。"
+end = ""
 
 ## 事件：走在街道上
 
@@ -343,7 +380,7 @@ next = "weird-glimpse-escape-2"
 
 [dialogue.weird-glimpse-escape-2]
 text = "你跑的很快,但是,你感覺到他的氣息越來越近,你感覺自己的胸口正在向外噴灑著什麼,一隻巨爪穿過你的胸口"
-event = "end1"
+end = ""
 
 #死亡數加1
 [update.lulu-death-plus-1]
@@ -630,13 +667,14 @@ next = "back-home-30"
 [dialogue.back-home-30]
 character = "grandma"
 text = "哈哈,太多東西了嗎?沒關係,慢慢會懂的,去森林幫我採點藥草吧,明天是你的生日,阿嬤要做好東西給你"
-next = "back-home-31"
+# next = "back-home-31"
+end = ""
 
-[dialogue.back-home-31]
-text = "下一步,該怎麼作?"
+# [dialogue.back-home-31]
+# text = "下一步,該怎麼作?"
 
-[[dialogue.back-home-31.option]]
-condition = "lulu-item-baton"
+# [[dialogue.back-home-31.option]]
+# condition = "lulu-item-baton"
 
 
 # 沒有拉古德的同行就開啟圖書館
