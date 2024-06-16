@@ -346,7 +346,7 @@ int32_t updateDialogue(Script *script, Display *display) {
 
         dialogue = next;
     }
-    else if (dialogue->next_type == DIALOGUE_OPTION) {
+    else if (dialogue->next_type == DIALOGUE_OPTION && display->option_select > 0) {
         if (display->option_select <= 0 || display->option_select > display->option_size) {
             printf("error: invalid option\n");
             return 1;
@@ -432,6 +432,10 @@ int32_t updateDialogue(Script *script, Display *display) {
 
     // Find options if any
 
+    display->option_flag   = 0;
+    display->option_size   = 0;
+    display->option_select = 0;
+
     if (dialogue->option_size > 0) {
         display->option_flag = 1;
 
@@ -460,11 +464,11 @@ int32_t updateDialogue(Script *script, Display *display) {
             strncpy(display->options[display->option_size], dialogue->options[i].text, STR_SIZE);
             display->options_selectable[display->option_size] = met;
             display->option_size++;
+
+            if (display->option_size >= 5) {
+                break;
+            }
         }
-    }
-    else {
-        display->option_flag = 0;
-        display->option_size = 0;
     }
 
     // Find updates if any
