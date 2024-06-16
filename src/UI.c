@@ -6,12 +6,25 @@ static bool GamePlayingFlag = false;
 static bool LoadFlag        = false;
 static bool CreditFlag      = false;
 
+<<<<<<< Updated upstream
 static bool fromMainMenuFlag = false;
 static bool fromSettingFlag  = false;
 
 static const SDL_Color g_white = {255, 255, 255, 255};
 static const SDL_Color g_black = {0, 0, 0, 255};
 static const SDL_Color g_grey  = {128, 128, 128, 255};
+=======
+// 全域flag
+bool newGameFlag = false;
+bool EndFlag = false;
+bool GamePlayingFlag = false;
+bool LoadFlag = false;
+bool CreditFlag = false;
+bool fromMainMenuFlag = false;
+bool fromSettingFlag = false;
+SDL_Color white = {255, 255, 255, 255}; // 定義全域變數
+SDL_Color black = {0, 0, 0, 255};
+>>>>>>> Stashed changes
 
 static Script  g_script  = {0};
 static Display g_display = {0};
@@ -64,6 +77,7 @@ void onClickResume(AppContext* ctx) {
     LoadFlag = false;  // 取消 Load 狀態
     GamePlayingFlag = true; // 設置 GamePlaying 狀態
 
+<<<<<<< Updated upstream
     if (initDisplay(&g_display) != 0) {
         printf("Failed to reset display\n");
         EndFlag = true;
@@ -71,6 +85,8 @@ void onClickResume(AppContext* ctx) {
 
     g_display.continue_flag = 1;
 }
+=======
+>>>>>>> Stashed changes
 
 void onClickMainMenu(AppContext* ctx) {
     printf("Button 'Main Menu' clicked\n");
@@ -148,12 +164,19 @@ void initMenuButtons(AppContext* ctx, Button* buttons) {
         buttons[i].onClick = NULL;
         strncpy(buttons[i].text, buttonTexts[i], STR_SIZE);
 
+<<<<<<< Updated upstream
         createButton(ctx, &buttons[i]);
     }
 }
 
 void renderTitle(AppContext* ctx) {
     TTF_Font *title_font = TTF_OpenFont("resources/font/Noto_Sans_TC/static/NotoSansTC-Black.ttf", 96);
+=======
+void onClickCredit(AppContext* ctx) {
+    printf("Button 'Credit' clicked\n");
+    CreditFlag = true;
+}
+>>>>>>> Stashed changes
 
     SDL_Surface* title_surface = TTF_RenderUTF8_Blended(title_font, g_script.name, g_white);
     SDL_Texture* title_texture = SDL_CreateTextureFromSurface(ctx->renderer, title_surface);
@@ -243,10 +266,37 @@ void MainMenu(AppContext* ctx) {
     }
 }
 
+<<<<<<< Updated upstream
 void BackToMainMenu(AppContext* ctx) {
     printf("Button 'Back' clicked\n");
     LoadFlag = false;  // 返回主菜單，將LoadFlag設置為false
 }
+=======
+void onClickItemNextPage(AppContext* ctx) {
+    printf("Button 'Item Next Page' clicked\n");
+    // Implement item next page logic
+}
+
+void onClickItemPreviousPage(AppContext* ctx) {
+    printf("Button 'Item Previous Page' clicked\n");
+    // Implement item previous page logic
+}
+
+void onClickStatusNextPage(AppContext* ctx) {
+    printf("Button 'Status Next Page' clicked\n");
+    // Implement status next page logic
+}
+
+void onClickStatusPreviousPage(AppContext* ctx) {
+    printf("Button 'Status Previous Page' clicked\n");
+    // Implement status previous page logic
+}
+
+
+
+
+
+>>>>>>> Stashed changes
 
 void End() {
     // 結束遊戲的代碼
@@ -281,6 +331,7 @@ void BackToPreviousMenu(AppContext* ctx) {
     }
 }
 
+<<<<<<< Updated upstream
 void Load(AppContext* ctx) {
     // 創建四個渲染區域，每個區域高度為視窗高度的四分之一
     int section_height = ctx->window_height / 4;
@@ -455,6 +506,8 @@ void Load(AppContext* ctx) {
         SDL_RenderPresent(ctx->renderer);
     }
 }
+=======
+>>>>>>> Stashed changes
 
 void renderMessages(AppContext* ctx, char** messages, int messageCount) {
     if (messageCount == 0) {
@@ -901,3 +954,117 @@ void GamePlaying(AppContext* ctx) {
         SDL_DestroyTexture(statusTextures[i]);
     }
 }
+<<<<<<< Updated upstream
+=======
+
+void onClickLoad(AppContext* ctx) {
+    printf("Button 'Load' clicked\n");
+    LoadFlag = true;  // 設置 Load 狀態
+    fromMainMenuFlag = true; // 標記從主菜單進入 Load 界面
+}
+
+void onClickSave(AppContext* ctx) {
+    printf("Button 'Save' clicked\n");
+    LoadFlag = true;  // 設置 Load 狀態
+    GamePlayingFlag = false; // 取消 GamePlaying 狀態
+    fromSettingFlag = true; // 標記從設定進入 Load 界面
+}
+
+void BackToPreviousMenu(AppContext* ctx) {
+    printf("Button 'Back' clicked\n");
+    LoadFlag = false; // 取消 Load 狀態
+    if (fromSettingFlag) {
+        fromSettingFlag = false; // 重置標誌
+        Settings(ctx); // 返回設定界面
+    } else if (fromMainMenuFlag) {
+        fromMainMenuFlag = false; // 重置標誌
+        MainMenu(ctx); // 返回主菜單界面
+    } else {
+        GamePlayingFlag = true; // 返回 GamePlaying 狀態
+    }
+}
+
+void Load(AppContext* ctx) {
+    // 創建返回按鈕，回調函數設置為 BackToPreviousMenu
+    Button backButton;
+    createButton(ctx, &backButton, ctx->window_width - 110, 10, 100, 50, "Back", BackToPreviousMenu);
+
+    // 創建四個渲染區域，每個區域高度為視窗高度的四分之一
+    int section_height = ctx->window_height / 4;
+    createRenderArea(ctx, 0, 0, ctx->window_width, section_height); // 第一部分
+    createRenderArea(ctx, 0, section_height, ctx->window_width, section_height); // 第二部分
+    createRenderArea(ctx, 0, 2 * section_height, ctx->window_width, section_height); // 第三部分
+    createRenderArea(ctx, 0, 3 * section_height, ctx->window_width, section_height); // 第四部分
+
+    // 設置按鈕和文本框
+    Button saveButtons[4];
+    Button loadButtons[4];
+    SDL_Rect textRects[4];
+    char* texts[4] = {"進度:", "進度:", "進度:", "進度:"};
+
+    createButton(ctx, &saveButtons[0], 10, section_height / 2 - 25, 100, 50, "Save 1", onClickSaveSlot1);
+    createButton(ctx, &loadButtons[0], 120, section_height / 2 - 25, 100, 50, "Load 1", onClickLoadSlot1);
+    textRects[0] = (SDL_Rect){230, section_height / 2 - 25, 100, 50};
+
+    createButton(ctx, &saveButtons[1], 10, section_height + section_height / 2 - 25, 100, 50, "Save 2", onClickSaveSlot2);
+    createButton(ctx, &loadButtons[1], 120, section_height + section_height / 2 - 25, 100, 50, "Load 2", onClickLoadSlot2);
+    textRects[1] = (SDL_Rect){230, section_height + section_height / 2 - 25, 100, 50};
+
+    createButton(ctx, &saveButtons[2], 10, 2 * section_height + section_height / 2 - 25, 100, 50, "Save 3", onClickSaveSlot3);
+    createButton(ctx, &loadButtons[2], 120, 2 * section_height + section_height / 2 - 25, 100, 50, "Load 3", onClickLoadSlot3);
+    textRects[2] = (SDL_Rect){230, 2 * section_height + section_height / 2 - 25, 100, 50};
+
+    createButton(ctx, &saveButtons[3], 10, 3 * section_height + section_height / 2 - 25, 100, 50, "Auto Save", onClickSaveAuto);
+    createButton(ctx, &loadButtons[3], 120, 3 * section_height + section_height / 2 - 25, 100, 50, "Load Auto", onClickLoadAuto);
+    textRects[3] = (SDL_Rect){230, 3 * section_height + section_height / 2 - 25, 100, 50};
+
+    loadTextures(ctx);
+
+    // 渲染循環
+    bool quit = false;
+    SDL_Event e;
+    while (!quit) {
+        while (SDL_PollEvent(&e) != 0) {
+            if (e.type == SDL_QUIT) {
+                quit = true;
+                EndFlag = true;
+            } else if (e.type == SDL_MOUSEBUTTONDOWN) {  
+                int x = e.button.x;
+                int y = e.button.y;
+                if (isButtonClicked(&backButton, x, y)) {
+                    backButton.onClick(ctx);
+                    quit = true;
+                } else {
+                    for (int i = 0; i < 4; i++) {
+                        if (isButtonClicked(&saveButtons[i], x, y)) {
+                            saveButtons[i].onClick(ctx);
+                        }
+                        if (isButtonClicked(&loadButtons[i], x, y)) {
+                            loadButtons[i].onClick(ctx);
+                        }
+                    }
+                }
+            }
+        }
+
+        SDL_SetRenderDrawColor(ctx->renderer, 0, 0, 0, 255);
+        SDL_RenderClear(ctx->renderer);
+
+        renderAreas(ctx);
+        renderButton(ctx, &backButton);
+        for (int i = 0; i < 4; i++) {
+            renderButton(ctx, &saveButtons[i]);
+            renderButton(ctx, &loadButtons[i]);
+            SDL_Surface* surface = TTF_RenderUTF8_Blended(ctx->font, texts[i], white);
+            SDL_Texture* texture = SDL_CreateTextureFromSurface(ctx->renderer, surface);
+            SDL_RenderCopy(ctx->renderer, texture, NULL, &textRects[i]);
+            SDL_FreeSurface(surface);
+            SDL_DestroyTexture(texture);
+        }
+
+        SDL_RenderPresent(ctx->renderer);
+    }
+}
+
+
+>>>>>>> Stashed changes

@@ -79,7 +79,7 @@ int32_t changeParseTable(Script *script, Table *table, char *buffer) {
 
     for (int32_t i = 1; i < size; i++) {
         if (i == TABLE_ERROR) {
-            printf("error: table error\n");
+            printf("error: table error '%s'\n", buffer);
             return 1;
         }
         else if (i == TABLE_STATUS || i == TABLE_OPTION) {

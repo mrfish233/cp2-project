@@ -1,23 +1,23 @@
 {
-	"datetime":	"2024-06-16 17:14:17",
-	"event":	"back-home",
+	"datetime":	"2024-06-16 20:20:25",
+	"event":	"finale",
 	"characters":	[{
 			"id":	"lulu",
 			"status":	[{
 					"status_name":	"hp",
-					"value":	10
+					"value":	5
 				}, {
 					"status_name":	"san",
-					"value":	40
+					"value":	50
 				}, {
 					"status_name":	"coin",
 					"value":	100
 				}, {
 					"status_name":	"harmony",
-					"value":	0
+					"value":	2
 				}, {
 					"status_name":	"unharmony",
-					"value":	0
+					"value":	3
 				}, {
 					"status_name":	"humanity",
 					"value":	0
@@ -26,12 +26,50 @@
 					"value":	0
 				}, {
 					"status_name":	"count1",
-					"value":	0
+					"value":	2
 				}, {
 					"status_name":	"count2",
+					"value":	2
+				}],
+			"inventory":	["meat", "cabbage", "purple-flower", "baton", "lagoud-reward", "red-rain", "unfulfilled-miss"]
+		}, {
+			"id":	"inok",
+			"status":	[{
+					"status_name":	"hp",
+					"value":	10
+				}, {
+					"status_name":	"san",
+					"value":	40
+				}, {
+					"status_name":	"coin",
+					"value":	20
+				}, {
+					"status_name":	"like",
+					"value":	50
+				}, {
+					"status_name":	"humanity",
 					"value":	0
 				}],
-			"inventory":	["meat", "cabbage"]
+			"inventory":	[]
+		}, {
+			"id":	"lord_of_lake",
+			"status":	[{
+					"status_name":	"hp",
+					"value":	10
+				}, {
+					"status_name":	"san",
+					"value":	40
+				}, {
+					"status_name":	"coin",
+					"value":	20
+				}, {
+					"status_name":	"like",
+					"value":	50
+				}, {
+					"status_name":	"humanity",
+					"value":	0
+				}],
+			"inventory":	[]
 		}, {
 			"id":	"belwett",
 			"status":	[{

@@ -94,6 +94,32 @@ humanity = 0
 death = 0
 count1 = 0
 count2 = 0
+[character.inok]
+name = "伊諾克"
+inventory = []
+[character.inok.tachie]
+default = "assets/character/inok/tachie/default.png"
+[character.inok.status]
+hp = 10
+san = 40
+coin = 20
+like = 50
+humanity = 0
+
+[character.lord_of_lake]
+name = "大湖之主"
+inventory = []
+
+[character.lord_of_lake.tachie]
+default = "assets/character/lord_of_lake/tachie/default.png"
+
+[character.lord_of_lake.status]
+hp = 10
+san = 40
+coin = 20
+like = 50
+humanity = 0
+
 
 [character.belwett]
 name = "貝爾維特"
@@ -175,6 +201,17 @@ humanity = 0
 
 
 # 物品 item
+#血族的同行
+[item.blood-companion]
+name = "血族的同行"
+desc = "血族的同行"
+# icon = "assets/items/blood-vampire.bmp"
+hidden = true
+[item.convinced]
+name = "說服"
+desc = "說服"
+# icon = "assets/items/convinced.bmp"
+hidden = true
 [item.secret-knowledge]
 name = "秘密知識"
 desc = "秘密知識"
@@ -209,6 +246,26 @@ name = "紫露花"
 desc = "紫露花"
 # icon = "assets/items/purple-flower.bmp"
 hidden = false
+
+#未竟的思念
+[item.unfulfilled-miss]
+name = "未竟的思念"
+desc = "未竟的思念"
+# icon = "assets/items/unfinished-thought.bmp"
+hidden = true
+
+[item.red-rain]
+name = "紅雨"
+desc = "紅雨"
+# icon = "assets/items/red-rain.bmp"
+hidden = true
+
+#拉古德的獎勵
+[item.lagoud-reward]
+name = "拉古德的獎勵"
+desc = "拉古德的獎勵"
+# icon = "assets/items/lagoud-reward.bmp"
+hidden = true
 
 # 場景 scene
 
@@ -869,7 +926,7 @@ next = "go-to-forest-24"
 
 [[dialogue.go-to-forest-21.option]]
 text = "說服"
-next = "go-to-forest-5"
+next = "go-to-forest-25"
 
 [dialogue.go-to-forest-22]
 character = "lulu"
@@ -2223,11 +2280,6 @@ next = "celebrate-14"
 text = "你也踢了他一腳,他被兩個人暴力對待後,連怎麼哭都忘記了"
 next = "celebrate-14"
 
-
-# "這都要從50年前說起,我...我們對那時的記憶都很模糊,歷史上說那時是世界大戰,但我們全鎮的人對那時的記憶都..."廚師說道
-# "只有鎮長好像什麼都知道一樣,他擅自更改了傳下來的祭典,要我把那些...人做成料理"
-# "我也沒辦法阿,我全家老小都在他手裡...."接下來都是一些求情的話,似乎問不出更多東西了
-# 在他人喋喋不休時,貝爾維特看向你,用眼神詢問你下一步該怎麼作
 [dialogue.celebrate-14]
 text = "這都要從50年前說起,我...我們對那時的記憶都很模糊。"
 next = "celebrate-15"
@@ -2246,9 +2298,1208 @@ next = "celebrate-18"
 
 [dialogue.celebrate-18]
 text = "在他仍喋喋不休時,貝爾維特看向你,用眼神詢問你下一步該怎麼作"
+next = "celebrate-19"
+
+[dialogue.celebrate-19]
+text = "你們最後問了鎮長的家在哪,爾後放走了廚師,他蹣跚著回到了廚房,不情願的繼續工作"
+event = "decision2"
+
+[event.decision2]
+scene = "street"
+dialogue = "decision2-1"
+
+[dialogue.decision2-1]
+text = "下一步該怎麼做?"
+
+[[dialogue.decision2-1.option]]
+text = "去找鎮長"
+event = "mayor"
+condition = "lulu-status-count2-2"
+
+[[dialogue.decision2-1.option]]
+condition = "lulu-item-lagoud-reward"
+text = "回圖書館"
+event = "library2"
+
+[[dialogue.decision2-1.option]]
+condition = "lulu-item-unfulfilled-miss"
+text = "去聖恩湖"
+event = "lake"
+
+[condition.lulu-status-count2-2]
+character = "lulu"
+status = "count2"
+logic = "GE"
+value = 2
+
+[condition.lulu-item-lagoud-reward]
+character = "lulu"
+item = "lagoud-reward"
+logic = "NE"
+
+[condition.lulu-item-unfulfilled-miss]
+character = "lulu"
+item = "unfulfilled-miss"
+logic = "NE"
+
+[event.library2]
+scene = "lagoud-house"
+dialogue = "library2-1"
+
+[dialogue.library2-1]
+text = "你們回到了圖書館,剛進門就被傳送到拉古德的房間,拉古德露出急切卻又自制的態度"
+next = "library2-2"
+
+[dialogue.library2-2]
+text = "你們迅速交代所有事,拉古德嘴角不住的上揚"
+next = "library2-3"
+
+[dialogue.library2-3]
+character = "lagoud"
+text = "就跟我猜的一樣哈哈哈,秀才不出門能知天下事。"
+next = "library2-4"
+
+[dialogue.library2-4]
+character = "lulu"
+tachie = "yikes"
+text = "那麼能否懇請偉大的拉古德大人分享一下您的真知灼見?"
+next = "library2-5"
+
+[dialogue.library2-5]
+character = "lagoud"
+text = "用不著那麼酸~從哪裡開始說呢~神明是依托著人的信仰與相應的祭祀獲得力量。"
+next = "library2-6"
+
+[dialogue.library2-6]
+character = "lagoud"
+text = ",現在這副慘狀就是大湖之主被冒名頂替了呢w真是太有趣了,洒家這輩子值了哈哈哈。"
+next = "library2-7"
+
+[dialogue.library2-7]
+character = "lagoud"
+text = "作為一點小小獎勵,就給你一點知識吧"
+next = "library2-8"
+
+[dialogue.library2-8]
+text = "他揮了揮手,你感覺大量知識進入你的腦海"
+next = "library2-9"
+update = [
+    "lulu-harmony-plus-1",
+    "lulu-unharmony-plus-1",
+]
+
+[dialogue.library2-9]
+character = "lagoud"
+text = "我還有點是要忙,最近可真是大事不斷呢w先走啦~~"
+next = "library2-10"
+
+[dialogue.library2-10]
+text = "他化作黑霧,消失了"
+event = "decision2"
+update = [
+    "lulu-item-lagoud-reward",
+    "lulu-status-count2-1"
+]
+
+[update.lulu-item-lagoud-reward]
+character = "lulu"
+item = "lagoud-reward"
+change = 1
+
+[update.lulu-status-count2-1]
+character = "lulu"
+status = "count2"
+change = 1
+
+
+[event.lake]
+scene = "lake"
+dialogue = "lake-1"
+
+[dialogue.lake-1]
+text = "你們到了湖邊,烏雲密佈,四周如詩如畫,你們找了塊高處坐了下來,俯瞰整個聖恩湖"
+next = "lake-2"
+
+[dialogue.lake-2]
+text = "你們坐了一段時間,氣氛一度有點尷尬,貝爾維特率先打破了沉默"
+next = "lake-3"
+
+[dialogue.lake-3]
+character = "belwett"
+text = "嘿你覺得,我們能在一起嗎?"
+next = "lake-4"
+
+[dialogue.lake-4]
+character = "lulu"
+tachie = "nothing"
+text = "這麼直接?"
+next = "lake-5"
+
+[dialogue.lake-5]
+text = "你壓制著任何可能透露的情緒,現在是夕陽西下之時,此情此景,姑且談得上浪漫"
+
+[[dialogue.lake-5.option]]
+text = "做夢吧"
+next = "dream"
+
+[[dialogue.lake-5.option]]
+text = "除非下紅雨吧"
+next = "red-rain"
+
+[dialogue.dream]
+character = "lulu"
+tachie = "smiling"
+text = "做夢吧~"
+next = "dream-1"
+
+[dialogue.dream-1]
+text = "貝爾維特沒有說話,但你能感受到他的失落"
+next = "lake-6"
+
+[dialogue.red-rain]
+character = "lulu"
+tachie = "smiling"
+text = "除非下紅雨吧"
+next = "red-rain-1"
+update = [
+    "lulu-item-red-rain",
+]
+[update.lulu-item-red-rain]
+character = "lulu"
+item = "red-rain"
+change = 1
+
+
+[dialogue.red-rain-1]
+character = "belwett"
+text = "搞不好呢?"
+next = "red-rain-2"
+
+[dialogue.red-rain-2]
+text = "你被他逗樂了"
+next = "lake-6"
+
+[dialogue.lake-6]
+character = "belwett"
+text = "時候不早了,走吧!"
+next = "lake-7"
+
+[dialogue.lake-7]
+text = "他起身後走了,直接走了"
+event = "decision2"
+update = [
+    "lulu-item-unfulfilled-miss",
+    "lulu-status-count2-1"
+]
+
+[update.lulu-item-unfulfilled-miss]
+character = "lulu"
+item = "unfulfilled-miss"
+change = 1
+
+[event.mayor]
+scene = "office"
+dialogue = "mayor-1"
+
+[dialogue.mayor-1]
+text = "你們抵達了鎮長阿爾弗雷德的家"
+next = "mayor-2"
+
+[dialogue.mayor-2]
+text = "貝爾維特怒不可遏,他直接破門而入,將劍對準鎮長,鎮長夫人站在鎮長旁邊,一臉驚恐"
+next = "mayor-3"
+
+[dialogue.mayor-3]
+character = "belwett"
+text = "解釋你的所作所為!那些流浪漢,聖靈祭....你到底做了什麼?"
+next = "mayor-4"
+
+[dialogue.mayor-4]
+text = "鎮長被你們的突襲嚇傻了,"
+next = "mayor-5"
+
+[dialogue.mayor-5]
+text = "在你們的脅迫下,鎮長開始說起了他的故事"
+next = "mayor-6"
+
+[dialogue.mayor-6]
+character = "alfred"
+text = "50年前...我是生化實驗的唯一倖存者,戰爭結束後,其他人都變成了怪物。"
+next = "mayor-7"
+
+[dialogue.mayor-7]
+character = "alfred"
+text = "就在我絕望之際,伊諾克...那位大人出現了,他許諾我會將所有人恢復原狀,一切都像沒發生過一樣。"
+next = "mayor-8"
+
+[dialogue.mayor-8]
+character = "alfred"
+text = "只要...只要我,守護聖恩鎮。"
+next = "mayor-9"
+
+[dialogue.mayor-9]
+character = "belwett"
+text = "守護...?你把這叫做守護?"
+next = "mayor-10"
+
+[dialogue.mayor-10]
+character = "alfred"
+text = "我至愛的妻子,桃樂絲,也是生化實驗的犧牲者,伊諾克大人就在我面前,讓桃樂絲原本冰冷的身體,再次充滿血色,站了起來。"
+next = "mayor-11"
+
+[dialogue.mayor-11]
+character = "alfred"
+text = "隨後他告訴我,只要我配合,他就會實現我的願望,彈指之間,又讓我的桃樂絲變回冰冷的軀體。"
+next = "mayor-12"
+
+[dialogue.mayor-12]
+character = "alfred"
+text = "他真的可以操縱生死,我...我只要維持聖靈祭,並且不要讓鎮民知道這件事....我願意為了桃樂絲付出一切。"
+next = "mayor-13"
+
+[dialogue.mayor-13]
+text = "他進入輕微的歇斯底里,眼中充滿血絲"
+event = "convince"
+
+[event.convince]
+scene = "office"
+dialogue = "convince-1"
+
+
+[dialogue.convince-1]
+text = "你得想辦法從他口中得知真相"
+
+[[dialogue.convince-1.option]]
+text = "演奏"
+next = "play-9"
+
+[[dialogue.convince-1.option]]
+text = "說服"
+next = "talk"
+
+[dialogue.talk]
+text = "你開始說服鎮長,但他的眼神越來越瘋狂,他的話語越來越不合理"
+next = "talk-1"
+
+[dialogue.talk-1]
+text = "你意識到此時的鎮長聽不進任何話語,他需要現實來擊潰他的憶想"
+event = "convince"
+update = [
+    "lulu-item-convinced",
+]
+
+[update.lulu-item-convinced]
+character = "lulu"
+item = "convinced"
+change = 1
+
+
+[dialogue.play-9]
+text = "那麼"
+next = "play-10"
+
+[dialogue.play-10]
+text = "你要演奏什麼呢?"
+
+[[dialogue.play-10.option]]
+text = "和諧之聲"
+condition = "lulu-status-harmony-1"
+hidden = true
+next = "harmony10"
+
+[[dialogue.play-10.option]]
+text = "不諧之音"
+condition = "lulu-status-unharmony-1"
+hidden = true
+next = "unharmony10"
+
+[[dialogue.play-10.option]]
+text = "撫慰之韻"
+condition = "lulu-status-harmony-2"
+hidden = true
+next = "harmony10"
+
+[[dialogue.play-10.option]]
+text = "靈魂之歌"
+condition = "lulu-status-harmony-3"
+hidden = true
+next = "harmony10"
+
+[[dialogue.play-10.option]]
+text = "生命禮讚"
+condition = "lulu-status-harmony-4"
+hidden = true
+next = "harmony10"
+
+[[dialogue.play-10.option]]
+text = "暗黑節奏"
+condition = "lulu-status-unharmony-2"
+hidden = true
+next = "unharmony10"
+
+[[dialogue.play-10.option]]
+text = "終焉序曲"
+condition = "lulu-status-unharmony-3"
+hidden = true
+next = "unharmony10"
+
+[[dialogue.play-10.option]]
+text = "滅世樂章"
+condition = "lulu-status-unharmony-4"
+hidden = true
+next = "unharmony10"
+
+# 聖潔的能量一波波湧出,如今你的力量成長的異常迅速,純白能量影響範圍內,鎮民的皮膚潰爛,桃樂絲理你們非常非常近
+# 你的力量將虛假的表象依掃而過,留下的只有冰冷的現實,桃樂絲開始嘔吐,她吐出了一些綠色黏液,身體腫脹,扭曲,變成了一頭怪物
+# San-5
+# 雖然鎮長嚇得不輕,但桃樂絲依舊以怪物的身形擺出人類的姿態,當鎮長躲避她的觸碰,她還不解的發出一些有規律但無法理解的咕嚕聲
+# 就好像她以為自己是人一樣
+# 獲得 怪物桃樂絲
+[dialogue.harmony10]
+text = "聖潔的能量一波波湧出,如今你的力量成長的異常迅速,純白能量影響範圍內"
+next = "harmony10-1"
+
+[dialogue.harmony10-1]
+text = "鎮民的皮膚潰爛,桃樂絲離你們非常非常近,她受到的影響尤其劇烈"
+next = "harmony10-2"
+
+[dialogue.harmony10-2]
+text = "你的力量將虛假的表象依掃而過,留下的只有冰冷的現實,桃樂絲開始嘔吐。"
+next = "harmony10-3"
+update = [
+    "lulu-san-minus-5",
+]
+
+[dialogue.harmony10-3]
+text = "她吐出了一些綠色黏液,身體腫脹,扭曲,變成了一頭怪物"
+next = "harmony10-4"
+
+[dialogue.harmony10-4]
+text = "雖然鎮長嚇得不輕,但桃樂絲依舊以怪物的身形擺出人類的姿態"
+next = "harmony10-5"
+
+[dialogue.harmony10-5]
+text = "當鎮長躲避她的觸碰,她還不解的發出一些有規律但無法理解的咕嚕聲"
+next = "harmony10-6"
+
+[dialogue.harmony10-6]
+text = "就好像她以為自己是人一樣"
+next = "convince-2"
+
+[dialogue.unharmony10]
+text = "狂暴的能量傾瀉而出,被波及倒的所有智慧生命都陷入不可控的暈眩,在他們眼中,世界破碎,扭曲"
+next = "unharmony10-1"
+
+[dialogue.unharmony10-1]
+text = "而這似乎觸發了什麼開關,周圍街道的鎮民彷彿被這股波動撕下了一層面紗,他們頃刻間變成了怪物"
+next = "unharmony10-2"
+
+[dialogue.unharmony10-2]
+text = "離得最近的桃樂絲也是,她張開血盆大口,咬向離他最近的血肉 鎮長"
+next = "unharmony10-3"
+
+[dialogue.unharmony10-3]
+text = "但你的法術先她一步將她壓倒在地"
+next = "convince-2"
+
+
+
+[dialogue.convince-2]
+character = "belwett"
+text = "這都什麼跟什麼阿...."
+next = "convince-3"
+
+[dialogue.convince-3]
+character = "lulu"
+tachie = "angry"
+text = "你被騙了,這是一場騙局,那個伊諾克,利用褻瀆聖靈祭汲取力量,試圖取代大湖之主。"
+next = "convince-4"
+
+[dialogue.convince-4]
+character = "lulu"
+tachie = "angry"
+text = "所有鎮民都還是生化實驗的產物,伊諾克只是用輕薄的假象讓事情好像沒發生過!"
+next = "convince-5"
+
+[dialogue.convince-5]
+character = "lulu"
+tachie = "yikes"
+text = "你難道沒想過那些怪病是怎麼來的嗎?"
+next = "convince-6"
+
+[dialogue.convince-6]
+character = "alfred"
+text = "我...我知道了!別再說了。"
+next = "convince-7"
+
+[dialogue.convince-7]
+character = "lulu"
+tachie = "yikes"
+text = "就是維持的假象剝落了啊!!"
+next = "convince-8"
+
+[dialogue.convince-8]
+character = "alfred"
+text = "..."
+next = "convince-9"
+
+[dialogue.convince-9]
+character = "belwett"
+text = "我們...去找大湖之主,他也需要鎮民的存在才能取得力量,只要我們打敗伊諾克,他會讓這裡恢復原狀的"
+next = "convince-10"
+
+[dialogue.convince-10]
+character = "alfred"
+text = "桃樂絲...我的桃樂絲...到頭來...只是美夢一場...什麼都沒有改變..."
+next = "convince-11"
+
+[dialogue.convince-11]
+character = "lulu"
+tachie = "smiling"
+text = "如何?要再賭一把嗎?"
+next = "convince-12"
+
+[dialogue.convince-12]
+character = "belwett"
+text = "村長直直盯著怪物桃樂絲,喃喃說道'桃樂絲,只要她能回來...'"
+next = "convince-13"
+
+[dialogue.convince-13]
+character = "belwett"
+text = "我們明早出發,今晚好好休息吧"
+event = "bloody-night"
+
+[event.bloody-night]
+scene = "street"
+dialogue = "bloody-night-1"
+# 你們回到拉古德的密室睡下來,但半夜,你聽到了響動
+# 起身查看
+# 繼續睡
+# 隔天早上,一陣轟鳴聲響起,巨大的肉塊憑空出現,正在吞噬整個城市,你完全感覺不到大湖之主的氣息,從肉塊的表徵,你看出那是
+# 莎布·尼古拉絲
+# End
+# 你起身發現拉古德敲咪咪的出了門,你跟了上去
+# 跟蹤到一半,你發現貝爾維特跟著你出來了,他用眼神詢問你怎麼了,你沒有理他
+# 在往前,你發現拉古德在殺人,然後在屍體的額頭畫了一個符文
+# 你在做什麼?
+# if密儀知識  你的主人不是莉莉絲嗎?
+# 貝爾維特衝向前去,在血族沒有反應過來之時此穿了他的胸膛
+# 貝爾維特
+
+# 我看他不爽很久了,回去吧,別浪費寶貴的休息時間
+# 拉古德
+
+# 這是自然,我就是在進行吾主莉莉斯的降臨儀式!你膽敢阻撓我?
+# 你一字不差的背誦出召喚莎布·尼古拉絲儀式的細節,跟他現在的所作所為一模一樣
+# 拉古德
+
+# 不可能,這是吾主託夢告訴我的,我感受到了上位的威壓,不會有錯!
+# 露露  smilng
+
+# 唉呀呀活了700年的大血族竟然不知道要查證嗎?這樣很容易被騙喔?
+# 拉古德語塞,結結巴巴地說
+# 拉古德
+
+# 那...ㄜ...多謝...如果讓...如果經我的手讓這種...邪神降臨....我死一萬次都對不起吾主
+# 貝爾維特
+
+# 就這樣放過他?
+# 露露
+
+# 別浪費時間了,況且,我們還需要他
+# 你們回去睡覺了
+# san+5
+# 獲得  血族的同行
+[dialogue.bloody-night-1]
+text = "你們回到拉古德的密室睡下來,但半夜,你聽到了響動"
+
+[[dialogue.bloody-night-1.option]]
+text = "起身查看"
+next = "bloody-night-2"
+
+[[dialogue.bloody-night-1.option]]
+text = "繼續睡"
+next = "outer-coming"
+
+[dialogue.outer-coming]
+text = "隔天早上,一陣轟鳴聲響起,巨大的肉塊憑空出現,正在吞噬整個城市。"
+next = "outer-coming-1"
+
+[dialogue.outer-coming-1]
+text = "你完全感覺不到大湖之主的氣息,從肉塊的表徵,你看出那是莎布·尼古拉絲"
 end = ""
 
-#event = "decision2"
+[dialogue.bloody-night-2]
+text = "你起身發現拉古德敲咪咪的出了門,你跟了上去"
+next = "bloody-night-3"
+
+[dialogue.bloody-night-3]
+text = "跟蹤到一半,你發現貝爾維特跟著你出來了,他用眼神詢問你怎麼了,你沒有理他"
+next = "bloody-night-4"
+
+[dialogue.bloody-night-4]
+text = "再往前,你發現拉古德在殺人,然後在屍體的額頭畫了一個符文"
+
+[[dialogue.bloody-night-4.option]]
+text = "你在做什麼?"
+next = "what"
+
+[[dialogue.bloody-night-4.option]]
+text = "你的主人不是莉莉絲嗎?"
+next = "lilith"
+
+[dialogue.what]
+character = "lulu"
+text = "你在做什麼?"
+next = "what-1"
+
+[dialogue.what-1]
+character = "lagoud"
+text = "你怎麼會在這裡?"
+next = "what-2"
+
+[dialogue.what-2]
+text = "貝爾維特趁你吸引了拉古德的注意力衝向前去,在血族沒有反應過來之時刺穿了他的胸膛"
+next = "what-3"
+
+[dialogue.what-3]
+character = "belwett"
+text = "我看他不爽很久了,回去吧,別浪費寶貴的休息時間"
+next = "what-4"
+
+[dialogue.what-4]
+text = "你們回去睡覺了"
+event = "morning"
+
+[dialogue.lilith]
+character = "lulu"
+text = "你的主人不是莉莉絲嗎?"
+next = "lilith-1"
+
+[dialogue.lilith-1]
+character = "lagoud"
+text = "這是自然,我就是在進行吾主莉莉絲的降臨儀式!你膽敢阻撓我?"
+next = "lilith-2"
+
+[dialogue.lilith-2]
+text = "你一字不差的背誦出召喚莎布·尼古拉絲儀式的細節,跟他現在的所作所為一模一樣"
+next = "lilith-3"
+
+[dialogue.lilith-3]
+character = "lagoud"
+text = "不可能,你怎麼會知道?這是吾主託夢告訴我的,我感受到了血脈的壓制,不會有錯!"
+next = "lilith-4"
+
+[dialogue.lilith-4]
+character = "lulu"
+tachie = "smiling"
+text = "唉呀呀活了700年的大血族竟然不知道要查證嗎?這樣很容易被騙喔?"
+next = "lilith-5"
+update = [
+    "lulu-san-plus-5",
+]
+
+[dialogue.lilith-5]
+text = "拉古德瞬間了解發生甚麼事,一時語塞,結結巴巴地說"
+next = "lilith-6"
+
+[dialogue.lilith-6]
+character = "lagoud"
+text = "那...ㄜ...多謝...如果讓...如果經我的手讓這種...邪神降臨....我死一萬次都對不起吾主"
+next = "lilith-7"
+
+[dialogue.lilith-7]
+text = "你趁勢觀察了你跟他的魔力差距發現已經達到不相上下的水平"
+next = "lilith-8"
+
+[dialogue.lilith-8]
+character = "belwett"
+text = "就這樣放過他?"
+next = "lilith-9"
+
+[dialogue.lilith-9]
+character = "lulu"
+text = "別浪費時間了,況且,我們還需要他"
+next = "what-4"
+update = [
+    "lulu-item-blood-companion",
+]
+
+[update.lulu-item-blood-companion]
+character = "lulu"
+item = "blood-companion"
+change = 1
+
+
+[event.morning]
+scene = "bedroom"
+dialogue = "morning-1"
+
+
+
+[dialogue.morning-1]
+text = "你們看到一個戴黑墨鏡黑皮衣黑皮鞋飛機頭的浮誇男子唰地出現在你們面前,你看出來這是一個投影"
+next = "morning-2"
+
+[dialogue.morning-2]
+character = "inok"
+text = "阿爾弗雷德!你打破了我們的約定!"
+next = "morning-3"
+
+[dialogue.morning-3]
+text = "他說話斷斷續續的,這個投影也時長出現雜訊,看得出來他現在分身乏術"
+next = "morning-4"
+
+[dialogue.morning-4]
+character = "lulu"
+tachie = "smiling"
+text = "去把一切做個了結吧"
+event = "finale"
+
+[event.finale]
+scene = "lake"
+dialogue = "finale-1"
+
+[dialogue.finale-1]
+text = "你們再一次來到聖恩湖,但路途卻不像上一次那麼順遂"
+next = "finale-2"
+
+[dialogue.finale-2]
+text = "在路上不斷有巨型的觸手四處拍打"
+next = "finale-3"
+
+[dialogue.finale-3]
+character = "belwett"
+text = "小心!"
+next = "finale-4"
+
+[dialogue.finale-4]
+text = "貝爾維特將你撲倒"
+next = "finale-5"
+
+[dialogue.finale-5]
+text = "原先的地方是觸手下落的邊緣"
+next = "finale-6"
+
+[dialogue.finale-6]
+character = "lulu"
+tachie = "smiling"
+text = "..."
+next = "finale-7"
+
+[dialogue.finale-7]
+character = "alfred"
+text = "現在是打情罵俏的時候嗎?快點!!!"
+next = "finale-8"
+
+[dialogue.finale-8]
+text = "露露與貝爾維特 別過頭起身後,繼續衝向聖恩湖"
+next = "finale-9"
+
+[dialogue.finale-9]
+text = "終於,你們到了湖前,伊諾克巨大的身軀遮蔽天日"
+next = "finale-10"
+
+[dialogue.finale-10]
+text = "正對著湖中心瘋狂傾瀉,周圍的破壞只不過是餘波"
+next = "finale-11"
+
+[dialogue.finale-11]
+character = "lord_of_lake"
+text = "你...會為此付出..."
+next = "finale-12"
+
+[dialogue.finale-12]
+text = "大湖之主的聲音震耳欲聾,蘊含的憤怒令你們寒毛直豎,那是來自最原初的本能 恐懼"
+next = "finale-13"
+
+[dialogue.finale-13]
+character = "lord_of_lake"
+text = "...代價!!!!!!"
+next = "finale-14"
+
+[dialogue.finale-14]
+text = "伊諾克的身軀猛的炸裂出一個大洞,迸發的血肉衝上天空,血腥瀰漫,天下起了紅雨"
+next = "finale-15"
+
+[dialogue.finale-15]
+character = "belwett"
+text = "..."
+[[dialogue.finale-15.option]]
+text = "好臭"
+next = "finale-16"
+
+[[dialogue.finale-15.option]]
+text = "這個不算!"
+condition = "lulu-item-red-rain"
+next = "finale-16"
+[condition.lulu-item-red-rain]
+character = "lulu"
+item = "red-rain"
+logic = "EQ"
+
+[dialogue.finale-16]
+text = "這是最後的抉擇了"
+
+[[dialogue.finale-16.option]]
+text = "生命禮讚"
+condition = "lulu-status-harmony-4"
+
+next = "harmony99"
+
+
+[[dialogue.finale-16.option]]
+text = "滅世樂章"
+condition = "lulu-status-unharmony-4"
+
+next = "unharmony99"
+
+[[dialogue.finale-16.option]]
+text = "你無能為力"
+next = "weakness"
+
+[dialogue.weakness]
+text = "在這樣的怪物面前,你太弱小了,你無法做出任何選擇,片刻的猶豫便是你的終結"
+end = ""
+
+
+[dialogue.unharmony99]
+text = "你奏響了滅世的樂章,任由那漆黑的衝動接管你的雙手"
+next = "unharmony99-1"
+
+[dialogue.unharmony99-1]
+text = "充滿破壞性的音符隨著激進的旋律傾瀉而出,你周圍的空間似乎都扭曲了起來"
+next = "unharmony99-2"
+
+[dialogue.unharmony99-2]
+character = "inok"
+text = "不...快停止!你不知道你在做什麼!!"
+next = "unharmony99-3"
+
+[dialogue.unharmony99-3]
+character = "lord_of_lake"
+text = "這股力量...不....不可能!"
+next = "unharmony99-4"
+
+[dialogue.unharmony99-4]
+character = "belwett"
+text = "這就是你最後的選擇嗎?(苦笑)也好,至少在這一刻,至少曾經有一刻我可以像這樣看著你..."
+next = "unharmony99-5"
+
+[dialogue.unharmony99-5]
+character = "alfred"
+text = "這跟說好的不一樣!我在溶解,不!"
+next = "unharmony99-6"
+
+[dialogue.unharmony99-6]
+text = "以你為中心,空間開始波動,一道道縱波裹挟著黑色的能量肆虐著周圍的一切"
+next = "unharmony99-7"
+
+[dialogue.unharmony99-7]
+text = "波動所經之處,物體風化,肉體崩解,很快四周一片荒蕪"
+next = "unharmony99-8"
+
+[dialogue.unharmony99-8]
+text = "兩個神明也因鎮民消亡一併消散,等到你清醒過來,那股破壞世界的衝動褪去"
+next = "unharmony99-9"
+
+[dialogue.unharmony99-9]
+text = "四周乃至森林,聖恩湖,聖恩鎮皆不復存在,而你,將要付出代價,心愛之人的死亡,森林的消逝意味著..."
+next = "unharmony99-10"
+
+[dialogue.unharmony99-10]
+text = "此情此景令你的精神再也無法支撐"
+next = "unharmony99-11"
+
+[dialogue.unharmony99-11]
+character = "lulu"
+tachie = "firstlook"
+text = "哈哈...哈哈哈哈哈哈哈哈哈"
+next = "unharmony99-12"
+
+[dialogue.unharmony99-12]
+text = "你露出了淡淡的微笑,但內心對於破壞的慾望已經無法壓抑"
+next = "unharmony99-13"
+
+[dialogue.unharmony99-13]
+text = "數年後,屠殺近二十萬人的邪惡魔女'指揮家'在王都處以火刑"
+end = ""
+
+
+
+
+
+
+# 你奏響了生命的禮讚
+# 純白的能量隨著溫婉的旋律在周圍的空間輾轉騰挪
+# 對於人類,這股能量可以治癒傷口,撫慰心靈
+# 但對於邪惡的血肉,這股能量是致命的
+# 追逐你們的鎮民一接觸到這股能量就紛紛消解,並且這股能量正以生命為跳板,不斷蔓延
+# 伊諾克
+
+# 呃...呃阿阿阿阿阿
+# 失去了力量來源的邪神
+# 再也壓抑不住大湖原本的主人
+# 伊諾克的身體不斷炸開
+# 直到灰飛煙滅
+# 剎時間,一個手持三叉戟的老者衝出湖面
+# 在一段玄秘詭譎的詞語過後
+# 頃刻之間,一切歸於平靜與虛無
+# 一切都已消失,張揚的觸手
+# 不可一世的邪神
+# 聖恩湖瞬間乾涸,只剩下巨大的坑
+# 夜空中只剩下那個老者,作為唯一可看見的星
+# 你的演奏抽乾了你的力量
+# 你只能攤坐在地
+# 貝爾維特也跪在地上,剛才的情景依舊震懾著他
+# 貝爾維特
+
+# 哈...哈哈...我們做到了!
+# 露露,我們做到了!
+# 空中的老者降了下來
+# 盯著貝爾維特,手指向一個空地處
+# 而那邊突然撕裂空間般出現一道裂口
+# 露露  angry
+
+# 什麼意思
+# 貝爾維特
+
+# 我不是說我有個小祕密嗎?
+# 就是阿...我是另一個時空的啦
+# 嘿嘿  是邪神讓我無法回去原本的空間所以...
+# 露露
+
+# 所以你要回去了?
+# 生氣,難過,無法置信
+# 各種複雜的情緒揪住了你的胸口
+# 給他一巴掌
+# 不能留下來嗎?
+# 將他推進門
+# 啜泣
+# if  貝爾維特的信物: 演奏"  "
+# 啪!
+# 你的手印在他的臉上慢慢浮現
+# 隨後,你轉頭就走,他似乎試圖挽留你,但你並不想聽
+# 貝爾維特
+
+# 抱歉啦...
+# 露露
+
+# 不能留下來嗎?
+# 貝爾維特
+
+# 之前邪神的力量隔絕了這片區域
+# 但現在隔絕解除了
+# 我的存在是不被允許的
+# 繼續呆著會招來"獵犬"的
+# 露露  sad
+
+# 誰準你擅自闖進我的世界
+# 現在又擅自...
+# 你轉頭就走,他似乎試圖挽留你,但你並不想聽
+# End 3
+# 你將他推進了門
+# 裂縫在他一進去的瞬間直接關上
+# 他似乎最後有想說的話
+# 但都不再重要了
+# 你無聲的啜泣,眼淚含在眼眶中
+# 你極力掩飾,但不可控的吸氣聲
+# 卻出賣了你
+# 貝爾維特走向前
+# 抱住了你
+# 貝爾維特
+
+# 抱歉啦
+# 跟你在一起的時光很快樂
+# 我會永遠銘記在心的
+# 在離別之時
+# 妳想起曾經在他手記上找到的旋律
+# 你揮動指揮棒，慢慢的，把感情編成線
+# 織出了最後的　失落的旋律
+# 貝爾維特神色一緩
+# 他走向前來
+# 貝爾維特
+
+# 太美了．．．太美了．．．
+# 我走遍世界,就是在尋找
+# 這樣的樂章,但從未有人能將他演奏
+# 空中瀰漫的旋律與你的雙手一起
+# 停下
+# 你雙眼微睜
+# 看著貝爾維特從沉浸中醒來的模樣
+# 我能為你每天演奏
+
+# 滾吧
+# 露露  firstlook
+
+# 如果你想要,我能為你每天演奏
+# 貝爾維特
+
+# 但...:獵犬"
+# 大湖之主看了你們的互動
+# 大致了解發生了什麼事
+# 大湖之主
+
+# 為什麼不問問我呢?
+# 伊諾克封閉了此地的時空
+# 那種下等神能做到的事
+# 我也能做到
+# 只要....
+# 露露  nothing
+
+# 只要?
+# 大湖之主
+
+# 我要你  露露 作為我的祭司
+# 你要在我的祭典演奏最美妙的曲子
+# 如此一來我的力量就可以在廷達羅斯獵犬到來前,封閉這個區域
+# 露露  smiling
+
+# 聽起來是筆划算的交易w
+# 就這樣
+# 魔女與時空旅人
+# 過上了幸福快樂的日子
+# Happy  Ending
+[dialogue.harmony99]
+text = "你奏響了生命的禮讚,純白的能量隨著溫婉的旋律在周圍的空間輾轉騰挪"
+next = "harmony99-1"
+
+[dialogue.harmony99-1]
+text = "對於人類,這股能量可以治癒傷口,撫慰心靈,但對於邪惡的血肉,這股能量是致命的"
+next = "harmony99-2"
+
+[dialogue.harmony99-2]
+text = "追逐你們的鎮民一接觸到這股能量就紛紛消解,並且這股能量正以生命為跳板,不斷蔓延"
+next = "harmony99-3"
+
+[dialogue.harmony99-3]
+character = "inok"
+text = "呃....呃阿阿阿阿阿阿!!"
+next = "harmony99-4"
+
+[dialogue.harmony99-4]
+text = "失去了力量來源的邪神,再也壓抑不住大湖原本的主人,伊諾克的身體不斷炸開,直到灰飛煙滅"
+next = "harmony99-5"
+
+[dialogue.harmony99-5]
+text = "剎時間,一個手持三叉戟的老者衝出湖面,在一段玄秘詭譎的詞語過後,頃刻之間,一切歸於平靜與虛無"
+next = "harmony99-6"
+
+[dialogue.harmony99-6]
+text = "一切都已消失,張揚的觸手,不可一世的邪神,聖恩湖瞬間乾涸,只剩下巨大的坑"
+next = "harmony99-7"
+
+[dialogue.harmony99-7]
+text = "夜空中只剩下那個老者,作為唯一可看見的星,你的絕奏抽乾了你的力量,你只能攤坐在地"
+next = "harmony99-8"
+
+[dialogue.harmony99-8]
+character = "belwett"
+text = "哈...哈哈...我們做到了!露露,我們做到了!"
+next = "harmony99-9"
+
+[dialogue.harmony99-9]
+text = "空中的老者降了下來,盯著貝爾維特,手指向一個空地處,而那邊突然撕裂空間般出現一道裂口"
+next = "harmony99-10"
+
+[dialogue.harmony99-10]
+text = "你有種不祥的預感"
+next = "harmony99-11"
+
+[dialogue.harmony99-11]
+character = "lulu"
+tachie = "angry"
+text = "這是怎麼回事?"
+next = "harmony99-12"
+
+[dialogue.harmony99-12]
+character = "belwett"
+text = "我不是說我有個小祕密嗎?就是阿...我是另一個時空的啦,嘿嘿是邪神讓我無法回去原本的空間所以..."
+next = "harmony99-13"
+
+[dialogue.harmony99-13]
+character = "lulu"
+tachie = "angry"
+text = "所以你要回去了?"
+next = "harmony99-14"
+
+[dialogue.harmony99-14]
+character = "belwett"
+text = "之前邪神的力量隔絕了這片區域,但現在隔絕解除了,我的存在是不被允許的...抱歉啦"
+next = "harmony99-15"
+
+[dialogue.harmony99-15]
+text = "他不敢直視你,生氣,難過,無法置信...文字無法表述的情緒揪住了你的胸口"
+
+[[dialogue.harmony99-15.option]]
+text = "不能留下來嗎?"
+next = "dont_go"
+
+[[dialogue.harmony99-15.option]]
+text = "將他推進門"
+next = "push"
+
+[[dialogue.harmony99-15.option]]
+text = "演奏"
+next = "last_play"
+
+[[dialogue.harmony99-15.option]]
+text = "打一巴掌"
+next = "hit"
+
+[dialogue.hit]
+text = "啪!你的手印在他的臉上慢慢浮現,隨後,你轉頭就走,他似乎試圖挽留你,但你並不想聽"
+end = ""
+
+[dialogue.push]
+text = "你將他推進了門,裂縫在他一進去的瞬間直接關上,他似乎最後有想說的話,但都不再重要了"
+end = ""
+
+
+# 露露
+
+# 不能留下來嗎?
+# 貝爾維特
+
+# 之前邪神的力量隔絕了這片區域
+# 但現在隔絕解除了
+# 我的存在是不被允許的
+# 繼續呆著會招來"獵犬"的
+# 露露  sad
+
+# 誰準你擅自闖進我的世界
+# 現在又擅自...
+# 你轉頭就走,他似乎試圖挽留你,但你並不想聽
+[dialogue.dont_go]
+character = "lulu"
+tachie = "sad"
+text = "不能留下來嗎?"
+next = "dont_go-1"
+
+[dialogue.dont_go-1]
+character = "belwett"
+text = "在不屬於自己的時空待太久會招來獵犬的"
+next = "dont_go-2"
+
+[dialogue.dont_go-2]
+character = "lulu"
+tachie = "sad"
+text = "誰準你擅自闖進我的世界,現在又擅自..."
+next = "dont_go-3"
+
+[dialogue.dont_go-3]
+text = "你轉頭就走,,他似乎試圖挽留你,但你並不想聽"
+end = ""
+
+[dialogue.last_play]
+text = "你已經強大到可以看穿一個人的內心,你從他的心中找出旋律"
+next = "last_play-1"
+
+[dialogue.last_play-1]
+text = "你揮動指揮棒,慢慢的,把感情,記憶,魔力編成線,織出了失落的旋律。"
+next = "last_play-2"
+
+[dialogue.last_play-2]
+character = "belwett"
+text = "太美了...太美了...我走遍世界,就是在尋找這樣的...感覺,但從未有事物能使我如此感動"
+next = "last_play-3"
+
+[dialogue.last_play-3]
+text = "空中瀰漫的旋律與你的雙手一起,停下,你雙眼微睜,手停在半空,看著貝爾維特從沉浸中醒來的模樣"
+
+[[dialogue.last_play-3.option]]
+text = "滾吧"
+next = "push"
+
+[[dialogue.last_play-3.option]]
+text = "如果你想要,我能為你每天演奏"
+next = "last_chance"
+
+[dialogue.last_chance]
+character = "lulu"
+tachie = "firstlook"
+text = "如果你想要,我能為你每天演奏"
+next = "last_chance-1"
+
+[dialogue.last_chance-1]
+character = "belwett"
+text = "...我終究不屬於這裡,一旦被牠們發現..."
+
+[[dialogue.last_chance-1.option]]
+text = "是嗎..."
+next = "push"
+
+[[dialogue.last_chance-1.option]]
+text = "我不在乎"
+next = "last_chance-2"
+condition = "lulu-item-blood-companion"
+
+[condition.lulu-item-blood-companion]
+character = "lulu"
+item = "blood-companion"
+logic = "EQ"
+
+[dialogue.last_chance-2]
+character = "lagoud"
+text = "這方面我可以提供一些小小的幫助~老爺子,你還記得上次那個人情嗎?"
+next = "last_chance-3"
+
+[dialogue.last_chance-3]
+character = "lord_of_lake"
+text = "...我可以讓你們的存在隱匿於位面觀察者的視線之外,但這是有代價的"
+next = "last_chance-4"
+
+[dialogue.last_chance-4]
+character = "lord_of_lake"
+text = "我要你  露露 作為我的祭司 你要在我的祭典演奏最美妙的曲子"
+next = "last_chance-5"
+
+[dialogue.last_chance-5]
+character = "lagoud"
+text = "大放水耶~"
+next = "last_chance-6"
+
+[dialogue.last_chance-6]
+character = "lord_of_lake"
+text = "放了一個太平洋"
+next = "last_chance-7"
+
+[dialogue.last_chance-7]
+character = "lulu"
+tachie = "smiling"
+text = "聽起來是筆划算的交易w"
+next = "last_chance-8"
+
+[dialogue.last_chance-8]
+text = "就這樣,魔女與時空旅人過上了幸福快樂的日子"
+end = ""
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
