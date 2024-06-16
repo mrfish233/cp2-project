@@ -25,7 +25,7 @@ int startEngine(char *dir) {
     initSDL(&ctx);
 
     initAudio();
-    loadSound("resources/sounds/pop.mp3", &popSfx);
+    loadSound("resources/sounds/button.mp3", &popSfx);
     loadSound("resources/sounds/page.mp3", &pageSfx);
 
     if (initGame(&g_script, &g_display, dir) != 0) {

@@ -538,7 +538,7 @@ next = "back-home-8"
 
 [dialogue.back-home-8]
 character = "grandma"
-text = "太久...沒去小鎮了...竟然...出現了血族...露露阿...."
+text = "太久沒去小鎮了...竟然出現了血族...要不適教會一直阻撓"
 next = "back-home-9"
 
 [dialogue.back-home-9]

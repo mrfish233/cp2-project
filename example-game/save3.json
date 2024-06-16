@@ -1,0 +1,125 @@
+{
+	"datetime":	"2024-06-16 13:46:23",
+	"event":	"walking-on-street",
+	"characters":	[{
+			"id":	"lulu",
+			"status":	[{
+					"status_name":	"hp",
+					"value":	10
+				}, {
+					"status_name":	"san",
+					"value":	40
+				}, {
+					"status_name":	"coin",
+					"value":	50
+				}, {
+					"status_name":	"harmony",
+					"value":	0
+				}, {
+					"status_name":	"unharmony",
+					"value":	0
+				}, {
+					"status_name":	"humanity",
+					"value":	0
+				}, {
+					"status_name":	"death",
+					"value":	0
+				}],
+			"inventory":	[]
+		}, {
+			"id":	"belwett",
+			"status":	[{
+					"status_name":	"hp",
+					"value":	10
+				}, {
+					"status_name":	"san",
+					"value":	40
+				}, {
+					"status_name":	"coin",
+					"value":	20
+				}, {
+					"status_name":	"like",
+					"value":	50
+				}, {
+					"status_name":	"humanity",
+					"value":	0
+				}],
+			"inventory":	[]
+		}, {
+			"id":	"alfred",
+			"status":	[{
+					"status_name":	"hp",
+					"value":	10
+				}, {
+					"status_name":	"san",
+					"value":	40
+				}, {
+					"status_name":	"coin",
+					"value":	20
+				}, {
+					"status_name":	"like",
+					"value":	50
+				}, {
+					"status_name":	"humanity",
+					"value":	0
+				}],
+			"inventory":	[]
+		}, {
+			"id":	"auntie",
+			"status":	[{
+					"status_name":	"hp",
+					"value":	10
+				}, {
+					"status_name":	"san",
+					"value":	40
+				}, {
+					"status_name":	"coin",
+					"value":	20
+				}, {
+					"status_name":	"like",
+					"value":	50
+				}, {
+					"status_name":	"humanity",
+					"value":	0
+				}],
+			"inventory":	["cabbage", "apple"]
+		}, {
+			"id":	"lagoud",
+			"status":	[{
+					"status_name":	"hp",
+					"value":	10
+				}, {
+					"status_name":	"san",
+					"value":	40
+				}, {
+					"status_name":	"coin",
+					"value":	20
+				}, {
+					"status_name":	"like",
+					"value":	50
+				}, {
+					"status_name":	"humanity",
+					"value":	0
+				}],
+			"inventory":	[]
+		}, {
+			"id":	"grandma",
+			"status":	[{
+					"status_name":	"hp",
+					"value":	10
+				}, {
+					"status_name":	"san",
+					"value":	40
+				}, {
+					"status_name":	"coin",
+					"value":	20
+				}, {
+					"status_name":	"like",
+					"value":	50
+				}, {
+					"status_name":	"humanity",
+					"value":	0
+				}],
+			"inventory":	[]
+		}]
+}
