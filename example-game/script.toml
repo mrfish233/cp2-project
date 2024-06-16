@@ -1389,7 +1389,6 @@ next = "ask-1"
 
 [dialogue.ask-1]
 character = "lagoud"
-tachie = "nothing"
 text = "您是要我幫忙甚麼?"
 next = "meet-lagoud-17"
 
