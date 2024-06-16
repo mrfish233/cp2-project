@@ -319,8 +319,7 @@ int32_t updateDialogue(Script *script, Display *display) {
         strncpy(display->end_path, dialogue->next, STR_SIZE);
         display->end_flag = 1;
     }
-
-    if (display->continue_flag) {
+    else if (display->continue_flag) {
         display->continue_flag = 0;
     }
     else if (dialogue->next_type == DIALOGUE_EVENT) {
