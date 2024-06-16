@@ -418,6 +418,7 @@ void Load(AppContext* ctx) {
                             g_display.continue_flag = 1;
 
                             LoadFlag = false;
+                            fromMainMenuFlag = false;
                             GamePlayingFlag = true;
                             quit = true;
                         }
