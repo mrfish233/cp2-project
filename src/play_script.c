@@ -81,6 +81,7 @@ int32_t initDisplay(Display *display) {
     display->path_sfx[0] = '\0';
     display->path_voice[0] = '\0';
 
+    display->character_type = CHARACTER_NARRATOR;
     display->character[0] = '\0';
     display->dialogue[0]  = '\0';
 
@@ -400,6 +401,8 @@ int32_t updateDialogue(Script *script, Display *display) {
     strncpy(display->dialogue, dialogue->text, STR_SIZE);
 
     // Find the character
+
+    display->character_type = dialogue->character_type;
 
     if (dialogue->character_type != CHARACTER_NARRATOR) {
         Character *character = getCharacter(script, dialogue->character);

@@ -659,15 +659,17 @@ void GamePlaying(AppContext* ctx) {
 
             // Name
 
-            if (strlen(g_display.character) > 0) {
+            if (g_display.character_type != CHARACTER_NARRATOR) {
                 nameSurface = TTF_RenderUTF8_Blended(ctx->font, g_display.character, g_white);
-                nameTexture = SDL_CreateTextureFromSurface(ctx->renderer, nameSurface);
-                nameRect = (SDL_Rect) {section_width * 0.2 + 10, section_height * 0.8 - 40, nameSurface->w, nameSurface->h};
-                SDL_FreeSurface(nameSurface);
             }
             else {
-                SDL_DestroyTexture(nameTexture);
+                // SDL_DestroyTexture(nameTexture);
+                nameSurface = TTF_RenderUTF8_Blended(ctx->font, " ", g_white);
             }
+
+            nameTexture = SDL_CreateTextureFromSurface(ctx->renderer, nameSurface);
+            nameRect = (SDL_Rect) {section_width * 0.2 + 10, section_height * 0.8 - 40, nameSurface->w, nameSurface->h};
+            SDL_FreeSurface(nameSurface);
 
             // Dialogues
 
