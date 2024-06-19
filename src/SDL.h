@@ -6,7 +6,10 @@
 #include <stdbool.h>
 #include <unistd.h>  // 用於 getcwd
 #include <limits.h>  // 用於 PATH_MAX
+
+#if defined(__linux__)
 #include <linux/limits.h>
+#endif
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
