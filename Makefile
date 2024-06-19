@@ -8,13 +8,15 @@ DEPEND := $(SROUCE:$(SRC_DIR)/%.c=$(SRC_DIR)/%.d)
 
 TARGET = engine
 
+LIBS = sdl2 SDL2_image SDL2_mixer SDL2_ttf libavformat libavcodec libavutil libswscale libswresample libcjson
+
 # compile variables
 CC = -gcc
-CFLAGS = -Wall -Wextra -MMD -MP
+CFLAGS = -Wall -Wextra -MMD -MP $(shell pkg-config --cflags $(LIBS))
 
 # link variables
 LDFLAGS = -Wall -Wextra
-LDLIBS  = -lm -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -lavcodec -lavformat -lavutil -lswscale -lswresample -lcjson
+LDLIBS  = -lm $(shell pkg-config --libs $(LIBS))
 
 # .PHONY means these rules get executed even if files of those names exist
 .PHONY: all clean
