@@ -12,12 +12,12 @@
 #include "reallocarray.h"
 
 typedef struct Display {
-    char path_background[STR_SIZE];
-    char path_tachie[STR_SIZE];
+    char path_background[STR_SIZE * 2];
+    char path_tachie[STR_SIZE * 2];
 
-    char path_bgm[STR_SIZE];
-    char path_sfx[STR_SIZE];
-    char path_voice[STR_SIZE];
+    char path_bgm[STR_SIZE * 2];
+    char path_sfx[STR_SIZE * 2];
+    char path_voice[STR_SIZE * 2];
 
     char character[STR_SIZE];
     char dialogue[STR_SIZE];
