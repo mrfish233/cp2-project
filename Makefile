@@ -25,7 +25,7 @@ all: $(TARGET)
 
 # debug: CFLAGS += -g -DDEBUG
 debug: CFLAGS += -g -DDEBUG -fsanitize=address
-debug: LDFLAGS += -fsanitize=address -static-libasan
+debug: LDFLAGS += -fsanitize=address
 debug: $(TARGET)
 
 $(TARGET): $(OBJECT)
