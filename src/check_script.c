@@ -30,7 +30,7 @@ int32_t isValidScript(Script *script) {
         Character *chr = &(script->characters[i]);
 
         if (strlen(chr->voice) > 0) {
-            char path[STR_SIZE] = {0};
+            char path[STR_SIZE * 2] = {0};
 
             snprintf(path, STR_SIZE * 2, "%s/%s", script->dir, chr->voice);
 
@@ -44,7 +44,7 @@ int32_t isValidScript(Script *script) {
             for (int32_t j = 0; j < chr->tachie_size; j++) {
                 Tachie *tachie = &(chr->tachies[j]);
 
-                char path[STR_SIZE] = {0};
+                char path[STR_SIZE * 2] = {0};
 
                 snprintf(path, STR_SIZE * 2, "%s/%s", script->dir, tachie->path);
 
@@ -90,7 +90,7 @@ int32_t isValidScript(Script *script) {
     for (int32_t i = 0; i < script->item_size; i++) {
         Item *item = &(script->items[i]);
 
-        char path[STR_SIZE] = {0};
+        char path[STR_SIZE * 2] = {0};
 
         snprintf(path, STR_SIZE * 2, "%s/%s", script->dir, item->icon);
 
@@ -251,7 +251,7 @@ int32_t isValidScript(Script *script) {
         }
 
         if (strlen(event->bgm) != 0) {
-            char path[STR_SIZE] = {0};
+            char path[STR_SIZE * 2] = {0};
 
             snprintf(path, STR_SIZE * 2, "%s/%s", script->dir, event->bgm);
 
@@ -276,7 +276,7 @@ int32_t isValidScript(Script *script) {
     for (int32_t i = 0; i < script->scene_size; i++) {
         Scene *scene = &(script->scenes[i]);
 
-        char path[STR_SIZE] = {0};
+        char path[STR_SIZE * 2] = {0};
 
         snprintf(path, STR_SIZE * 2, "%s/%s", script->dir, scene->background);
 
@@ -300,7 +300,7 @@ int32_t isValidScript(Script *script) {
     for (int32_t i = 0; i < script->dialogue_size; i++) {
         Dialogue *dialogue = &(script->dialogues[i]);
 
-        char path[STR_SIZE] = {0};
+        char path[STR_SIZE * 2] = {0};
 
         snprintf(path, STR_SIZE * 2, "%s/%s", script->dir, dialogue->sfx);
 
