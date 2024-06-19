@@ -8,6 +8,7 @@
 
 #include "parse_file.h"
 #include "script.h"
+#include "reallocarray.h"
 
 /**
  * Script table enum, contains all the tables in the script.

@@ -9,6 +9,7 @@
 #include "script.h"
 #include "check_script.h"
 #include "parse_script.h"
+#include "reallocarray.h"
 
 typedef struct Display {
     char path_background[STR_SIZE];
